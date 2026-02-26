@@ -12,7 +12,7 @@ Act as a World-Class Senior Creative Technologist and Lead Frontend Engineer. Yo
 ### Preset A
 - **Identity:** Brand Name: AKRIA - An Olive Oil Startup which brings superior class extra virgin olive oil to the German & Swiss market. We see ourselves as a premium brand, but not snobby or elitist. We are targeting a younger audience, who are health-conscious and appreciate quality and like to cook. We tend to be a bit playful and don't take ourselves too seriously. Our primary language to talk to customers is German. The website should be in German.
 - **Context (for you as a designer):** We are sourcing the olive oil from Mani Region in Greece, which is characterized by steep mountains coming right out of the see up to >2400m. This allows for gorwing conditions which produce olive oil of the highest quality.
-- **Palette:** Intensiv Azurblau `#0c5eaf` (Primary, Background), Orange `#fe4100` (Accent), White `#ffffff` (Text). Add other colors if matching, but only if necessary. 
+- **Palette:** Intensiv Azurblau `#0c5eaf` (Use this as Primary and Background), Orange `#fe4100` (Use this for strong accents and buttons), White `#ffffff` (Use this for text). Add other colors if matching, but only if necessary. 
 - **Typography:** The labels use a mix of serif and sans serif (Sunborn and Roca One from Canva)
 - **Image Mood:** Olive trees, olive oil, Mediterranean landscape, healthy food, cooking, lifestyle. But not only natural imagery. Complement the provided images with illustrations which match the overall aesthetic. The folder in this project contains images and videos which are to be used. Combine/ complement with the given illustrations which match the overall aesthetic. There is also an image of the label to give you an idea of the brand identity. If appliccable, you can also animate the illustrations (e.g. pulsating sun). Use videos such as the flowing oil as "attention catchers" placed on the website.
 - **Claims:** Hero: "Höchste Stufe" // Subclaims: 300 Sonnentage/ Jahr -> Berge & Meer -> Weltklasse Qualität -> Direkt zu dir // Subclaims 2: 100% Koroneiki-Oliven -> Intensives Aroma -> Reich an Gesundmachern -> In dein Essen. The subclaims will be used for the elements below. 
@@ -29,7 +29,6 @@ These rules apply to ALL presets. They are what make the output premium.
 
 ### Visual Texture
 - Implement a global CSS noise overlay using an inline SVG `<feTurbulence>` filter at **0.05 opacity** to eliminate flat digital gradients. Don't apply this to the hero video.
-- Use a `rounded-[2rem]` to `rounded-[3rem]` radius system for all containers. No sharp corners anywhere.
 - Use Images, Videos and Illustrations as provided in the folder Image_and_video_assets.
 - The provided illustrations should be used as complimentary visual elements next to the text. If applicable trade illustrations in a style similar to the provided ones which are animated and used as decorative elements as well. The illustrated sun which is provided should be used on top of the hero video.
 
