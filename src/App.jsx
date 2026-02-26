@@ -120,6 +120,15 @@ function Hero() {
                     scrub: true,
                 },
             })
+
+            // Force play video on mobile
+            const video = heroRef.current?.querySelector('video')
+            if (video) {
+                video.play().catch(() => {
+                    // Autoplay might be blocked by browser/battery saver
+                    console.log('Autoplay blocked, waiting for interaction')
+                })
+            }
         }, heroRef)
 
         return () => ctx.revert()
@@ -286,6 +295,12 @@ function ClaimSet1() {
                     }
                 })
             }
+
+            // Force play video
+            const video = sectionRef.current?.querySelector('video')
+            if (video) {
+                video.play().catch(() => { })
+            }
         }, sectionRef)
 
         return () => ctx.revert()
@@ -363,6 +378,7 @@ function ClaimSet1() {
                                 preload="auto"
                                 className="absolute inset-0 w-full h-full object-cover"
                             >
+                                <source src="/assets/oil-flow.mov" type="video/quicktime" />
                                 <source src="/assets/oil-flow.mov" type="video/mp4" />
                             </video>
                             <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent" />
@@ -538,6 +554,12 @@ function Waitlist() {
                     toggleActions: 'play none none reverse',
                 },
             })
+
+            // Force play video
+            const video = sectionRef.current?.querySelector('video')
+            if (video) {
+                video.play().catch(() => { })
+            }
         }, sectionRef)
         return () => ctx.revert()
     }, [])
