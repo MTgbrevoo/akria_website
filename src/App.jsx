@@ -495,41 +495,42 @@ function ClaimSet2() {
     return (
         <section ref={sectionRef} id="qualitaet" className="relative bg-primary-dark">
             <div ref={cardsRef}>
-                <div
-                    key={i}
-                    className={`stack-card-inner min-h-[100svh] w-full ${card.bg} flex items-center justify-center relative overflow-hidden 
+                {cards.map((card, i) => (
+                    <div
+                        key={i}
+                        className={`stack-card-inner min-h-[100svh] w-full ${card.bg} flex items-center justify-center relative overflow-hidden 
                         ${i > 0 ? 'shadow-[0_-20px_50px_rgba(0,0,0,0.3)] rounded-t-[3rem] md:rounded-t-[4rem]' : ''}`}
-                >
-                    {/* Mobile Gradient Overlay for legibility */}
-                    <div className="absolute inset-0 bg-black/20 md:hidden z-0" />
+                    >
+                        {/* Mobile Gradient Overlay for legibility */}
+                        <div className="absolute inset-0 bg-black/20 md:hidden z-0" />
 
-                    {/* Decorative illustration */}
-                    <img
-                        src={card.illustration}
-                        alt=""
-                        className="absolute right-0 top-1/2 -translate-y-1/2 w-64 md:w-96 pointer-events-none"
-                    />
+                        {/* Decorative illustration */}
+                        <img
+                            src={card.illustration}
+                            alt=""
+                            className="absolute right-0 top-1/2 -translate-y-1/2 w-64 md:w-96 pointer-events-none"
+                        />
 
-                    <div className="card-content relative z-10 max-w-4xl mx-auto px-6 md:px-16 text-center">
-                        <div className={`inline-flex items-center justify-center w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-white/5 backdrop-blur-sm border border-white/10 mb-8 ${card.accent}`}>
-                            {card.icon}
+                        <div className="card-content relative z-10 max-w-4xl mx-auto px-6 md:px-16 text-center">
+                            <div className={`inline-flex items-center justify-center w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-white/5 backdrop-blur-sm border border-white/10 mb-8 ${card.accent}`}>
+                                {card.icon}
+                            </div>
+                            <p className="text-white/50 font-display text-sm md:text-base font-semibold tracking-[0.15em] uppercase mb-3">
+                                {card.subtitle}
+                            </p>
+                            <h2 className="font-serif italic font-bold text-4xl md:text-6xl lg:text-7xl text-white mb-6 md:mb-8 leading-tight">
+                                {card.title}
+                            </h2>
+                            <p className="text-white/60 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-light">
+                                {card.desc}
+                            </p>
                         </div>
-                        <p className="text-white/50 font-display text-sm md:text-base font-semibold tracking-[0.15em] uppercase mb-3">
-                            {card.subtitle}
-                        </p>
-                        <h2 className="font-serif italic font-bold text-4xl md:text-6xl lg:text-7xl text-white mb-6 md:mb-8 leading-tight">
-                            {card.title}
-                        </h2>
-                        <p className="text-white/60 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-light">
-                            {card.desc}
-                        </p>
-                    </div>
 
-                    {/* Card number */}
-                    <div className="absolute bottom-8 left-8 md:left-16 font-display font-bold text-7xl md:text-9xl text-white/[0.03]">
-                        0{i + 1}
+                        {/* Card number */}
+                        <div className="absolute bottom-8 left-8 md:left-16 font-display font-bold text-7xl md:text-9xl text-white/[0.03]">
+                            0{i + 1}
+                        </div>
                     </div>
-                </div>
                 ))}
             </div>
         </section>
