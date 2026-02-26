@@ -523,8 +523,6 @@ function ClaimSet2() {
    ═══════════════════════════════════════════════════════════ */
 function Waitlist() {
     const sectionRef = useRef(null)
-    const [email, setEmail] = useState('')
-    const [submitted, setSubmitted] = useState(false)
 
     useEffect(() => {
         const ctx = gsap.context(() => {
@@ -544,28 +542,25 @@ function Waitlist() {
         return () => ctx.revert()
     }, [])
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        if (email) setSubmitted(true)
-    }
-
     return (
         <section
             ref={sectionRef}
             id="waitlist"
             className="relative min-h-[100svh] flex items-center justify-center py-24 md:py-32 bg-primary overflow-hidden"
         >
-            {/* Background Video (Olive Trees) */}
+            {/* Background Video (Beach Drone) */}
             <div className="absolute inset-0 w-full h-full">
                 <video
                     autoPlay
                     muted
                     loop
                     playsInline
+                    preload="auto"
                     className="absolute inset-0 w-full h-full object-cover"
                 >
-                    <source src="/assets/hero-drone.mp4" type="video/mp4" />
+                    <source src="/assets/beach-video.mp4" type="video/mp4" />
                 </video>
+                <div className="absolute inset-0 bg-black/40" />
             </div>
 
             <div className="waitlist-content relative z-20 max-w-3xl mx-auto px-6 md:px-12 py-16 md:py-20 text-center backdrop-blur-xl bg-black/30 rounded-[3rem] border border-white/10 shadow-2xl">
@@ -576,37 +571,23 @@ function Waitlist() {
                     Bald ist es soweit.
                 </h2>
                 <p className="text-white/60 text-lg md:text-xl max-w-xl mx-auto leading-relaxed mb-10 font-light">
-                    Trag dich ein und sei unter den Ersten, die unser Olivenöl probieren. Kein Spam, versprochen. Nur ein kurzes Heads-up, wenn's losgeht.
+                    Trag dich für die nächste Ernte ein!
                 </p>
 
-                {!submitted ? (
-                    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center gap-3 max-w-md mx-auto">
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Deine E-Mail Adresse"
-                            required
-                            className="flex-1 w-full sm:w-auto px-6 py-4 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/40 text-base focus:outline-none focus:border-accent/60 focus:ring-2 focus:ring-accent/20 transition-all"
-                        />
-                        <button
-                            type="submit"
-                            className="btn-magnetic btn-accent w-full sm:w-auto py-4 px-8 text-base"
-                        >
-                            Ich bin dabei
-                            <ArrowRight className="ml-2 w-5 h-5" />
-                        </button>
-                    </form>
-                ) : (
-                    <div className="glass-card p-8 max-w-md mx-auto">
-                        <div className="text-accent text-4xl mb-4">🫒</div>
-                        <h3 className="font-display font-bold text-xl text-white mb-2">Du bist auf der Liste!</h3>
-                        <p className="text-white/60">Wir melden uns, sobald die frische Ernte da ist.</p>
-                    </div>
-                )}
+                <div className="flex justify-center">
+                    <a
+                        href="https://deine-warteliste-url.de" // Replace with actual URL if needed
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-magnetic btn-accent py-5 px-12 text-xl md:text-2xl shadow-[0_0_40px_rgba(254,65,0,0.4)]"
+                    >
+                        Warteliste
+                        <ArrowRight className="ml-3 w-6 h-6" />
+                    </a>
+                </div>
 
-                <p className="text-white/30 text-xs mt-6">
-                    Wir verwenden deine E-Mail nur, um dich über die Ernte zu informieren. Kein Spam.
+                <p className="text-white/30 text-xs mt-10">
+                    Wir informieren dich, sobald die frische Ernte bereit ist.
                 </p>
             </div>
         </section>
