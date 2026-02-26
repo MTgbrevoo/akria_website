@@ -451,9 +451,9 @@ function ClaimSet2() {
                         pinSpacing: false,
                         snap: {
                             snapTo: 1,
-                            duration: 0.3,
+                            duration: { min: 0.1, max: 0.3 },
                             delay: 0,
-                            ease: 'power2.inOut'
+                            ease: 'power3.inOut'
                         },
                         onUpdate: (self) => {
                             const progress = self.progress
