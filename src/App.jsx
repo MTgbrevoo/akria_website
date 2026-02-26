@@ -451,9 +451,10 @@ function ClaimSet2() {
                         pinSpacing: false,
                         snap: {
                             snapTo: 1,
-                            duration: { min: 0.1, max: 0.3 },
+                            duration: { min: 0.2, max: 0.6 },
                             delay: 0,
-                            ease: 'power3.inOut'
+                            ease: 'power2.inOut',
+                            inertia: false // Disable inertia to prevent overshooting
                         },
                         onUpdate: (self) => {
                             const progress = self.progress
@@ -578,13 +579,13 @@ function Waitlist() {
                 <video
                     autoPlay
                     muted
+                    loop
                     playsInline
                     preload="auto"
                     className="absolute inset-0 w-full h-full object-cover"
                 >
                     <source src="/assets/beach-video.mp4" type="video/mp4" />
                 </video>
-                <div className="absolute inset-0 bg-black/10" />
             </div>
 
             {/* Compact Glass Container focused on text */}
