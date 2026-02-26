@@ -540,19 +540,20 @@ function ClaimSet2() {
                     })
                 })
             } else {
-                // Mobile: Standard vertical reveal
+                // Mobile: Standard vertical reveal with improved pacing
                 const cards = gsap.utils.toArray('.stack-card-inner')
                 cards.forEach((card) => {
                     const content = card.querySelector('.card-content')
                     gsap.from(content.children, {
-                        y: 40,
+                        y: 60,
                         opacity: 0,
-                        stagger: 0.1,
-                        duration: 1,
-                        ease: 'power2.out',
+                        stagger: 0.15,
+                        duration: 1.2,
+                        ease: 'power3.out',
                         scrollTrigger: {
                             trigger: card,
-                            start: 'top 80%'
+                            start: 'top 85%',
+                            toggleActions: 'play none none reverse'
                         }
                     })
                 })
@@ -564,11 +565,11 @@ function ClaimSet2() {
 
     return (
         <section ref={sectionRef} id="qualitaet" className="relative bg-primary-dark overflow-hidden">
-            <div ref={cardsRef} className="relative h-[100svh] w-full">
+            <div ref={cardsRef} className="relative h-auto md:h-[100svh] w-full flex flex-col md:block gap-8 py-12 md:py-0">
                 {cards.map((card, i) => (
                     <div
                         key={i}
-                        className={`stack-card-inner absolute inset-0 min-h-[100svh] w-full ${card.bg} flex items-center justify-center overflow-hidden 
+                        className={`stack-card-inner relative md:absolute inset-0 min-h-[70vh] md:min-h-[100svh] w-full ${card.bg} flex items-center justify-center overflow-hidden 
                         ${i > 0 ? 'shadow-[0_-30px_60px_rgba(0,0,0,0.4)] rounded-t-[3rem] md:rounded-t-[5rem]' : ''}`}
                         style={{ zIndex: i }}
                     >
