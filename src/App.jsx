@@ -460,118 +460,72 @@ function ClaimSet2() {
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            const isMobile = window.innerWidth < 768
+            const cardElements = gsap.utils.toArray('.stack-card-inner')
 
-            // Floating animations for all illustrations
-            gsap.utils.toArray('.card-illustration').forEach((img) => {
-                gsap.to(img, {
-                    y: '+=25',
-                    x: '+=15',
-                    rotation: '+=3',
-                    duration: '3 + Math.random() * 2',
-                    repeat: -1,
-                    yoyo: true,
-                    ease: 'sine.inOut'
-                })
+            // Force 1-swipe = 1-card by normalizing scroll behavior
+            ScrollTrigger.normalizeScroll(true)
+
+            cardElements.forEach((card, i) => {
+                if (i < cardElements.length - 1) {
+                    ScrollTrigger.create({
+                        trigger: card,
+                        start: 'top top',
+                        end: '+=150%',
+                        pin: true,
+                        pinSpacing: false,
+                        snap: {
+                            snapTo: 1,
+                            duration: { min: 0.3, max: 0.8 },
+                            delay: 0,
+                            ease: 'power2.inOut',
+                            inertia: false // Disable inertia to prevent overshooting
+                        },
+                        onUpdate: (self) => {
+                            const progress = self.progress
+                            const blurAmount = 15 // Standard blur
+
+                            gsap.to(card, {
+                                scale: 1 - progress * 0.15,
+                                filter: `blur(${progress * blurAmount}px)`,
+                                opacity: 1 - progress * 0.7,
+                                duration: 0.6,
+                                ease: 'power2.out'
+                            })
+                        },
+                    })
+                }
             })
 
-            if (!isMobile) {
-                const innerCards = gsap.utils.toArray('.stack-card-inner')
-
-                // Master Timeline for the entire section
-                const masterTl = gsap.timeline({
+            // Animate card content on enter
+            cardElements.forEach((card, i) => {
+                const content = card.querySelector('.card-content')
+                gsap.from(content.children, {
+                    y: 60,
+                    opacity: 0,
+                    stagger: 0.1,
+                    duration: 1,
+                    ease: 'power3.out',
                     scrollTrigger: {
-                        trigger: sectionRef.current,
-                        start: 'top top',
-                        end: '+=600%', // Total scroll duration
-                        pin: true,
-                        scrub: 1.5,
-                        snap: {
-                            snapTo: 1 / (innerCards.length - 1),
-                            duration: { min: 0.5, max: 1.2 },
-                            delay: 0.1,
-                            ease: 'power2.inOut'
-                        }
-                    }
+                        trigger: card,
+                        start: 'top 80%',
+                        end: 'top 20%',
+                        scrub: 2,
+                    },
                 })
-
-                // Set initial state for cards 2 and 3
-                innerCards.forEach((card, i) => {
-                    if (i > 0) {
-                        gsap.set(card, { yPercent: 100 })
-                    }
-                })
-
-                // Build the stacking sequence
-                innerCards.forEach((card, i) => {
-                    if (i < innerCards.length - 1) {
-                        const nextCard = innerCards[i + 1]
-
-                        // Transition: Next card comes up, Current card fades/scales/blurs
-                        masterTl.to(nextCard, {
-                            yPercent: 0,
-                            ease: 'none'
-                        }, i) // Align with index-based timing
-
-                        masterTl.to(card, {
-                            scale: 0.85,
-                            opacity: 0.4,
-                            filter: 'blur(20px)',
-                            yPercent: -15,
-                            ease: 'none'
-                        }, i)
-                    }
-                })
-
-                // Content entrance on first load
-                innerCards.forEach((card) => {
-                    const content = card.querySelector('.card-content')
-                    gsap.from(content.children, {
-                        y: 80,
-                        opacity: 0,
-                        stagger: 0.12,
-                        duration: 1.2,
-                        ease: 'power3.out',
-                        scrollTrigger: {
-                            trigger: sectionRef.current,
-                            start: 'top 80%',
-                            toggleActions: 'play none none reverse'
-                        }
-                    })
-                })
-            } else {
-                // Mobile: Standard vertical reveal with improved pacing
-                const cards = gsap.utils.toArray('.stack-card-inner')
-                cards.forEach((card) => {
-                    const content = card.querySelector('.card-content')
-                    gsap.from(content.children, {
-                        y: 60,
-                        opacity: 0,
-                        stagger: 0.15,
-                        duration: 1.2,
-                        ease: 'power3.out',
-                        scrollTrigger: {
-                            trigger: card,
-                            start: 'top 85%',
-                            toggleActions: 'play none none reverse'
-                        }
-                    })
-                })
-            }
+            })
         }, sectionRef)
 
         return () => ctx.revert()
     }, [])
 
     return (
-        <section ref={sectionRef} id="qualitaet" className="relative bg-primary-dark overflow-hidden">
-            <div ref={cardsRef} className="relative h-auto md:h-[100svh] w-full flex flex-col md:block gap-8 py-12 md:py-0">
+        <section ref={sectionRef} id="qualitaet" className="relative bg-primary-dark">
+            <div ref={cardsRef}>
                 {cards.map((card, i) => (
                     <div
                         key={i}
-                        className={`stack-card-inner relative md:absolute inset-0 min-h-[70vh] md:min-h-[100svh] w-full ${card.bg} flex items-center justify-center overflow-hidden 
-                        ${i > 0 ? 'shadow-[0_-30px_60px_rgba(0,0,0,0.4)] rounded-t-[3rem] md:rounded-t-[5rem]' : ''}`}
-                        style={{ zIndex: i }}
+                        className={`stack-card-inner min-h-[100svh] w-full ${card.bg} flex items-center justify-center relative overflow-hidden 
+                        ${i > 0 ? 'shadow-[0_-20px_50px_rgba(0,0,0,0.3)] rounded-t-[3rem] md:rounded-t-[4rem]' : ''}`}
                     >
                         {/* Mobile Gradient Overlay for legibility */}
                         <div className="absolute inset-0 bg-black/20 md:hidden z-0" />
@@ -580,7 +534,7 @@ function ClaimSet2() {
                         <img
                             src={card.illustration}
                             alt=""
-                            className="card-illustration absolute right-0 top-1/2 -translate-y-1/2 w-64 md:w-96 pointer-events-none opacity-40 md:opacity-100"
+                            className="absolute right-0 top-1/2 -translate-y-1/2 w-64 md:w-96 pointer-events-none"
                         />
 
                         <div className="card-content relative z-10 max-w-4xl mx-auto px-6 md:px-16 text-center">
