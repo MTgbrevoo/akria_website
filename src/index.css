@@ -1,0 +1,211 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Noise Overlay ────────────────────────────────────── */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.05;
+}
+
+/* ── Global Resets ────────────────────────────────────── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: #0c5eaf;
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+/* ── Magnetic Button ──────────────────────────────────── */
+.btn-magnetic {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2.5rem;
+  border-radius: 3rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  border: none;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.btn-magnetic:hover {
+  transform: scale(1.03);
+}
+
+.btn-accent {
+  background-color: #fe4100;
+  color: #ffffff;
+  box-shadow: 0 0 20px rgba(254, 65, 0, 0.3), 0 0 60px rgba(254, 65, 0, 0.1);
+}
+
+.btn-accent:hover {
+  box-shadow: 0 0 30px rgba(254, 65, 0, 0.5), 0 0 80px rgba(254, 65, 0, 0.2);
+}
+
+.btn-accent::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.btn-accent:hover::after {
+  opacity: 1;
+}
+
+.btn-outline {
+  background: transparent;
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+}
+
+.btn-outline:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.1);
+}
+
+/* ── Interactive lift ─────────────────────────────────── */
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.hover-lift:hover {
+  transform: translateY(-1px);
+}
+
+/* ── Rounded Container System ─────────────────────────── */
+.container-rounded {
+  border-radius: 2rem;
+}
+
+.container-rounded-lg {
+  border-radius: 3rem;
+}
+
+/* ── Sun Pulsate Animation ────────────────────────────── */
+@keyframes sunPulsate {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+.sun-pulsate {
+  animation: sunPulsate 4s ease-in-out infinite;
+}
+
+@keyframes sunRotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sun-rotate {
+  animation: sunRotate 30s linear infinite;
+}
+
+/* ── Navbar Entrance ──────────────────────────────────── */
+@keyframes navEntrance {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.nav-entrance {
+  animation: navEntrance 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1.2s both;
+}
+
+/* ── Stacking Cards ───────────────────────────────────── */
+.stack-card {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform, filter, opacity;
+}
+
+/* ── Scrollbar ────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #083d73;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(254, 65, 0, 0.5);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(254, 65, 0, 0.8);
+}
+
+/* ── Claim arrow path ─────────────────────────────────── */
+.arrow-path {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+}
+
+/* ── Glass card ───────────────────────────────────────── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 2rem;
+}
+
+/* ── Video container ──────────────────────────────────── */
+.video-mask {
+  border-radius: 2rem;
+  overflow: hidden;
+}
