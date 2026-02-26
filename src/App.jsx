@@ -121,10 +121,10 @@ function Hero() {
                 },
             })
 
-            // Force play video on mobile and set slow motion
+            // Force play video on mobile
             const video = heroRef.current?.querySelector('video')
             if (video) {
-                video.playbackRate = 0.5; // Slow down the video
+                video.playbackRate = 1.0; // Normal speed
                 video.play().catch(() => {
                     // Autoplay might be blocked by browser/battery saver
                     console.log('Autoplay blocked, waiting for interaction')
@@ -578,14 +578,13 @@ function Waitlist() {
                 <video
                     autoPlay
                     muted
-                    loop
                     playsInline
                     preload="auto"
                     className="absolute inset-0 w-full h-full object-cover"
                 >
                     <source src="/assets/beach-video.mp4" type="video/mp4" />
                 </video>
-                <div className="absolute inset-0 bg-black/40" />
+                <div className="absolute inset-0 bg-black/10" />
             </div>
 
             {/* Compact Glass Container focused on text */}
