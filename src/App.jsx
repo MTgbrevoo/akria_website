@@ -136,7 +136,6 @@ function Hero() {
                     playsInline
                     preload="auto"
                     className="absolute inset-0 w-full h-full object-cover"
-                    poster="/assets/hero-photo.jpg"
                 >
                     <source src="/assets/hero-drone.mp4" type="video/mp4" />
                 </video>
@@ -334,15 +333,15 @@ function ClaimSet1() {
                                 {i < claims.length - 1 && (
                                     <div className="py-2 md:py-0">
                                         <svg
-                                            className={`claim-arrow-${i} w-12 h-12 md:w-24 md:h-24 mx-auto my-[-0.5rem] md:my-[-1rem] text-accent z-20`}
+                                            className={`claim-arrow-${i} w-16 h-16 md:w-32 md:h-32 mx-auto my-[-1rem] md:my-[-2rem] text-accent z-20`}
                                             viewBox="0 0 100 100"
                                             fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
+                                            xmlns="http://www.w3.org/2000/center"
                                         >
                                             <path
                                                 d="M50 10 C 45 35, 55 45, 50 80 M 35 65 C 40 75, 50 85, 50 80 M 65 65 C 60 75, 50 85, 50 80"
                                                 stroke="currentColor"
-                                                strokeWidth="3"
+                                                strokeWidth="4"
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
                                             />
