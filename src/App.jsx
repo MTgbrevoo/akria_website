@@ -121,9 +121,10 @@ function Hero() {
                 },
             })
 
-            // Force play video on mobile
+            // Force play video on mobile and set slow motion
             const video = heroRef.current?.querySelector('video')
             if (video) {
+                video.playbackRate = 0.5; // Slow down the video
                 video.play().catch(() => {
                     // Autoplay might be blocked by browser/battery saver
                     console.log('Autoplay blocked, waiting for interaction')
@@ -141,7 +142,6 @@ function Hero() {
                 <video
                     autoPlay
                     muted
-                    loop
                     playsInline
                     preload="auto"
                     className="absolute inset-0 w-full h-full object-cover"
@@ -588,14 +588,15 @@ function Waitlist() {
                 <div className="absolute inset-0 bg-black/40" />
             </div>
 
-            <div className="waitlist-content relative z-20 max-w-3xl mx-auto px-6 md:px-12 py-16 md:py-20 text-center backdrop-blur-xl bg-black/30 rounded-[3rem] border border-white/10 shadow-2xl">
-                <p className="font-display text-sm md:text-base font-semibold tracking-[0.2em] uppercase text-accent mb-4">
+            {/* Compact Glass Container focused on text */}
+            <div className="waitlist-content relative z-20 max-w-2xl mx-auto px-6 md:px-10 py-12 md:py-16 text-center backdrop-blur-md bg-black/20 rounded-[2.5rem] border border-white/5 shadow-xl">
+                <p className="font-display text-xs md:text-sm font-semibold tracking-[0.2em] uppercase text-accent mb-3">
                     Ernte 2026 / 2027
                 </p>
-                <h2 className="font-serif italic font-bold text-4xl md:text-6xl lg:text-7xl text-white mb-6 leading-tight">
+                <h2 className="font-serif italic font-bold text-3xl md:text-5xl text-white mb-4 leading-tight">
                     Bald ist es soweit.
                 </h2>
-                <p className="text-white/60 text-lg md:text-xl max-w-xl mx-auto leading-relaxed mb-10 font-light">
+                <p className="text-white/60 text-base md:text-lg max-w-md mx-auto leading-relaxed mb-8 font-light">
                     Trag dich für die nächste Ernte ein!
                 </p>
 
@@ -604,15 +605,15 @@ function Waitlist() {
                         href="https://deine-warteliste-url.de" // Replace with actual URL if needed
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn-magnetic btn-accent py-5 px-12 text-xl md:text-2xl shadow-[0_0_40px_rgba(254,65,0,0.4)]"
+                        className="btn-magnetic btn-accent py-4 px-10 text-lg md:text-xl shadow-[0_0_30px_rgba(254,65,0,0.3)] hover:scale-[1.05] transition-transform"
                     >
                         Warteliste
-                        <ArrowRight className="ml-3 w-6 h-6" />
+                        <ArrowRight className="ml-3 w-5 h-5 flex-shrink-0" />
                     </a>
                 </div>
 
-                <p className="text-white/30 text-xs mt-10">
-                    Wir informieren dich, sobald die frische Ernte bereit ist.
+                <p className="text-white/20 text-[10px] md:text-xs mt-8">
+                    Wir informieren dich bei Erntebeginn.
                 </p>
             </div>
         </section>
