@@ -97,6 +97,7 @@ function Hero() {
                 .from('.hero-line-1', { y: 30, opacity: 0, duration: 1 }, '-=0.8')
                 .from('.hero-line-2', { y: 40, opacity: 0, duration: 1 }, '-=0.7')
                 .from('.hero-line-3', { y: 40, opacity: 0, duration: 1 }, '-=0.7')
+                .from('.hero-line-4', { y: 40, opacity: 0, duration: 1 }, '-=0.7')
                 .from('.hero-cta', { y: 30, opacity: 0, duration: 0.8 }, '-=0.6')
                 .from('.hero-scroll-hint', { y: 20, opacity: 0, duration: 0.6 }, '-=0.5')
 
@@ -191,12 +192,15 @@ function Hero() {
                     <p className="hero-line-1 font-display text-sm md:text-base font-semibold tracking-[0.2em] uppercase text-white/70 mb-4 md:mb-6">
                         Extra Natives Olivenöl aus der Mani
                     </p>
-                    <h1 className="mb-6 md:mb-8 text-center">
+                    <h1 className="mb-6 md:mb-8 text-center flex flex-col items-center">
                         <span className="hero-line-2 block font-display font-800 text-5xl md:text-7xl lg:text-8xl tracking-tight text-white leading-[1.1]">
-                            Höchste
+                            Upgrade
                         </span>
-                        <span className="hero-line-3 block font-serif italic font-900 text-6xl md:text-9xl lg:text-[12rem] tracking-tight text-accent leading-[0.9]">
-                            Stufe.
+                        <span className="hero-line-3 block font-display font-800 text-3xl md:text-5xl lg:text-6xl tracking-tight text-white/90 leading-[0.9] -mt-2">
+                            für
+                        </span>
+                        <span className="hero-line-4 block font-serif italic font-900 text-6xl md:text-9xl lg:text-[12rem] tracking-tight text-accent leading-[0.8] -mt-2">
+                            alles.
                         </span>
                     </h1>
                     <p className="hero-line-3 text-white/60 text-base md:text-xl max-w-xl mb-10 font-light leading-relaxed">
