@@ -420,148 +420,145 @@ function ClaimSet1() {
     )
 }
 
+
 /* ═══════════════════════════════════════════════════════════
-   CLAIM SET 2 — Stacking Full-Screen Cards
-   100% Koroneiki → Intensives Aroma → Reich an Gesundmachern
+   CLAIM SET 2 — Falling Cards Stacking Effect
+   100% Koroneiki-Oliven → Intensives Aroma → Reich an Gesundmachern
    ═══════════════════════════════════════════════════════════ */
 function ClaimSet2() {
-    const sectionRef = useRef(null)
-    const cardsRef = useRef(null)
+    const sectionRef = useRef(null);
+    const containerRef = useRef(null);
 
     const cards = [
         {
-            title: '100% Koroneiki-Oliven',
-            subtitle: 'Eine Sorte. Die Beste.',
-            desc: 'Koroneiki-Oliven sind klein, aber haben es in sich. Intensiver Geschmack und der höchste Polyphenolgehalt aller Sorten. Deswegen nehmen wir auch nur die.',
-            icon: <img src="/assets/illustrations/Olive.png" alt="" className="w-12 h-12 md:w-16 md:h-16 object-contain" />,
-            bg: 'bg-primary',
-            accent: 'text-accent',
-            illustration: '/assets/waves.png',
+            headline: "100% Koroneiki-Oliven",
+            desc: "Koroneiki-Oliven sind klein, aber haben es in sich. Intensiver Geschmack und der höchste Polyphenolgehalt aller Sorten. Deswegen nehmen wir auch nur die.",
+            bg: "bg-[#0c5eaf]",
+            illustration: "/assets/illustrations/Olive.png"
         },
         {
-            title: 'Intensives Aroma',
-            subtitle: 'Vergiss Supermarktöl.',
-            desc: 'Scharf, fruchtig, mit einem Finish, das im Hals kitzelt. So muss gutes Olivenöl schmecken. Einmal probiert, willst du nichts anderes mehr.',
-            icon: <img src="/assets/illustrations/Aroma.png" alt="" className="w-12 h-12 md:w-16 md:h-16 object-contain" />,
-            bg: 'from-[#0a4d8f] to-primary-dark',
-            accent: 'text-orange-300',
-            illustration: '/assets/mountains.png',
+            headline: "Intensives Aroma",
+            desc: "Scharf, fruchtig, mit einem Finish, das im Hals kitzelt. So muss gutes Olivenöl schmecken. Einmal probiert, willst du nichts anderes mehr.",
+            bg: "bg-[#0a4d8f]", // Slightly darker blue
+            illustration: "/assets/illustrations/Aroma.png"
         },
         {
-            title: 'Reich an Gesundmachern',
-            subtitle: 'Flüssiges Gold. Wortwörtlich.',
-            desc: 'Vollgepackt mit Polyphenolen, Vitamin E und Antioxidantien. Unser Olivenöl ist nicht nur lecker. Es tut dir auch richtig gut.',
-            icon: <img src="/assets/illustrations/Herz.png" alt="" className="w-12 h-12 md:w-16 md:h-16 object-contain" />,
-            bg: 'from-primary-dark to-[#062d54]',
-            accent: 'text-emerald-300',
-            illustration: '/assets/sun.png',
-        },
-    ]
+            headline: "Reich an Gesundmachern",
+            desc: "Vollgepackt mit Polyphenolen, Vitamin E und Antioxidantien. Unser Olivenöl ist nicht nur lecker. Es tut dir auch richtig gut.",
+            bg: "bg-[#083b6e]", // Even darker blue
+            illustration: "/assets/illustrations/Herz.png"
+        }
+    ];
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            const cardElements = gsap.utils.toArray('.stack-card-inner')
+            const isMobile = window.innerWidth < 768;
 
-            // Force 1-swipe = 1-card by normalizing scroll behavior
-            ScrollTrigger.normalizeScroll(true)
-
-            cardElements.forEach((card, i) => {
-                if (i < cardElements.length - 1) {
-                    ScrollTrigger.create({
-                        trigger: card,
-                        start: 'top top',
-                        end: '+=150%',
-                        pin: true,
-                        pinSpacing: false,
-                        snap: {
-                            snapTo: 1,
-                            duration: { min: 0.3, max: 0.8 },
-                            delay: 0,
-                            ease: 'power2.inOut',
-                            inertia: false // Disable inertia to prevent overshooting
-                        },
-                        onUpdate: (self) => {
-                            const progress = self.progress
-                            const blurAmount = 15 // Standard blur
-
-                            gsap.to(card, {
-                                scale: 1 - progress * 0.15,
-                                filter: `blur(${progress * blurAmount}px)`,
-                                opacity: 1 - progress * 0.7,
-                                duration: 0.6,
-                                ease: 'power2.out'
-                            })
-                        },
-                    })
-                }
-            })
-
-            // Animate card content on enter
-            cardElements.forEach((card, i) => {
-                const content = card.querySelector('.card-content')
-                gsap.from(content.children, {
-                    y: 60,
-                    opacity: 0,
-                    stagger: 0.1,
-                    duration: 1,
-                    ease: 'power3.out',
+            if (isMobile) {
+                // Mobile: Sequential animation as we scroll
+                cards.forEach((_, i) => {
+                    gsap.from(`.stack-card-${i}`, {
+                        y: 100,
+                        opacity: 0,
+                        rotateX: -10,
+                        duration: 1,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: `.stack-card-${i}`,
+                            start: "top 80%",
+                        }
+                    });
+                });
+            } else {
+                // Desktop: Pinned Stacking Effect
+                const tl = gsap.timeline({
                     scrollTrigger: {
-                        trigger: card,
-                        start: 'top 80%',
-                        end: 'top 20%',
-                        scrub: 2,
-                    },
-                })
-            })
-        }, sectionRef)
+                        trigger: sectionRef.current,
+                        start: "top top",
+                        end: `+=${cards.length * 100}%`,
+                        pin: true,
+                        scrub: 1,
+                        anticipatePin: 1
+                    }
+                });
 
-        return () => ctx.revert()
-    }, [])
+                cards.forEach((_, i) => {
+                    if (i === 0) {
+                        // First card is already there or enters normally
+                        gsap.set(`.stack-card-0`, { zIndex: 10 });
+                        return;
+                    }
+
+                    // Card falls from above
+                    tl.fromTo(`.stack-card-${i}`,
+                        {
+                            y: "-100vh",
+                            rotateX: 15,
+                            scale: 1.1,
+                            zIndex: 10 + i
+                        },
+                        {
+                            y: "0vh",
+                            rotateX: 0,
+                            scale: 1,
+                            duration: 1.5,
+                            ease: "power2.inOut"
+                        },
+                        `card-${i}`
+                    );
+
+                    // Previous cards effect (Scale down, blur, fade)
+                    for (let j = 0; j < i; j++) {
+                        tl.to(`.stack-card-${j}`, {
+                            scale: 0.9 - (i - j) * 0.05,
+                            filter: `blur(${(i - j) * 5}px)`,
+                            opacity: 0.6 / (i - j),
+                            y: -20 * (i - j),
+                            duration: 1.5,
+                            ease: "power2.inOut"
+                        }, `card-${i}`);
+                    }
+                });
+            }
+        }, sectionRef);
+
+        return () => ctx.revert();
+    }, []);
 
     return (
-        <section ref={sectionRef} id="qualitaet" className="relative bg-primary-dark">
-            <div ref={cardsRef}>
+        <section ref={sectionRef} className="relative w-full h-screen overflow-hidden bg-primary" id="qualitaet">
+            <div ref={containerRef} className="relative w-full h-full flex items-center justify-center">
                 {cards.map((card, i) => (
                     <div
                         key={i}
-                        className={`stack-card-inner min-h-[100svh] w-full ${card.bg} flex items-center justify-center relative overflow-hidden 
-                        ${i > 0 ? 'shadow-[0_-20px_50px_rgba(0,0,0,0.3)] rounded-t-[3rem] md:rounded-t-[4rem]' : ''}`}
+                        className={`stack-card-${i} absolute w-full max-w-4xl px-6 md:px-0 flex items-center justify-center`}
+                        style={{ zIndex: 10 + i }}
                     >
-                        {/* Mobile Gradient Overlay for legibility */}
-                        <div className="absolute inset-0 bg-black/20 md:hidden z-0" />
-
-                        {/* Decorative illustration */}
-                        <img
-                            src={card.illustration}
-                            alt=""
-                            className="absolute right-0 top-1/2 -translate-y-1/2 w-64 md:w-96 pointer-events-none"
-                        />
-
-                        <div className="card-content relative z-10 max-w-4xl mx-auto px-6 md:px-16 text-center">
-                            <div className={`inline-flex items-center justify-center w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-white/5 backdrop-blur-sm border border-white/10 mb-8 ${card.accent}`}>
-                                {card.icon}
+                        <div className={`w-full ${card.bg} rounded-[2.5rem] p-10 md:p-20 shadow-[-20px_40px_80px_rgba(0,0,0,0.4)] border border-white/10 flex flex-col md:flex-row gap-10 md:gap-16 items-center`}>
+                            <div className="flex-1 text-center md:text-left">
+                                <h2 className="font-serif italic font-900 text-5xl md:text-7xl text-white mb-6 leading-tight">
+                                    {card.headline}
+                                </h2>
+                                <p className="text-white/70 text-lg md:text-xl font-light leading-relaxed mb-4">
+                                    {card.desc}
+                                </p>
                             </div>
-                            <p className="text-white/50 font-display text-sm md:text-base font-semibold tracking-[0.15em] uppercase mb-3">
-                                {card.subtitle}
-                            </p>
-                            <h2 className="font-serif italic font-bold text-4xl md:text-6xl lg:text-7xl text-white mb-6 md:mb-8 leading-tight">
-                                {card.title}
-                            </h2>
-                            <p className="text-white/60 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-light">
-                                {card.desc}
-                            </p>
-                        </div>
-
-                        {/* Card number */}
-                        <div className="absolute bottom-8 left-8 md:left-16 font-display font-bold text-7xl md:text-9xl text-white/[0.03]">
-                            0{i + 1}
+                            <div className="hidden md:block w-72 h-72 relative">
+                                {/* Abstract shape or illustration background */}
+                                <div className="absolute inset-0 bg-accent/10 rounded-full blur-3xl animate-pulse" />
+                                <div className="relative z-10 w-full h-full flex items-center justify-center">
+                                    <img src={card.illustration} className="w-full h-auto object-contain max-h-full" alt="" />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 ))}
             </div>
         </section>
-    )
+    );
 }
+
+
 
 /* ═══════════════════════════════════════════════════════════
    WAITLIST CTA
