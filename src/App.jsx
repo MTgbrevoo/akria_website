@@ -455,27 +455,8 @@ function ClaimSet2() {
     ];
 
     useEffect(() => {
-        const mm = gsap.matchMedia();
-
-        mm.add("(max-width: 767px)", () => {
-            // Mobile: Sequential animation as we scroll
-            cards.forEach((_, i) => {
-                gsap.from(`.stack-card-${i}`, {
-                    y: 100,
-                    opacity: 0,
-                    rotateX: -10,
-                    duration: 1,
-                    ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: `.stack-card-${i}`,
-                        start: "top 80%",
-                    }
-                });
-            });
-        });
-
-        mm.add("(min-width: 768px)", () => {
-            // Desktop: Pinned Stacking Effect
+        const ctx = gsap.context(() => {
+            // Pinned Stacking Effect for all devices
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current,
@@ -524,30 +505,30 @@ function ClaimSet2() {
                     }, `card-${i}`);
                 }
             });
-        });
+        }, sectionRef);
 
-        return () => mm.revert();
+        return () => ctx.revert();
     }, []);
 
     return (
-        <section ref={sectionRef} className="relative w-full min-h-[100svh] md:h-screen overflow-x-hidden md:overflow-hidden bg-primary py-24 md:py-0" id="qualitaet">
-            <div ref={containerRef} className="relative w-full h-full flex flex-col md:flex-row items-center justify-center gap-12 md:gap-0">
+        <section ref={sectionRef} className="relative w-full h-[100svh] overflow-hidden bg-primary" id="qualitaet">
+            <div ref={containerRef} className="relative w-full h-full flex items-center justify-center">
                 {cards.map((card, i) => (
                     <div
                         key={i}
-                        className={`stack-card-${i} relative md:absolute w-full max-w-4xl px-6 md:px-0 flex items-center justify-center`}
+                        className={`stack-card-${i} absolute w-full max-w-4xl px-4 md:px-0 flex items-center justify-center`}
                         style={{ zIndex: 10 + i }}
                     >
-                        <div className={`w-full ${card.bg} rounded-[2.5rem] p-10 md:p-20 shadow-[-20px_40px_80px_rgba(0,0,0,0.4)] border border-white/10 flex flex-col md:flex-row gap-10 md:gap-16 items-center`}>
+                        <div className={`w-full ${card.bg} rounded-[2.5rem] p-8 md:p-20 shadow-[-20px_40px_80px_rgba(0,0,0,0.4)] border border-white/10 flex flex-col md:flex-row gap-6 md:gap-16 items-center`}>
                             <div className="flex-1 text-center md:text-left">
-                                <h2 className="font-serif italic font-900 text-5xl md:text-7xl text-white mb-6 leading-tight">
+                                <h2 className="font-serif italic font-900 text-4xl md:text-7xl text-white mb-4 md:mb-6 leading-tight">
                                     {card.headline}
                                 </h2>
-                                <p className="text-white/70 text-lg md:text-xl font-light leading-relaxed mb-4">
+                                <p className="text-white/70 text-base md:text-xl font-light leading-relaxed mb-4">
                                     {card.desc}
                                 </p>
                             </div>
-                            <div className="hidden md:block w-72 h-72 relative">
+                            <div className="w-32 h-32 md:w-72 md:h-72 relative">
                                 {/* Abstract shape or illustration background */}
                                 <div className="absolute inset-0 bg-accent/10 rounded-full blur-3xl animate-pulse" />
                                 <div className="relative z-10 w-full h-full flex items-center justify-center">
