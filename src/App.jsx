@@ -455,87 +455,87 @@ function ClaimSet2() {
     ];
 
     useEffect(() => {
-        const ctx = gsap.context(() => {
-            const isMobile = window.innerWidth < 768;
+        const mm = gsap.matchMedia();
 
-            if (isMobile) {
-                // Mobile: Sequential animation as we scroll
-                cards.forEach((_, i) => {
-                    gsap.from(`.stack-card-${i}`, {
-                        y: 100,
-                        opacity: 0,
-                        rotateX: -10,
-                        duration: 1,
-                        ease: "power3.out",
-                        scrollTrigger: {
-                            trigger: `.stack-card-${i}`,
-                            start: "top 80%",
-                        }
-                    });
-                });
-            } else {
-                // Desktop: Pinned Stacking Effect
-                const tl = gsap.timeline({
+        mm.add("(max-width: 767px)", () => {
+            // Mobile: Sequential animation as we scroll
+            cards.forEach((_, i) => {
+                gsap.from(`.stack-card-${i}`, {
+                    y: 100,
+                    opacity: 0,
+                    rotateX: -10,
+                    duration: 1,
+                    ease: "power3.out",
                     scrollTrigger: {
-                        trigger: sectionRef.current,
-                        start: "top top",
-                        end: `+=${cards.length * 100}%`,
-                        pin: true,
-                        scrub: 1,
-                        anticipatePin: 1
+                        trigger: `.stack-card-${i}`,
+                        start: "top 80%",
                     }
                 });
+            });
+        });
 
-                cards.forEach((_, i) => {
-                    if (i === 0) {
-                        // First card is already there or enters normally
-                        gsap.set(`.stack-card-0`, { zIndex: 10 });
-                        return;
-                    }
+        mm.add("(min-width: 768px)", () => {
+            // Desktop: Pinned Stacking Effect
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: sectionRef.current,
+                    start: "top top",
+                    end: `+=${cards.length * 100}%`,
+                    pin: true,
+                    scrub: 1,
+                    anticipatePin: 1
+                }
+            });
 
-                    // Card falls from above
-                    tl.fromTo(`.stack-card-${i}`,
-                        {
-                            y: "-100vh",
-                            rotateX: 15,
-                            scale: 1.1,
-                            zIndex: 10 + i
-                        },
-                        {
-                            y: "0vh",
-                            rotateX: 0,
-                            scale: 1,
-                            duration: 1.5,
-                            ease: "power2.inOut"
-                        },
-                        `card-${i}`
-                    );
+            cards.forEach((_, i) => {
+                if (i === 0) {
+                    // First card is already there or enters normally
+                    gsap.set(`.stack-card-0`, { zIndex: 10 });
+                    return;
+                }
 
-                    // Previous cards effect (Scale down, blur, fade)
-                    for (let j = 0; j < i; j++) {
-                        tl.to(`.stack-card-${j}`, {
-                            scale: 0.9 - (i - j) * 0.05,
-                            filter: `blur(${(i - j) * 5}px)`,
-                            opacity: 0.6 / (i - j),
-                            y: -20 * (i - j),
-                            duration: 1.5,
-                            ease: "power2.inOut"
-                        }, `card-${i}`);
-                    }
-                });
-            }
-        }, sectionRef);
+                // Card falls from above
+                tl.fromTo(`.stack-card-${i}`,
+                    {
+                        y: "-100vh",
+                        rotateX: 15,
+                        scale: 1.1,
+                        zIndex: 10 + i
+                    },
+                    {
+                        y: "0vh",
+                        rotateX: 0,
+                        scale: 1,
+                        duration: 1.5,
+                        ease: "power2.inOut"
+                    },
+                    `card-${i}`
+                );
 
-        return () => ctx.revert();
+                // Previous cards effect (Scale down, blur, fade)
+                for (let j = 0; j < i; j++) {
+                    tl.to(`.stack-card-${j}`, {
+                        scale: 0.9 - (i - j) * 0.05,
+                        filter: `blur(${(i - j) * 5}px)`,
+                        opacity: 0.6 / (i - j),
+                        y: -20 * (i - j),
+                        duration: 1.5,
+                        ease: "power2.inOut"
+                    }, `card-${i}`);
+                }
+            });
+        });
+
+        return () => mm.revert();
     }, []);
 
     return (
-        <section ref={sectionRef} className="relative w-full h-screen overflow-hidden bg-primary" id="qualitaet">
-            <div ref={containerRef} className="relative w-full h-full flex items-center justify-center">
+        <section ref={sectionRef} className="relative w-full min-h-[100svh] md:h-screen overflow-x-hidden md:overflow-hidden bg-primary py-24 md:py-0" id="qualitaet">
+            <div ref={containerRef} className="relative w-full h-full flex flex-col md:flex-row items-center justify-center gap-12 md:gap-0">
                 {cards.map((card, i) => (
                     <div
                         key={i}
-                        className={`stack-card-${i} absolute w-full max-w-4xl px-6 md:px-0 flex items-center justify-center`}
+                        className={`stack-card-${i} relative md:absolute w-full max-w-4xl px-6 md:px-0 flex items-center justify-center`}
                         style={{ zIndex: 10 + i }}
                     >
                         <div className={`w-full ${card.bg} rounded-[2.5rem] p-10 md:p-20 shadow-[-20px_40px_80px_rgba(0,0,0,0.4)] border border-white/10 flex flex-col md:flex-row gap-10 md:gap-16 items-center`}>
