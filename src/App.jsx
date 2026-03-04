@@ -106,9 +106,21 @@ function Hero() {
             }
 
             // Hide other elements initially
-            gsap.set(['.hero-line-1', '.hero-line-2', '.hero-line-3', '.hero-line-4', '.hero-cta', '.hero-scroll-hint'], {
+            gsap.set(['.hero-line-1', '.hero-line-2', '.hero-line-3', '.hero-line-4', '.hero-cta'], {
                 opacity: 0,
                 y: 30
+            })
+
+            // Scroll hint is visible initially, then fades as soon as user scrolls
+            gsap.to('.hero-scroll-hint', {
+                opacity: 0,
+                y: -20,
+                scrollTrigger: {
+                    trigger: heroRef.current,
+                    start: 'top top',
+                    end: '20%',
+                    scrub: true
+                }
             })
 
             // Scroll-Synced Timeline
@@ -137,7 +149,6 @@ function Hero() {
                 .to('.hero-line-1', { opacity: 0.7, y: 0, duration: 1 }, 0.5) // Subclaim 1
                 .to('.hero-line-3.desc-line', { opacity: 0.6, y: 0, duration: 1 }, 0.6) // Subclaim 2
                 .to('.hero-cta', { opacity: 1, y: 0, duration: 1 }, 0.8)
-                .to('.hero-scroll-hint', { opacity: 0.4, y: 0, duration: 0.5 }, 0.9)
 
         }, heroRef)
 
@@ -215,11 +226,12 @@ function Hero() {
                         Auf die Warteliste
                         <ArrowRight className="ml-2 w-5 h-5" />
                     </a>
-                </div>
-                {/* Scroll hint */}
-                <div className="hero-scroll-hint absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center text-white/40 animate-bounce z-30">
-                    <span className="text-xs tracking-widest uppercase mb-1">Scroll</span>
-                    <ChevronDown className="w-4 h-4" />
+
+                    {/* Scroll hint — now under CTA/Logo area */}
+                    <div className="hero-scroll-hint mt-12 flex flex-col items-center text-white/60 animate-bounce z-30">
+                        <span className="text-xs tracking-widest uppercase mb-1">Scroll</span>
+                        <ChevronDown className="w-4 h-4" />
+                    </div>
                 </div>
             </div>
         </section>
@@ -236,25 +248,25 @@ function ClaimSet1() {
         {
             icon: <img src="/assets/sun.png" alt="" className="w-full h-full object-contain" />,
             title: '300 Sonnentage / Jahr',
-            desc: 'Die Mani-Halbinsel ist quasi ein einziger Sonnendeck. Über 300 Tage im Jahr knallt hier die Sonne auf die Olivenbäume. Besser geht nicht.',
+            desc: 'Die Mani ist ein Solarium für Olivenbäume. Keine wässrigen Kompromisse, sondern eine absolute Aromen-Explosion auf deinem Teller. So muss Sommer schmecken.',
             illustration: null,
         },
         {
             icon: <img src="/assets/mountains.png" alt="" className="w-full h-full object-contain scale-[1.5]" />,
             title: 'Berge & Meer',
-            desc: 'Berge, die über 2.400 Meter aus dem Meer ragen. Mineralreiche Böden, Meeresluft und krasse Höhenunterschiede. Das schmeckst du in jedem Tropfen.',
+            desc: 'Salzige Meeresluft trifft auf rauen Bergboden. Das sorgt für ein Öl, das nicht langweilig und flach schmeckt, sondern Ecken, Kanten und ordentlich Würze hat.',
             illustration: null,
         },
         {
             icon: <img src="/assets/illustrations/Pokal.png" alt="" className="w-12 h-12 md:w-16 md:h-16 object-contain" />,
             title: 'Weltklasse Qualität',
-            desc: 'Nicht wir sagen das. Die Laborwerte sagen das. Polyphenolgehalt, Säuregrad, Geschmacksprofil: alles auf höchstem Niveau.',
+            desc: 'Unsere Laborwerte zeigen schwarz auf weiß: Extrem niedrige Säure für weichen Geschmack und hohe Polyphenole für den gesunden Kick.',
             illustration: null,
         },
         {
             icon: <img src="/assets/illustrations/Present.png" alt="" className="w-12 h-12 md:w-16 md:h-16 object-contain" />,
             title: 'Direkt zu dir',
-            desc: 'Kein Zwischenhändler, kein Aufschlag, kein Bullshit. Vom Olivenbauern in der Mani direkt in deine Küche.',
+            desc: 'Wir bringen den Sommer in deine Küche! Schluss mit Ratlosigkeit vor dem Supermarkt-Regal. Wir holen echtes Handwerk aus Griechenland und machen es für dich verfügbar.',
             illustration: null,
         },
     ]
@@ -441,20 +453,20 @@ function ClaimSet2() {
     const cards = [
         {
             headline: "100% Koroneiki-Oliven",
-            desc: "Koroneiki-Oliven sind klein, aber haben es in sich. Intensiver Geschmack und der höchste Polyphenolgehalt aller Sorten. Deswegen nehmen wir auch nur die.",
+            desc: "Koroneiki-Oliven sind klein, aber haben es in sich. Intensiver Geschmack und einer der höchsten Polyphenolgehalte aller Sorten.",
             bg: "bg-[#0c5eaf]",
             illustration: "/assets/illustrations/Olive.png"
         },
         {
             headline: "Intensives Aroma",
-            desc: "Scharf, fruchtig, mit einem Finish, das im Hals kitzelt. So muss gutes Olivenöl schmecken. Einmal probiert, willst du nichts anderes mehr.",
-            bg: "bg-[#0a4d8f]", // Slightly darker blue
+            desc: "Vergiss fades Öl, das nur fettig ist. Unser Öl hat echten Charakter und macht sogar trockenes Brot zum Highlight.",
+            bg: "bg-[#0c5eaf]",
             illustration: "/assets/illustrations/Aroma.png"
         },
         {
             headline: "Reich an Gesundmachern",
             desc: "Vollgepackt mit Polyphenolen, Vitamin E und Antioxidantien. Unser Olivenöl ist nicht nur lecker. Es tut dir auch richtig gut.",
-            bg: "bg-[#083b6e]", // Even darker blue
+            bg: "bg-[#0c5eaf]",
             illustration: "/assets/illustrations/Herz.png"
         }
     ];
