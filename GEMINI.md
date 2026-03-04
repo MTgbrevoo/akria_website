@@ -74,7 +74,7 @@ Next to this the olive oil flowing video should appear. The video should play in
 - **Each card gets a unique canvas/SVG animation:**
 - Card content: title (heading font), 2-line description. Use this sequence: 1. 100% Koroneiki-Oliven -> 2. Intensives Aroma -> 3. Reich an Gesundmachern
 
-### F. Waitlist
+### F. Waitlist 
 - Large CTA pointing to the waitlist for the upcoming harvest 2026/2027
 
 
