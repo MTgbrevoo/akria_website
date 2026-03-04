@@ -91,17 +91,10 @@ function Hero() {
         const video = heroRef.current?.querySelector('video')
 
         const ctx = gsap.context(() => {
-            const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+            // Initial animation for Logo and Sun
+            const introTl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+            introTl.from('.hero-logo', { scale: 0.8, opacity: 0, duration: 1.2, delay: 0.3 })
 
-            tl.from('.hero-logo', { scale: 0.8, opacity: 0, duration: 1.2, delay: 0.3 })
-                .from('.hero-line-1', { y: 30, opacity: 0, duration: 1 }, '-=0.8')
-                .from('.hero-line-2', { y: 40, opacity: 0, duration: 1 }, '-=0.7')
-                .from('.hero-line-3', { y: 40, opacity: 0, duration: 1 }, '-=0.7')
-                .from('.hero-line-4', { y: 40, opacity: 0, duration: 1 }, '-=0.7')
-                .from('.hero-cta', { y: 30, opacity: 0, duration: 0.8 }, '-=0.6')
-                .from('.hero-scroll-hint', { y: 20, opacity: 0, duration: 0.6 }, '-=0.5')
-
-            // Sun pulsation
             if (sunRef.current) {
                 gsap.to(sunRef.current, {
                     scale: 1.1,
@@ -112,51 +105,54 @@ function Hero() {
                 })
             }
 
-            // Video Slowdown Logic
-            if (video) {
-                // Ensure video doesn't loop
-                video.loop = false;
+            // Hide other elements initially
+            gsap.set(['.hero-line-1', '.hero-line-2', '.hero-line-3', '.hero-line-4', '.hero-cta', '.hero-scroll-hint'], {
+                opacity: 0,
+                y: 30
+            })
 
-                const handleEnded = () => {
-                    video.pause();
-                    video.currentTime = video.duration;
-                };
-                video.addEventListener('ended', handleEnded);
-
-                // Slow down as it approaches the end
-                const checkTime = () => {
-                    if (video.duration) {
-                        const timeLeft = video.duration - video.currentTime;
-                        // Start slowing down in the last 2 seconds
-                        if (timeLeft < 2 && timeLeft > 0) {
-                            const newRate = Math.max(0.1, timeLeft / 2);
-                            video.playbackRate = newRate;
-                        }
-                    }
-                    requestAnimationFrame(checkTime);
-                };
-                requestAnimationFrame(checkTime);
-            }
-
-            // Parallax on scroll
-            gsap.to('.hero-video-wrap', {
-                yPercent: 20,
-                ease: 'none',
+            // Scroll-Synced Timeline
+            const scrollTl = gsap.timeline({
                 scrollTrigger: {
                     trigger: heroRef.current,
                     start: 'top top',
-                    end: 'bottom top',
-                    scrub: true,
-                },
+                    end: '+=200%', // Scroll distance
+                    pin: true,
+                    scrub: 1,
+                    anticipatePin: 1,
+                    onUpdate: (self) => {
+                        if (video && video.duration) {
+                            // Video Scrubbing
+                            video.currentTime = video.duration * self.progress
+                        }
+                    }
+                }
             })
 
-            if (video) {
-                video.playbackRate = 1.0;
-                video.play().catch(() => {
-                    console.log('Autoplay blocked')
-                })
-            }
+            // Staggered reveal linked to scroll
+            scrollTl
+                .to('.hero-line-2', { opacity: 1, y: 0, duration: 1 }, 0.1) // "Upgrade"
+                .to('.hero-line-3.small-line', { opacity: 0.7, y: 0, duration: 1 }, 0.2) // "für"
+                .to('.hero-line-4', { opacity: 1, y: 0, duration: 1 }, 0.3) // "alles."
+                .to('.hero-line-1', { opacity: 0.7, y: 0, duration: 1 }, 0.5) // Subclaim 1
+                .to('.hero-line-3.desc-line', { opacity: 0.6, y: 0, duration: 1 }, 0.6) // Subclaim 2
+                .to('.hero-cta', { opacity: 1, y: 0, duration: 1 }, 0.8)
+                .to('.hero-scroll-hint', { opacity: 0.4, y: 0, duration: 0.5 }, 0.9)
+
         }, heroRef)
+
+        // Ensure video metadata is loaded for scrubbing
+        if (video) {
+            video.pause() // Ensure it doesn't play
+            const handleMetadata = () => {
+                video.currentTime = 0
+            }
+            video.addEventListener('loadedmetadata', handleMetadata)
+            return () => {
+                ctx.revert()
+                video.removeEventListener('loadedmetadata', handleMetadata)
+            }
+        }
 
         return () => ctx.revert()
     }, [])
@@ -166,7 +162,6 @@ function Hero() {
             {/* Background Video */}
             <div className="hero-video-wrap absolute inset-0 w-full h-full">
                 <video
-                    autoPlay
                     muted
                     playsInline
                     preload="auto"
@@ -196,14 +191,14 @@ function Hero() {
                         <span className="hero-line-2 block font-display font-800 text-5xl md:text-7xl lg:text-8xl tracking-tight text-white leading-[1.1]">
                             Upgrade
                         </span>
-                        <span className="hero-line-3 block font-display font-800 text-3xl md:text-5xl lg:text-6xl tracking-tight text-white/90 leading-[0.9] -mt-2">
+                        <span className="hero-line-3 small-line block font-display font-800 text-3xl md:text-5xl lg:text-6xl tracking-tight text-white/90 leading-[0.9] -mt-2">
                             für
                         </span>
                         <span className="hero-line-4 block font-serif italic font-900 text-6xl md:text-9xl lg:text-[12rem] tracking-tight text-accent leading-[0.8] -mt-2">
                             alles.
                         </span>
                     </h1>
-                    <p className="hero-line-3 text-white/60 text-base md:text-xl max-w-xl mb-10 font-light leading-relaxed">
+                    <p className="hero-line-3 desc-line text-white/60 text-base md:text-xl max-w-xl mb-10 font-light leading-relaxed">
                         Wir bringen Olivenöl der besten Qualität zu einem fairen Preis in deine Küche.
                     </p>
                     <a href="#waitlist" className="hero-cta btn-magnetic btn-accent text-base md:text-lg py-4 px-10 relative z-10">
@@ -621,7 +616,7 @@ function Waitlist() {
                         >
                             <source src="/assets/beach-video.mp4" type="video/mp4" />
                         </video>
-                        <div className="absolute inset-0 bg-gradient-to-t from-primary/30 to-transparent" />
+                        {/* Overlay removed as requested */}
                     </div>
                     {/* Decorative waves for desktop */}
                     <img
@@ -645,7 +640,7 @@ function Waitlist() {
                     >
                         <source src="/assets/beach-video.mp4" type="video/mp4" />
                     </video>
-                    <div className="absolute inset-0 bg-black/40" />
+                    {/* Overlay removed as requested */}
                 </div>
 
                 <div className="waitlist-content relative z-20 w-full max-w-md py-12 px-8 text-center backdrop-blur-md bg-black/20 rounded-[2.5rem] border border-white/5 shadow-xl">
