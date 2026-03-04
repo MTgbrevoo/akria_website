@@ -1038,7 +1038,7 @@ function CookieBanner({ onShowDatenschutz }) {
                 </div>
 
                 <p className="text-white/60 text-sm leading-relaxed mb-5">
-                    Diese Website verwendet ausschließlich technisch notwendige Cookies für den Betrieb der Seite. Keine Tracker, kein Marketing-Gedöns.{' '}
+                    Diese Website verwendet ausschließlich technisch notwendige Cookies für den Betrieb der Seite.{' '}
                     <button
                         onClick={onShowDatenschutz}
                         className="text-accent underline hover:text-accent/80 transition-colors"
