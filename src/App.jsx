@@ -118,7 +118,7 @@ function Hero() {
                     start: 'top top',
                     end: '+=200%', // Scroll distance
                     pin: true,
-                    scrub: 1,
+                    scrub: true, // Use boolean scrub for most responsive mobile behavior
                     anticipatePin: 1,
                     onUpdate: (self) => {
                         if (video && video.duration) {
@@ -143,18 +143,27 @@ function Hero() {
 
         // Ensure video metadata is loaded for scrubbing
         if (video) {
-            video.pause() // Ensure it doesn't play
-            const handleMetadata = () => {
-                video.currentTime = 0
+            // Prime the video for mobile browsers
+            video.addEventListener('loadedmetadata', () => {
+                video.play().then(() => {
+                    video.pause();
+                    video.currentTime = 0;
+                }).catch(err => console.log("Video priming failed", err));
+            }, { once: true });
+
+            if (video.readyState >= 2) {
+                video.play().then(() => {
+                    video.pause();
+                    video.currentTime = 0;
+                }).catch(err => console.log("Video priming failed", err));
             }
-            video.addEventListener('loadedmetadata', handleMetadata)
+
             return () => {
-                ctx.revert()
-                video.removeEventListener('loadedmetadata', handleMetadata)
-            }
+                ctx.revert();
+            };
         }
 
-        return () => ctx.revert()
+        return () => ctx.revert();
     }, [])
 
     return (
@@ -162,6 +171,7 @@ function Hero() {
             {/* Background Video */}
             <div className="hero-video-wrap absolute inset-0 w-full h-full">
                 <video
+                    autoPlay
                     muted
                     playsInline
                     preload="auto"
