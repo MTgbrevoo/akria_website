@@ -987,6 +987,86 @@ function Footer({ onShowImpressum, onShowDatenschutz }) {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   COOKIE BANNER — GDPR-compliant consent notification
+   ═══════════════════════════════════════════════════════════ */
+function CookieBanner({ onShowDatenschutz }) {
+    const [visible, setVisible] = useState(false)
+    const bannerRef = useRef(null)
+
+    useEffect(() => {
+        const consent = localStorage.getItem('akria-cookie-consent')
+        if (!consent) {
+            const timer = setTimeout(() => setVisible(true), 800)
+            return () => clearTimeout(timer)
+        }
+    }, [])
+
+    useEffect(() => {
+        if (!bannerRef.current || !visible) return
+        gsap.fromTo(
+            bannerRef.current,
+            { y: 60, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }
+        )
+    }, [visible])
+
+    const dismiss = (choice) => {
+        localStorage.setItem('akria-cookie-consent', choice)
+        gsap.to(bannerRef.current, {
+            y: 60,
+            opacity: 0,
+            duration: 0.4,
+            ease: 'power3.inOut',
+            onComplete: () => setVisible(false),
+        })
+    }
+
+    if (!visible) return null
+
+    return (
+        <div
+            ref={bannerRef}
+            className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-md z-[200]"
+            style={{ opacity: 0 }}
+        >
+            <div className="bg-[#041e3a]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-5 md:p-6 shadow-[0_8px_60px_rgba(0,0,0,0.5)]">
+                <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl" role="img" aria-label="Cookie">🫒</span>
+                    <p className="font-display font-bold text-white text-sm uppercase tracking-widest">
+                        Hinweis zu Cookies
+                    </p>
+                </div>
+
+                <p className="text-white/60 text-sm leading-relaxed mb-5">
+                    Diese Website verwendet ausschließlich technisch notwendige Cookies für den Betrieb der Seite. Keine Tracker, kein Marketing-Gedöns.{' '}
+                    <button
+                        onClick={onShowDatenschutz}
+                        className="text-accent underline hover:text-accent/80 transition-colors"
+                    >
+                        Mehr erfahren
+                    </button>
+                </p>
+
+                <div className="flex gap-3">
+                    <button
+                        onClick={() => dismiss('accepted')}
+                        className="btn-magnetic btn-accent flex-1 py-3 text-sm shadow-[0_0_20px_rgba(254,65,0,0.25)]"
+                    >
+                        Verstanden
+                    </button>
+                    <button
+                        onClick={() => dismiss('declined')}
+                        className="flex-1 py-3 text-sm font-display font-semibold tracking-wide text-white/50 hover:text-white border border-white/10 hover:border-white/20 rounded-full transition-all duration-200"
+                    >
+                        Ablehnen
+                    </button>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+/* ═══════════════════════════════════════════════════════════
    APP — Main Composition
    ═══════════════════════════════════════════════════════════ */
 export default function App() {
@@ -1006,6 +1086,7 @@ export default function App() {
             <NoiseOverlay />
             <Impressum isOpen={showImpressum} onClose={() => setShowImpressum(false)} />
             <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(false)} />
+            <CookieBanner onShowDatenschutz={() => setShowDatenschutz(true)} />
             <main>
                 <Hero />
                 <ClaimSet1 />
