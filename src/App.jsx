@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ArrowRight, ChevronDown, Leaf, Sun, Mountain, Truck, Droplets, Flame, Heart } from 'lucide-react'
+import { ArrowRight, ChevronDown, Leaf, Sun, Mountain, Truck, Droplets, Flame, Heart, X } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -677,9 +677,105 @@ function Waitlist() {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   IMPRESSUM OVERLAY
+   ═══════════════════════════════════════════════════════════ */
+function Impressum({ isOpen, onClose }) {
+    const overlayRef = useRef(null)
+
+    useEffect(() => {
+        if (isOpen) {
+            gsap.to(overlayRef.current, {
+                opacity: 1,
+                visibility: 'visible',
+                duration: 0.5,
+                ease: 'power3.out'
+            })
+            document.body.style.overflow = 'hidden'
+        } else {
+            gsap.to(overlayRef.current, {
+                opacity: 0,
+                duration: 0.4,
+                ease: 'power3.inOut',
+                onComplete: () => {
+                    gsap.set(overlayRef.current, { visibility: 'hidden' })
+                }
+            })
+            document.body.style.overflow = 'auto'
+        }
+    }, [isOpen])
+
+    return (
+        <div
+            ref={overlayRef}
+            className="fixed inset-0 z-[100] bg-primary flex items-center justify-center p-6 md:p-12 opacity-0 invisible"
+        >
+            {/* Noise Overlay specifically for the Impressum */}
+            <NoiseOverlay />
+
+            <button
+                onClick={onClose}
+                className="absolute top-8 right-8 text-white/60 hover:text-white transition-colors p-2"
+                aria-label="Schließen"
+            >
+                <X size={32} />
+            </button>
+
+            <div className="max-w-3xl w-full text-white text-center md:text-left overflow-y-auto max-h-full py-12">
+                <h2 className="font-serif italic font-bold text-4xl md:text-6xl mb-12 text-accent">Impressum</h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-white/80 font-light leading-relaxed">
+                    <div>
+                        <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4">Angaben gemäß § 5 TMG</h3>
+                        <p>
+                            Meyer & Tiffert GbR<br />
+                            Hofwiese 27<br />
+                            79809 Weilheim<br />
+                            Deutschland
+                        </p>
+
+                        <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4 mt-8">Kontakt</h3>
+                        <p>
+                            E-Mail: <a href="mailto:meyertiffergbr@gmail.com" className="text-accent hover:underline">meyertiffergbr@gmail.com</a>
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4">Vertreten durch</h3>
+                        <p>
+                            Denis Tiffert und Zeno Meyer
+                        </p>
+
+                        <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4 mt-8">Umsatzsteuer-ID</h3>
+                        <p>
+                            Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG:<br />
+                            DE457997438
+                        </p>
+
+                        <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4 mt-8">Steuernummer</h3>
+                        <p>
+                            20005/29606
+                        </p>
+                    </div>
+                </div>
+
+                <div className="mt-12 pt-12 border-t border-white/10">
+                    <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4">Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3>
+                    <p className="text-white/80 font-light">
+                        Denis Tiffert und Zeno Meyer<br />
+                        Hofwiese 27<br />
+                        79809 Weilheim<br />
+                        Deutschland
+                    </p>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+/* ═══════════════════════════════════════════════════════════
    FOOTER
    ═══════════════════════════════════════════════════════════ */
-function Footer() {
+function Footer({ onShowImpressum }) {
     return (
         <footer className="bg-[#041e3a] border-t border-white/5 py-12 md:py-16">
             <div className="max-w-7xl mx-auto px-6 md:px-16">
@@ -707,7 +803,7 @@ function Footer() {
                     <div>
                         <h4 className="font-display font-semibold text-white/80 text-sm uppercase tracking-wider mb-4">Rechtliches</h4>
                         <div className="flex flex-col gap-2">
-                            <a href="#" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Impressum</a>
+                            <button onClick={onShowImpressum} className="text-white/40 hover:text-white text-sm hover-lift transition-colors text-left">Impressum</button>
                             <a href="#" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Datenschutz</a>
                             <a href="#" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">AGB</a>
                         </div>
@@ -732,6 +828,8 @@ function Footer() {
    APP — Main Composition
    ═══════════════════════════════════════════════════════════ */
 export default function App() {
+    const [showImpressum, setShowImpressum] = useState(false)
+
     useEffect(() => {
         // Refresh ScrollTrigger after all content loads
         const timeout = setTimeout(() => {
@@ -743,13 +841,14 @@ export default function App() {
     return (
         <>
             <NoiseOverlay />
+            <Impressum isOpen={showImpressum} onClose={() => setShowImpressum(false)} />
             <main>
                 <Hero />
                 <ClaimSet1 />
                 <ClaimSet2 />
                 <Waitlist />
             </main>
-            <Footer />
+            <Footer onShowImpressum={() => setShowImpressum(true)} />
         </>
     )
 }
