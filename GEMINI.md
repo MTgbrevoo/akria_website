@@ -53,13 +53,9 @@ These rules apply to ALL presets. They are what make the output premium.
 
 ## Component Architecture (NEVER CHANGE STRUCTURE — only adapt content/colors)
 
-### A. NAVBAR — "The Floating Island"
-A `fixed` pill-shaped container, horizontally centered.
-- **Morphing Logic:** Transparent with light text at hero top. Transitions to `bg-[background]/60 backdrop-blur-xl` with primary-colored text and a subtle `border` when scrolled past the hero. Use `IntersectionObserver` or ScrollTrigger.
-- Contains: Logo (brand name as text), 3-4 nav links, CTA button (accent color).
 
 ### B. HERO SECTION — "The Opening Shot"
-- `100dvh` height. Full-bleed background image (sourced from Unsplash matching preset's `imageMood`) with a heavy **primary-to-black gradient overlay** (`bg-gradient-to-t`).
+- `100dvh` height. Full-bleed background image (sourced from the provided images) 
 - **Layout:** Content pushed to the **bottom-left third** using flex + padding.
 - **Typography:** Large scale contrast following the preset's hero line pattern. First part in bold sans heading font. Second part in massive serif italic drama font (3-5x size difference).
 - **Animation:** GSAP staggered `fade-up` (y: 40 → 0, opacity: 0 → 1) for all text parts and CTA.
@@ -90,7 +86,7 @@ Next to this the olive oil flowing video should appear. The video should play in
 ## Technical Requirements (NEVER CHANGE)
 
 - **Stack:** React 19, Tailwind CSS v3.4.17, GSAP 3 (with ScrollTrigger plugin), Lucide React for icons.
-- **Fonts:** Load via Google Fonts `<link>` tags in `index.html` based on the selected preset.
+- **Fonts:** Load via Google Fonts `<link>` tags in `index.html` based on the selected preset. For GDPR reasons, make sure they are loaded from a local source.
 - **Images:** Use real Unsplash URLs. Select images matching the preset's `imageMood`. Never use placeholder URLs.
 - **File structure:** Single `App.jsx` with components defined in the same file (or split into `components/` if >600 lines). Single `index.css` for Tailwind directives + noise overlay + custom utilities.
 - **No placeholders.** Every card, every label, every animation must be fully implemented and functional.

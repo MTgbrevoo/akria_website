@@ -778,9 +778,166 @@ function Impressum({ isOpen, onClose }) {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   DATENSCHUTZ OVERLAY
+   ═══════════════════════════════════════════════════════════ */
+function Datenschutz({ isOpen, onClose }) {
+    const overlayRef = useRef(null)
+
+    useEffect(() => {
+        if (isOpen) {
+            gsap.to(overlayRef.current, { opacity: 1, visibility: 'visible', duration: 0.5, ease: 'power3.out' })
+            document.body.style.overflow = 'hidden'
+        } else {
+            gsap.to(overlayRef.current, {
+                opacity: 0, duration: 0.4, ease: 'power3.inOut',
+                onComplete: () => gsap.set(overlayRef.current, { visibility: 'hidden' })
+            })
+            document.body.style.overflow = 'auto'
+        }
+    }, [isOpen])
+
+    return (
+        <div
+            ref={overlayRef}
+            className="fixed inset-0 z-[100] bg-primary flex items-start justify-center p-6 md:p-12 opacity-0 invisible overflow-y-auto"
+        >
+            <NoiseOverlay />
+            <button
+                onClick={onClose}
+                className="fixed top-8 right-8 text-white/60 hover:text-white transition-colors p-2 z-10"
+                aria-label="Schließen"
+            >
+                <X size={32} />
+            </button>
+
+            <div className="max-w-3xl w-full text-white py-16">
+                <h2 className="font-serif italic font-bold text-4xl md:text-6xl mb-4 text-accent">Datenschutz&shy;erklärung</h2>
+                <p className="text-white/50 text-sm mb-12">Stand: März 2026</p>
+
+                {/* Section helper */}
+                {[
+                    {
+                        title: '1. Verantwortlicher',
+                        content: (
+                            <p className="text-white/70 font-light leading-relaxed">
+                                Verantwortlich im Sinne der DSGVO:<br />
+                                <strong className="text-white font-semibold">Meyer &amp; Tiffert GbR</strong><br />
+                                Hofwiese 27<br />
+                                79809 Weilheim<br />
+                                Deutschland<br /><br />
+                                E-Mail: <a href="mailto:meyertiffergbr@gmail.com" className="text-accent hover:underline">meyertiffergbr@gmail.com</a>
+                            </p>
+                        )
+                    },
+                    {
+                        title: '2. Hosting & Server-Logs',
+                        content: (
+                            <>
+                                <p className="text-white/70 font-light leading-relaxed mb-4">
+                                    Diese Website wird bei <strong className="text-white font-semibold">Vercel Inc.</strong>
+                                    , 340 Pine Street, Suite 701, San Francisco, CA 94104, USA, gehostet.
+                                    Beim Aufruf der Website erhebt Vercel automatisch sogenannte Server-Logfiles, die dein Browser übermittelt.
+                                    Dies umfasst: Browsertyp und -version, Betriebssystem, Referrer-URL, Hostname des zugreifenden Rechners, Uhrzeit der Serveranfrage und IP-Adresse.
+                                </p>
+                                <p className="text-white/70 font-light leading-relaxed mb-4">
+                                    Diese Daten sind nicht bestimmten Personen zuordenbar und werden nicht mit anderen Datenquellen zusammengeführt.
+                                    Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse am sicheren Betrieb der Website).
+                                </p>
+                                <p className="text-white/70 font-light leading-relaxed">
+                                    Vercel kann außerdem anonymisierte Nutzungsstatistiken erheben. Weitere Informationen findest du in der
+                                    Datenschutzerklärung von Vercel:{' '}
+                                    <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">vercel.com/legal/privacy-policy</a>.
+                                    Mit Vercel besteht ein Auftragsverarbeitungsvertrag gemäß Art. 28 DSGVO.
+                                </p>
+                            </>
+                        )
+                    },
+                    {
+                        title: '3. Warteliste',
+                        content: (
+                            <>
+                                <p className="text-white/70 font-light leading-relaxed mb-4">
+                                    Wenn du dich in unsere Warteliste einträgst, erheben wir deinen <strong className="text-white font-semibold">Vor- und Nachnamen, deine E-Mail-Adresse</strong> sowie deinen <strong className="text-white font-semibold">Wohnort</strong>.
+                                    Diese Daten werden ausschließlich dazu verwendet, dich über die Verfügbarkeit unseres Olivenöls zu informieren.
+                                </p>
+                                <p className="text-white/70 font-light leading-relaxed mb-4">
+                                    Die Daten werden in einer Google Sheets-Tabelle gespeichert, die auf unserem Google Drive liegt.
+                                    Anbieter: <strong className="text-white font-semibold">Google Ireland Ltd.</strong>, Gordon House, Barrow Street, Dublin 4, Irland.
+                                    Google kann diese Daten auf Servern in den USA verarbeiten. Mit Google besteht ein Standardvertragsklausel-Vertrag gemäß Art. 46 Abs. 2 lit. c DSGVO.
+                                </p>
+                                <p className="text-white/70 font-light leading-relaxed">
+                                    Rechtsgrundlage der Verarbeitung ist deine Einwilligung gemäß Art. 6 Abs. 1 lit. a DSGVO.
+                                    Du kannst deine Einwilligung jederzeit widerrufen, indem du uns eine E-Mail schickst.
+                                    Die Daten werden gelöscht, sobald sie für den genannten Zweck nicht mehr benötigt werden.
+                                </p>
+                            </>
+                        )
+                    },
+                    {
+                        title: '4. Schriftarten (Fonts)',
+                        content: (
+                            <p className="text-white/70 font-light leading-relaxed">
+                                Diese Website verwendet Schriftarten (Inter, Outfit, Playfair Display), die lokal von unserem eigenen Server ausgeliefert werden.
+                                Es findet dabei keine Verbindung zu externen Servern (z. B. Google Fonts) statt. Es werden keine personenbezogenen Daten durch die Schriftarten an Dritte übertragen.
+                            </p>
+                        )
+                    },
+                    {
+                        title: '5. Cookies & Tracking',
+                        content: (
+                            <p className="text-white/70 font-light leading-relaxed">
+                                Diese Website setzt keine Marketing- oder Tracking-Cookies ein. Vercel kann technisch notwendige Cookies für den Betrieb der Infrastruktur nutzen.
+                                Analysen werden ausschließlich über die anonymisierten Statistiken von Vercel durchgeführt — ohne Verbindung zu deiner Person.
+                            </p>
+                        )
+                    },
+                    {
+                        title: '6. Deine Rechte',
+                        content: (
+                            <>
+                                <p className="text-white/70 font-light leading-relaxed mb-3">
+                                    Du hast gemäß DSGVO folgende Rechte gegenüber uns:
+                                </p>
+                                <ul className="text-white/70 font-light leading-relaxed list-disc list-inside space-y-1 mb-4">
+                                    <li>Recht auf Auskunft (Art. 15 DSGVO)</li>
+                                    <li>Recht auf Berichtigung (Art. 16 DSGVO)</li>
+                                    <li>Recht auf Löschung (Art. 17 DSGVO)</li>
+                                    <li>Recht auf Einschränkung der Verarbeitung (Art. 18 DSGVO)</li>
+                                    <li>Recht auf Datenübertragbarkeit (Art. 20 DSGVO)</li>
+                                    <li>Recht auf Widerspruch (Art. 21 DSGVO)</li>
+                                    <li>Recht auf Widerruf der Einwilligung (Art. 7 Abs. 3 DSGVO)</li>
+                                </ul>
+                                <p className="text-white/70 font-light leading-relaxed">
+                                    Zur Ausübung deiner Rechte wende dich bitte an:{' '}
+                                    <a href="mailto:meyertiffergbr@gmail.com" className="text-accent hover:underline">meyertiffergbr@gmail.com</a>.
+                                    Außerdem hast du das Recht, dich bei einer Datenschutzaufsichtsbehörde zu beschweren.
+                                </p>
+                            </>
+                        )
+                    },
+                    {
+                        title: '7. Aktualität & Änderungen',
+                        content: (
+                            <p className="text-white/70 font-light leading-relaxed">
+                                Wir behalten uns vor, diese Datenschutzerklärung zu aktualisieren. Die jeweils aktuelle Version ist auf dieser Website abrufbar.
+                            </p>
+                        )
+                    },
+                ].map((section, i) => (
+                    <div key={i} className="mb-10 pb-10 border-b border-white/10 last:border-0">
+                        <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4">{section.title}</h3>
+                        {section.content}
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+}
+
+/* ═══════════════════════════════════════════════════════════
    FOOTER
    ═══════════════════════════════════════════════════════════ */
-function Footer({ onShowImpressum }) {
+function Footer({ onShowImpressum, onShowDatenschutz }) {
     return (
         <footer className="bg-[#041e3a] border-t border-white/5 py-12 md:py-16">
             <div className="max-w-7xl mx-auto px-6 md:px-16">
@@ -809,7 +966,7 @@ function Footer({ onShowImpressum }) {
                         <h4 className="font-display font-semibold text-white/80 text-sm uppercase tracking-wider mb-4">Rechtliches</h4>
                         <div className="flex flex-col gap-2">
                             <button onClick={onShowImpressum} className="text-white/40 hover:text-white text-sm hover-lift transition-colors text-left">Impressum</button>
-                            <a href="#" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Datenschutz</a>
+                            <button onClick={onShowDatenschutz} className="text-white/40 hover:text-white text-sm hover-lift transition-colors text-left">Datenschutz</button>
                             <a href="#" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">AGB</a>
                         </div>
                     </div>
@@ -834,6 +991,7 @@ function Footer({ onShowImpressum }) {
    ═══════════════════════════════════════════════════════════ */
 export default function App() {
     const [showImpressum, setShowImpressum] = useState(false)
+    const [showDatenschutz, setShowDatenschutz] = useState(false)
 
     useEffect(() => {
         // Refresh ScrollTrigger after all content loads
@@ -847,13 +1005,14 @@ export default function App() {
         <>
             <NoiseOverlay />
             <Impressum isOpen={showImpressum} onClose={() => setShowImpressum(false)} />
+            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(false)} />
             <main>
                 <Hero />
                 <ClaimSet1 />
                 <ClaimSet2 />
                 <Waitlist />
             </main>
-            <Footer onShowImpressum={() => setShowImpressum(true)} />
+            <Footer onShowImpressum={() => setShowImpressum(true)} onShowDatenschutz={() => setShowDatenschutz(true)} />
         </>
     )
 }
