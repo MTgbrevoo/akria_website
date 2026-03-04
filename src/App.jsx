@@ -80,6 +80,94 @@ function NoiseOverlay() {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   NAVBAR — "The Floating Island"
+   ═══════════════════════════════════════════════════════════ */
+function Navbar() {
+    const [isScrolled, setIsScrolled] = useState(false)
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 100)
+        }
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [])
+
+    const navLinks = [
+        { name: 'Herkunft', href: '#herkunft' },
+        { name: 'Qualität', href: '#qualitaet' },
+        { name: 'Warteliste', href: '#waitlist' },
+    ]
+
+    return (
+        <nav className={`fixed top-6 left-1/2 -translate-x-1/2 z-[80] transition-all duration-500 ease-out flex items-center gap-8 nav-entrance ${isScrolled
+            ? 'bg-primary/60 backdrop-blur-xl border border-white/10 px-6 py-3 rounded-full shadow-2xl scale-100'
+            : 'bg-transparent px-2 py-4 rounded-none scale-105'
+            }`}>
+            {/* Brand Logo / Name */}
+            <a href="#hero" className="flex items-center gap-2 group">
+                <span className={`font-display font-bold tracking-tighter text-xl transition-colors duration-300 ${isScrolled ? 'text-white' : 'text-white'}`}>
+                    AKRIA
+                </span>
+            </a>
+
+            {/* Desktop Links */}
+            <div className="hidden md:flex items-center gap-8">
+                {navLinks.map((link) => (
+                    <a
+                        key={link.name}
+                        href={link.href}
+                        className={`text-sm font-display font-medium tracking-wide transition-all duration-300 hover:text-accent ${isScrolled ? 'text-white/80' : 'text-white/90'
+                            }`}
+                    >
+                        {link.name}
+                    </a>
+                ))}
+                <a
+                    href="#waitlist"
+                    className={`btn-magnetic h-10 px-6 text-sm flex items-center justify-center transition-all duration-300 ${isScrolled ? 'btn-accent' : 'bg-white text-primary'
+                        }`}
+                >
+                    Warteliste
+                </a>
+            </div>
+
+            {/* Mobile Toggle */}
+            <button
+                className="md:hidden text-white p-2"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+                {isMobileMenuOpen ? <X size={24} /> : <div className="flex flex-col gap-1.5 w-6"><div className="h-0.5 w-full bg-white"></div><div className="h-0.5 w-full bg-white"></div></div>}
+            </button>
+
+            {/* Mobile Menu */}
+            {isMobileMenuOpen && (
+                <div className="absolute top-full left-0 right-0 mt-4 bg-primary/95 backdrop-blur-2xl rounded-3xl border border-white/10 p-6 flex flex-col gap-4 md:hidden shadow-2xl animate-fade-in">
+                    {navLinks.map((link) => (
+                        <a
+                            key={link.name}
+                            href={link.href}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="text-lg font-display font-semibold text-white/90 py-2 border-b border-white/5 last:border-0"
+                        >
+                            {link.name}
+                        </a>
+                    ))}
+                    <a
+                        href="#waitlist"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="btn-magnetic btn-accent w-full py-4 text-center text-lg mt-2"
+                    >
+                        Jetzt sichern
+                    </a>
+                </div>
+            )}
+        </nav>
+    )
+}
+
+/* ═══════════════════════════════════════════════════════════
    HERO — The Opening Shot
    ═══════════════════════════════════════════════════════════ */
 function Hero() {
@@ -841,6 +929,7 @@ export default function App() {
     return (
         <>
             <NoiseOverlay />
+            <Navbar />
             <Impressum isOpen={showImpressum} onClose={() => setShowImpressum(false)} />
             <main>
                 <Hero />
