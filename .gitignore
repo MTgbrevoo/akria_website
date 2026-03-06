@@ -26,3 +26,4 @@ dist-ssr
 # Large Assets
 Image_and_video_assets/
 public/assets/olive-trees.mp4
+.dyad/
