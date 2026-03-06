@@ -206,7 +206,7 @@ function ClaimSet1({ isLoaded }) {
         const ctx = gsap.context(() => {
             const isMobile = window.innerWidth < 1024;
 
-            // Initial states
+            // Initial states: hide everything
             gsap.set('.oil-video-container', { opacity: 0, scale: 0.9 })
             claims.forEach((_, i) => {
                 gsap.set(`.claim-card-${i}`, { 
@@ -219,42 +219,40 @@ function ClaimSet1({ isLoaded }) {
                 }
             })
 
+            // Timeline that triggers once section is in view
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current,
-                    start: 'top top',
-                    end: `+=${claims.length * 80}%`, // Reduced for snappier feel
-                    pin: true,
-                    scrub: 1,
-                    anticipatePin: 1,
+                    start: 'top 70%', // Trigger earlier when coming from top
+                    toggleActions: 'play none none reverse',
                 },
             })
 
-            // Fade in video container with first claim
+            // Fade in video container
             tl.to('.oil-video-container', {
                 opacity: 1,
                 scale: 1,
                 duration: 1,
-                ease: 'power2.out'
-            }, 0)
+                ease: 'power3.out'
+            })
 
+            // Stagger claims one after another
             claims.forEach((_, i) => {
-                const startTime = i * 1.2
                 tl.to(`.claim-card-${i}`, {
                     opacity: 1,
                     x: 0,
                     y: 0,
-                    duration: 1,
+                    duration: 0.6,
                     ease: 'power2.out',
-                }, startTime)
+                }, "-=0.3") // Slight overlap for smoothness
 
                 if (i < claims.length - 1) {
                     tl.to(`.claim-arrow-${i}`, {
                         opacity: 1,
                         strokeDashoffset: 0,
-                        duration: 0.6,
-                        ease: 'power2.inOut',
-                    }, startTime + 0.6)
+                        duration: 0.4,
+                        ease: 'power1.inOut',
+                    }, "-=0.1")
                 }
             })
 
