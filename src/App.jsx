@@ -9,9 +9,15 @@ import Preloader from './components/Preloader'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const ASSETS = [
+// Assets, die sofort für den ersten Eindruck (Hero) gebraucht werden
+const CRITICAL_ASSETS = [
     '/assets/logo.png',
     '/assets/sun.png',
+    '/assets/hero-drone.mp4'
+]
+
+// Assets, die im Hintergrund geladen werden können
+const LAZY_ASSETS = [
     '/assets/mountains.png',
     '/assets/illustrations/Pokal.png',
     '/assets/illustrations/Present.png',
@@ -19,7 +25,6 @@ const ASSETS = [
     '/assets/illustrations/Olive.png',
     '/assets/illustrations/Aroma.png',
     '/assets/illustrations/Herz.png',
-    '/assets/hero-drone.mp4',
     '/assets/oil-flow.mov',
     '/assets/beach-video.mp4'
 ]
@@ -567,47 +572,61 @@ function Footer({ onShowImpressum, onShowDatenschutz }) {
    MAIN PAGE
    ═══════════════════════════════════════════════════════════ */
 function Index() {
-    const [loadingProgress, setLoadingProgress] = useState(0)
     const [isLoaded, setIsLoaded] = useState(false)
     const [showImpressum, setShowImpressum] = useState(false)
     const [showDatenschutz, setShowDatenschutz] = useState(false)
 
     useEffect(() => {
-        let loadedCount = 0;
-        const totalAssets = ASSETS.length;
+        let criticalLoadedCount = 0;
+        const totalCritical = CRITICAL_ASSETS.length;
 
-        const updateProgress = () => {
-            loadedCount++;
-            const progress = (loadedCount / totalAssets) * 100;
-            setLoadingProgress(progress);
-            if (loadedCount === totalAssets) {
-                // Small delay for smooth transition
+        const updateCriticalProgress = () => {
+            criticalLoadedCount++;
+            
+            if (criticalLoadedCount === totalCritical) {
                 setTimeout(() => {
                     setIsLoaded(true);
                     ScrollTrigger.refresh();
-                }, 500);
+                    
+                    // Nachdem die kritischen Assets geladen sind, laden wir den Rest im Hintergrund
+                    loadLazyAssets();
+                }, 400);
             }
         };
 
-        ASSETS.forEach(path => {
+        const loadLazyAssets = () => {
+            LAZY_ASSETS.forEach(path => {
+                if (path.endsWith('.mp4') || path.endsWith('.mov')) {
+                    const video = document.createElement('video');
+                    video.src = path;
+                    video.preload = 'auto';
+                } else {
+                    const img = new Image();
+                    img.src = path;
+                }
+            });
+        };
+
+        // Starte Laden der kritischen Assets
+        CRITICAL_ASSETS.forEach(path => {
             if (path.endsWith('.mp4') || path.endsWith('.mov')) {
                 const video = document.createElement('video');
                 video.src = path;
                 video.preload = 'auto';
-                video.oncanplaythrough = updateProgress;
-                video.onerror = updateProgress; // Don't block on error
+                video.oncanplaythrough = updateCriticalProgress;
+                video.onerror = updateCriticalProgress;
             } else {
                 const img = new Image();
                 img.src = path;
-                img.onload = updateProgress;
-                img.onerror = updateProgress;
+                img.onload = updateCriticalProgress;
+                img.onerror = updateCriticalProgress;
             }
         });
     }, []);
 
     return (
         <>
-            <Preloader progress={loadingProgress} isLoaded={isLoaded} />
+            <Preloader isLoaded={isLoaded} />
             <NoiseOverlay />
             <Impressum isOpen={showImpressum} onClose={() => setShowImpressum(false)} />
             <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(false)} />

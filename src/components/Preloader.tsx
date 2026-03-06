@@ -4,23 +4,12 @@ import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 
 interface PreloaderProps {
-  progress: number;
   isLoaded: boolean;
 }
 
-const Preloader: React.FC<PreloaderProps> = ({ progress, isLoaded }) => {
+const Preloader: React.FC<PreloaderProps> = ({ isLoaded }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const barRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLImageElement>(null);
-
-  useEffect(() => {
-    // Animate progress bar filling
-    gsap.to(barRef.current, {
-      width: `${progress}%`,
-      duration: 0.3,
-      ease: "power1.out"
-    });
-  }, [progress]);
 
   useEffect(() => {
     if (isLoaded) {
@@ -33,7 +22,7 @@ const Preloader: React.FC<PreloaderProps> = ({ progress, isLoaded }) => {
           }
         });
 
-        tl.to([logoRef.current, barRef.current], {
+        tl.to(logoRef.current, {
           opacity: 0,
           y: -20,
           duration: 0.6,
@@ -60,19 +49,11 @@ const Preloader: React.FC<PreloaderProps> = ({ progress, isLoaded }) => {
           ref={logoRef}
           src="/assets/logo.png" 
           alt="AKRIA" 
-          className="h-16 md:h-24 w-auto mb-8 animate-pulse-slow"
+          className="h-16 md:h-24 w-auto animate-pulse-slow"
         />
         
-        <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
-          <div 
-            ref={barRef}
-            className="h-full bg-accent shadow-[0_0_15px_rgba(254,65,0,0.5)]"
-            style={{ width: '0%' }}
-          />
-        </div>
-        
-        <div className="mt-4 font-display text-[10px] md:text-xs tracking-[0.3em] uppercase text-white/40">
-          Wird geladen — {Math.round(progress)}%
+        <div className="mt-8 font-display text-[10px] md:text-xs tracking-[0.4em] uppercase text-white/30 animate-pulse">
+          Mani — Griechenland
         </div>
       </div>
     </div>
