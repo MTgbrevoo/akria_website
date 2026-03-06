@@ -206,11 +206,13 @@ function ClaimSet1({ isLoaded }) {
         const ctx = gsap.context(() => {
             const isMobile = window.innerWidth < 1024;
 
+            // Initial states
+            gsap.set('.oil-video-container', { opacity: 0, scale: 0.9 })
             claims.forEach((_, i) => {
                 gsap.set(`.claim-card-${i}`, { 
                     opacity: 0, 
-                    x: isMobile ? 0 : (i % 2 === 0 ? -40 : 40), 
-                    y: isMobile ? 40 : 0 
+                    y: 30,
+                    x: isMobile ? 0 : (i % 2 === 0 ? -20 : 20)
                 })
                 if (i < claims.length - 1) {
                     gsap.set(`.claim-arrow-${i}`, { opacity: 0, strokeDashoffset: 200 })
@@ -221,15 +223,23 @@ function ClaimSet1({ isLoaded }) {
                 scrollTrigger: {
                     trigger: sectionRef.current,
                     start: 'top top',
-                    end: `+=${claims.length * 100}%`,
+                    end: `+=${claims.length * 80}%`, // Reduced for snappier feel
                     pin: true,
-                    scrub: 1.5,
+                    scrub: 1,
                     anticipatePin: 1,
                 },
             })
 
+            // Fade in video container with first claim
+            tl.to('.oil-video-container', {
+                opacity: 1,
+                scale: 1,
+                duration: 1,
+                ease: 'power2.out'
+            }, 0)
+
             claims.forEach((_, i) => {
-                const startTime = i * 1.5
+                const startTime = i * 1.2
                 tl.to(`.claim-card-${i}`, {
                     opacity: 1,
                     x: 0,
@@ -244,7 +254,7 @@ function ClaimSet1({ isLoaded }) {
                         strokeDashoffset: 0,
                         duration: 0.6,
                         ease: 'power2.inOut',
-                    }, startTime + 0.8)
+                    }, startTime + 0.6)
                 }
             })
 
@@ -256,13 +266,13 @@ function ClaimSet1({ isLoaded }) {
     }, [isLoaded])
 
     return (
-        <section ref={sectionRef} id="herkunft" className="relative min-h-[100svh] w-full bg-primary overflow-hidden pt-20 md:pt-32 pb-16">
-            <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex flex-col h-full">
-                <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold mb-8 md:mb-16 text-white/90 text-center lg:text-left">
+        <section ref={sectionRef} id="herkunft" className="relative min-h-[100svh] w-full bg-primary overflow-hidden pt-20 md:pt-32 pb-16 flex items-center">
+            <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex flex-col justify-center">
+                <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold mb-8 md:mb-12 text-white/90 text-center lg:text-left">
                     Von der Mani zu dir.
                 </h2>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start lg:items-center flex-1">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
                     <div className="relative flex flex-col gap-2 md:gap-3 order-2 lg:order-1">
                         {claims.map((claim, i) => (
                             <div key={i} className="relative">
