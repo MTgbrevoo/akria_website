@@ -239,113 +239,80 @@ function Hero() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   CLAIM SET 1 — Sequential scroll reveals + Oil Video
+   CLAIM SET 1 — BENTO BOX REDESIGN
    300 Sonnentage → Berge & Meer → Weltklasse Qualität → Direkt zu dir
    ═══════════════════════════════════════════════════════════ */
 function ClaimSet1() {
     const sectionRef = useRef(null)
     const claims = [
         {
-            icon: <img src="/assets/sun.png" alt="" className="w-full h-full object-contain" />,
+            icon: "/assets/sun.png",
             title: '300 Sonnentage / Jahr',
-            desc: 'Die Mani ist ein Solarium für Olivenbäume. Keine wässrigen Kompromisse, sondern eine absolute Aromen-Explosion auf deinem Teller. So muss Sommer schmecken.',
-            illustration: null,
+            desc: 'Die Mani ist ein Solarium für Olivenbäume. Keine wässrigen Kompromisse, sondern eine absolute Aromen-Explosion.',
+            gridArea: 'md:col-span-2 md:row-span-1', // Breit
+            iconClass: 'w-24 md:w-32',
         },
         {
-            icon: <img src="/assets/mountains.png" alt="" className="w-full h-full object-contain scale-[1.5]" />,
+            icon: "/assets/mountains.png",
             title: 'Berge & Meer',
-            desc: 'Salzige Meeresluft trifft auf rauen Bergboden. Das sorgt für ein Öl, das nicht langweilig und flach schmeckt, sondern Ecken, Kanten und ordentlich Würze hat.',
-            illustration: null,
+            desc: 'Salzige Meeresluft trifft auf rauen Bergboden. Das sorgt für ein Öl mit Ecken, Kanten und ordentlich Würze.',
+            gridArea: 'md:col-span-1 md:row-span-2', // Hoch
+            iconClass: 'w-32 md:w-48 scale-125',
         },
         {
-            icon: <img src="/assets/illustrations/Pokal.png" alt="" className="w-12 h-12 md:w-16 md:h-16 object-contain" />,
+            icon: "/assets/illustrations/Pokal.png",
             title: 'Weltklasse Qualität',
-            desc: 'Unsere Laborwerte zeigen schwarz auf weiß: Extrem niedrige Säure für weichen Geschmack und hohe Polyphenole für den gesunden Kick.',
-            illustration: null,
+            desc: 'Extrem niedrige Säure und hohe Polyphenole für den gesunden Kick.',
+            gridArea: 'md:col-span-1 md:row-span-1', // Klein
+            iconClass: 'w-16 md:w-24',
         },
         {
-            icon: <img src="/assets/illustrations/Present.png" alt="" className="w-12 h-12 md:w-16 md:h-16 object-contain" />,
+            icon: "/assets/illustrations/Present.png",
             title: 'Direkt zu dir',
-            desc: 'Wir bringen den Sommer in deine Küche! Schluss mit Ratlosigkeit vor dem Supermarkt-Regal. Wir holen echtes Handwerk aus Griechenland und machen es für dich verfügbar.',
-            illustration: null,
+            desc: 'Schluss mit Ratlosigkeit im Supermarkt. Wir holen echtes Handwerk aus Griechenland direkt zu dir.',
+            gridArea: 'md:col-span-1 md:row-span-1', // Klein
+            iconClass: 'w-16 md:w-24',
         },
     ]
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            const isMobile = window.innerWidth < 768
-
-            // Hide all claims and arrows initially
-            claims.forEach((_, i) => {
-                gsap.set(`.claim-card-${i}`, { opacity: 0, x: isMobile ? 0 : -40, y: isMobile ? 40 : 0 })
-                if (i < claims.length - 1) {
-                    gsap.set(`.claim-arrow-${i}`, { opacity: 0 })
+            // Reveal Bento Items
+            gsap.from('.bento-item', {
+                opacity: 0,
+                y: 50,
+                scale: 0.95,
+                stagger: 0.15,
+                duration: 1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '.bento-grid',
+                    start: 'top 80%',
                 }
             })
 
-            if (isMobile) {
-                // Mobile: Natural scroll with simple reveal
-                claims.forEach((_, i) => {
-                    gsap.to(`.claim-card-${i}`, {
-                        opacity: 1,
-                        y: 0,
-                        duration: 0.8,
-                        ease: 'power2.out',
-                        scrollTrigger: {
-                            trigger: `.claim-card-${i}`,
-                            start: 'top 85%',
-                        }
-                    })
-                    if (i < claims.length - 1) {
-                        gsap.to(`.claim-arrow-${i}`, {
-                            opacity: 1,
-                            duration: 0.8,
-                            ease: 'power2.inOut',
-                            scrollTrigger: {
-                                trigger: `.claim-arrow-${i}`,
-                                start: 'top 90%',
-                            }
-                        })
-                    }
+            // Floating Icons Animation
+            gsap.utils.toArray('.bento-icon').forEach((icon) => {
+                gsap.to(icon, {
+                    y: -10,
+                    duration: 2.5 + Math.random(),
+                    repeat: -1,
+                    yoyo: true,
+                    ease: 'power1.inOut'
                 })
-            } else {
-                // Desktop: Pinned sequential reveal
-                const tl = gsap.timeline({
-                    scrollTrigger: {
-                        trigger: sectionRef.current,
-                        start: 'top top',
-                        end: `+=${claims.length * 150}%`,
-                        pin: true,
-                        scrub: 2,
-                        anticipatePin: 1,
-                    },
-                })
+            })
 
-                claims.forEach((_, i) => {
-                    const startTime = i * 1.5
-                    tl.to(`.claim-card-${i}`, {
-                        opacity: 1,
-                        x: 0,
-                        duration: 1,
-                        ease: 'power2.out',
-                    }, startTime)
-
-                    if (i < claims.length - 1) {
-                        tl.to(`.claim-arrow-${i}`, {
-                            opacity: 1,
-                            strokeDashoffset: 0,
-                            duration: 0.6,
-                            ease: 'power2.inOut',
-                        }, startTime + 0.8)
-                    }
-                })
-            }
-
-            // Force play video
-            const video = sectionRef.current?.querySelector('video')
-            if (video) {
-                video.play().catch(() => { })
-            }
+            // Video Entrance
+            gsap.from('.bento-video', {
+                opacity: 0,
+                scale: 0.8,
+                duration: 1.5,
+                ease: 'elastic.out(1, 0.75)',
+                scrollTrigger: {
+                    trigger: '.bento-grid',
+                    start: 'top 70%',
+                }
+            })
         }, sectionRef)
 
         return () => ctx.revert()
@@ -355,88 +322,84 @@ function ClaimSet1() {
         <section
             ref={sectionRef}
             id="herkunft"
-            className="relative min-h-[100svh] w-full bg-primary overflow-hidden py-16 md:py-24 flex items-center"
+            className="relative min-h-screen w-full bg-primary py-24 md:py-32 flex items-center overflow-hidden"
         >
-            <div className="flex items-center justify-center">
-                <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start lg:items-center">
-                    {/* Left: Claims */}
-                    <div className="relative flex flex-col gap-2 md:gap-3">
-                        <h2 className="font-display text-2xl md:text-3xl font-bold mb-4 md:mb-8 text-white/90">
-                            Von der Mani zu dir.
-                        </h2>
-                        {claims.map((claim, i) => (
-                            <div key={i} className="relative">
-                                <div
-                                    className={`claim-card-${i} glass-card p-3 md:p-4 flex items-center gap-4 group hover:bg-white/10 ${i % 2 === 0 ? 'md:translate-x-[-1rem]' : 'md:translate-x-[1rem]'}`}
-                                >
-                                    <div className="flex-shrink-0 w-10 h-10 md:w-14 md:h-14 flex items-center justify-center">
-                                        {claim.icon}
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="font-display font-bold text-base md:text-xl text-white mb-0.5">
-                                            {claim.title}
-                                        </h3>
-                                        <p className="text-white/60 text-xs md:text-sm leading-tight md:leading-relaxed">
-                                            {claim.desc}
-                                        </p>
-                                    </div>
-                                    {claim.illustration && (
-                                        <img
-                                            src={claim.illustration}
-                                            alt=""
-                                            className="hidden md:block absolute -right-4 top-1/2 -translate-y-1/2 w-16 h-auto pointer-events-none"
-                                        />
-                                    )}
-                                </div>
+            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 w-full">
+                <div className="mb-12 md:mb-20 text-center md:text-left">
+                    <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-black text-white mb-4 leading-tight">
+                        Besser geht <span className="text-accent italic font-serif">nicht.</span>
+                    </h2>
+                    <p className="text-white/60 text-lg md:text-xl max-w-2xl">
+                        Vier Gründe, warum AKRIA in jede Küche gehört, die Qualität über alles stellt.
+                    </p>
+                </div>
 
-                                {/* Hand-drawn arrow SVG between claims */}
-                                {i < claims.length - 1 && (
-                                    <div className="py-2 md:py-0">
-                                        <svg
-                                            className={`claim-arrow-${i} w-10 h-10 md:w-20 md:h-20 mx-auto my-[-1.5rem] md:my-[-2rem] text-accent z-20 ${i % 2 === 0 ? 'md:translate-x-[0.5rem] md:rotate-[15deg]' : 'md:translate-x-[-0.5rem] md:rotate-[-15deg]'}`}
-                                            viewBox="0 0 100 100"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/center"
-                                        >
-                                            <path
-                                                d="M50 10 C 40 35, 60 45, 50 80 M 35 65 C 40 75, 50 85, 50 80 M 65 65 C 60 75, 50 85, 50 80"
-                                                stroke="currentColor"
-                                                strokeWidth="4"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                            />
-                                        </svg>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Right: Oil flowing video */}
-                    <div className="oil-video-container relative flex items-center justify-center lg:justify-end">
-                        <div className="video-mask w-full max-w-[280px] md:max-w-md aspect-[3/4] relative overflow-hidden shadow-2xl">
-                            <video
-                                autoPlay
-                                muted
-                                loop
-                                playsInline
-                                preload="auto"
-                                className="absolute inset-0 w-full h-full object-cover"
-                            >
-                                <source src="/assets/oil-flow.mov" type="video/quicktime" />
-                                <source src="/assets/oil-flow.mov" type="video/mp4" />
-                            </video>
-                            <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent" />
+                {/* Bento Grid Layout */}
+                <div className="bento-grid grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 md:gap-6 auto-rows-[minmax(250px,auto)]">
+                    
+                    {/* Item 1: Sonnentage (Breit) */}
+                    <div className={`bento-item ${claims[0].gridArea} glass-card p-8 flex flex-col md:flex-row items-center gap-8 overflow-hidden group`}>
+                        <div className="flex-1 order-2 md:order-1">
+                            <h3 className="font-display font-bold text-2xl text-white mb-3">{claims[0].title}</h3>
+                            <p className="text-white/60 leading-relaxed">{claims[0].desc}</p>
                         </div>
-                        {/* Decorative waves illustration */}
-                        <img
-                            src="/assets/waves.png"
-                            alt=""
-                            className="absolute -bottom-8 -right-8 w-32 md:w-48 opacity-20 pointer-events-none"
-                        />
+                        <div className="bento-icon order-1 md:order-2 flex-shrink-0 flex justify-center items-center">
+                            <img src={claims[0].icon} alt="" className={`${claims[0].iconClass} object-contain transition-transform duration-500 group-hover:scale-110`} />
+                        </div>
                     </div>
+
+                    {/* Item 2: Berge & Meer (Hoch) */}
+                    <div className={`bento-item ${claims[1].gridArea} glass-card p-8 flex flex-col items-center justify-between text-center overflow-hidden group bg-accent/5`}>
+                        <div className="bento-icon mb-8">
+                            <img src={claims[1].icon} alt="" className={`${claims[1].iconClass} object-contain transition-transform duration-700 group-hover:rotate-3 group-hover:scale-110`} />
+                        </div>
+                        <div className="mt-auto">
+                            <h3 className="font-display font-bold text-2xl text-white mb-3">{claims[1].title}</h3>
+                            <p className="text-white/60 leading-relaxed text-sm">{claims[1].desc}</p>
+                        </div>
+                    </div>
+
+                    {/* Video Box (Zentraler Anker) */}
+                    <div className="bento-video md:col-span-2 md:row-span-1 relative rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 group">
+                        <video
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                        >
+                            <source src="/assets/oil-flow.mov" type="video/quicktime" />
+                            <source src="/assets/oil-flow.mov" type="video/mp4" />
+                        </video>
+                        <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent opacity-60" />
+                        <div className="absolute bottom-6 left-6 text-white z-10">
+                            <span className="bg-accent px-3 py-1 rounded-full text-[10px] uppercase tracking-widest font-bold">Live aus der Mani</span>
+                        </div>
+                    </div>
+
+                    {/* Item 3: Qualität (Klein) */}
+                    <div className={`bento-item ${claims[2].gridArea} glass-card p-6 flex flex-col justify-center items-center text-center group`}>
+                        <div className="bento-icon mb-6">
+                            <img src={claims[2].icon} alt="" className={`${claims[2].iconClass} object-contain transition-transform duration-500 group-hover:scale-125`} />
+                        </div>
+                        <h3 className="font-display font-bold text-lg text-white mb-2">{claims[2].title}</h3>
+                        <p className="text-white/50 text-xs leading-relaxed">{claims[2].desc}</p>
+                    </div>
+
+                    {/* Item 4: Direkt (Klein) */}
+                    <div className={`bento-item ${claims[3].gridArea} glass-card p-6 flex flex-col justify-center items-center text-center group`}>
+                        <div className="bento-icon mb-6">
+                            <img src={claims[3].icon} alt="" className={`${claims[3].iconClass} object-contain transition-transform duration-500 group-hover:-translate-y-2`} />
+                        </div>
+                        <h3 className="font-display font-bold text-lg text-white mb-2">{claims[3].title}</h3>
+                        <p className="text-white/50 text-xs leading-relaxed">{claims[3].desc}</p>
+                    </div>
+
                 </div>
             </div>
+
+            {/* Background elements */}
+            <img src="/assets/waves.png" alt="" className="absolute -bottom-20 -left-20 w-96 opacity-10 pointer-events-none rotate-12" />
         </section>
     )
 }
@@ -833,7 +796,7 @@ function Datenschutz({ isOpen, onClose }) {
                         content: (
                             <p className="text-white/70 font-light leading-relaxed">
                                 Verantwortlich im Sinne der DSGVO:<br />
-                                <strong className="text-white font-semibold">Meyer &amp; Tiffert GbR</strong><br />
+                                <strong className="text-white font-semibold">Meyer & Tiffert GbR</strong><br />
                                 Hofwiese 27<br />
                                 79809 Weilheim<br />
                                 Deutschland<br /><br />
