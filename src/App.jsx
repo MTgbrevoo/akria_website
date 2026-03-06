@@ -95,6 +95,14 @@ function Hero() {
             const introTl = gsap.timeline({ defaults: { ease: 'power3.out' } })
             introTl.from('.hero-logo', { scale: 0.8, opacity: 0, duration: 1.2, delay: 0.3 })
 
+            // Slide in the waves from the right
+            introTl.from('.hero-waves', { 
+                x: 300, 
+                opacity: 0, 
+                duration: 1.5, 
+                ease: 'power2.out' 
+            }, 0.5)
+
             if (sunRef.current) {
                 gsap.to(sunRef.current, {
                     scale: 1.1,
@@ -192,6 +200,13 @@ function Hero() {
                 </video>
             </div>
 
+            {/* Waves Illustration coming from right */}
+            <img 
+                src="/assets/illustrations/wellen-gross.png" 
+                alt="" 
+                className="hero-waves absolute top-1/2 -translate-y-1/2 right-0 w-1/4 md:w-1/5 opacity-40 pointer-events-none z-10" 
+            />
+
             {/* Sun Illustration — top right */}
             <div ref={sunRef} className="absolute top-12 md:top-16 lg:top-20 right-6 md:right-12 lg:right-16 w-16 md:w-24 lg:w-32 z-30 pointer-events-none">
                 <img src="/assets/sun.png" alt="" className="w-full h-auto" />
@@ -240,37 +255,27 @@ function Hero() {
 
 /* ═══════════════════════════════════════════════════════════
    CLAIM SET 1 — BENTO BOX REDESIGN
-   300 Sonnentage → Berge & Meer → Weltklasse Qualität → Direkt zu dir
    ═══════════════════════════════════════════════════════════ */
 function ClaimSet1() {
     const sectionRef = useRef(null)
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            // Reveal Bento Items one after another on scroll
-            gsap.from('.bento-item-anim', {
-                opacity: 0,
-                y: 50,
-                scale: 0.95,
-                stagger: 0.2, // Time between items
-                duration: 1.2,
-                ease: 'power3.out',
-                scrollTrigger: {
-                    trigger: '.bento-grid',
-                    start: 'top 75%', // Starts when the grid top hits 75% of viewport
-                    toggleActions: 'play none none none'
-                }
-            })
+            // Fix: Initial opacity 0 for all bento items
+            gsap.set('.bento-item-anim', { opacity: 0, y: 50, scale: 0.95 });
 
-            // Slide-in Animation for the new waves illustration
-            gsap.from('.bento-waves-illustration', {
-                x: -300,
-                opacity: 0,
-                duration: 1.8,
+            // Reveal Bento Items one after another on scroll
+            gsap.to('.bento-item-anim', {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                stagger: 0.15, 
+                duration: 1,
                 ease: 'power3.out',
                 scrollTrigger: {
                     trigger: sectionRef.current,
-                    start: 'top 80%',
+                    start: 'top 65%', 
+                    toggleActions: 'play none none none'
                 }
             })
 
@@ -295,13 +300,6 @@ function ClaimSet1() {
             id="herkunft"
             className="relative min-h-screen w-full bg-primary py-24 md:py-32 flex items-center overflow-hidden"
         >
-            {/* New Background Illustration: Waves - Slide in from side, smaller than before */}
-            <img 
-                src="/assets/illustrations/wellen-gross.png" 
-                alt="" 
-                className="bento-waves-illustration absolute bottom-0 left-0 w-1/2 md:w-1/3 lg:w-1/4 opacity-80 pointer-events-none z-0" 
-            />
-
             <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 w-full relative z-10">
                 <div className="mb-12 md:mb-20 text-center md:text-left">
                     <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-black text-white mb-4 leading-tight">
@@ -309,19 +307,15 @@ function ClaimSet1() {
                     </h2>
                 </div>
 
-                {/* 
-                   Bento Grid Layout (4 columns, 2 rows)
-                   Optimiert für Kohärenz und vertikales Video
-                */}
                 <div className="bento-grid grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 md:gap-6 auto-rows-[minmax(300px,auto)]">
                     
-                    {/* 1. Harvest Image (Small Top Left) */}
+                    {/* 1. Harvest Image */}
                     <div className="bento-item-anim bento-item md:col-span-1 md:row-span-1 relative rounded-[2rem] overflow-hidden border border-white/10 group shadow-lg">
                         <img src="/assets/harvest.jpg" alt="Ernte" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
                         <div className="absolute inset-0 bg-primary/20 group-hover:bg-transparent transition-colors duration-500" />
                     </div>
 
-                    {/* 2. Video Box (Vertical Center - Portrait) */}
+                    {/* 2. Video Box */}
                     <div className="bento-item-anim bento-item md:col-span-1 md:row-span-2 relative rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 group">
                         <video
                             autoPlay
@@ -339,7 +333,7 @@ function ClaimSet1() {
                         </div>
                     </div>
 
-                    {/* 3. 300 Sonnentage (Wide Top Right) */}
+                    {/* 3. 300 Sonnentage */}
                     <div className="bento-item-anim bento-item md:col-span-2 md:row-span-1 glass-card p-8 flex flex-col md:flex-row items-center gap-8 overflow-hidden group">
                         <div className="flex-1 order-2 md:order-1 text-left">
                             <h3 className="font-display font-bold text-2xl text-white mb-3">300 Sonnentage / Jahr</h3>
@@ -350,7 +344,7 @@ function ClaimSet1() {
                         </div>
                     </div>
 
-                    {/* 4. Berge & Meer (Small Bottom Left) */}
+                    {/* 4. Berge & Meer */}
                     <div className="bento-item-anim bento-item md:col-span-1 md:row-span-1 glass-card p-6 flex flex-col justify-center items-center text-center group">
                         <div className="bento-icon mb-4">
                             <img src="/assets/mountains.png" alt="" className="w-16 md:w-24 object-contain transition-transform duration-500 group-hover:scale-110" />
@@ -359,7 +353,7 @@ function ClaimSet1() {
                         <p className="text-white/50 text-xs leading-relaxed">Salzige Meeresluft trifft auf rauen Bergboden.</p>
                     </div>
 
-                    {/* 5. Weltklasse Qualität (Small Bottom) */}
+                    {/* 5. Weltklasse Qualität */}
                     <div className="bento-item-anim bento-item md:col-span-1 md:row-span-1 glass-card p-6 flex flex-col justify-center items-center text-center group">
                         <div className="bento-icon mb-6">
                             <img src="/assets/illustrations/Pokal.png" alt="" className="w-16 md:w-24 object-contain transition-transform duration-500 group-hover:scale-125" />
@@ -368,7 +362,7 @@ function ClaimSet1() {
                         <p className="text-white/50 text-xs leading-relaxed">Extrem niedrige Säure und hohe Polyphenole.</p>
                     </div>
 
-                    {/* 6. Direkt zu dir (Small Bottom Right) */}
+                    {/* 6. Direkt zu dir */}
                     <div className="bento-item-anim bento-item md:col-span-1 md:row-span-1 glass-card p-6 flex flex-col justify-center items-center text-center group">
                         <div className="bento-icon mb-6">
                             <img src="/assets/illustrations/Present.png" alt="" className="w-16 md:w-24 object-contain transition-transform duration-500 group-hover:-translate-y-2" />
@@ -569,11 +563,6 @@ function Waitlist() {
                             <source src="/assets/beach-video.mp4" type="video/mp4" />
                         </video>
                     </div>
-                    <img
-                        src="/assets/waves.png"
-                        alt=""
-                        className="absolute -bottom-10 -right-10 w-48 opacity-30 pointer-events-none"
-                    />
                 </div>
             </div>
 
