@@ -244,50 +244,21 @@ function Hero() {
    ═══════════════════════════════════════════════════════════ */
 function ClaimSet1() {
     const sectionRef = useRef(null)
-    const claims = [
-        {
-            icon: "/assets/sun.png",
-            title: '300 Sonnentage / Jahr',
-            desc: 'Die Mani ist ein Solarium für Olivenbäume. Keine wässrigen Kompromisse, sondern eine absolute Aromen-Explosion.',
-            gridArea: 'md:col-span-2 md:row-span-1', // Breit
-            iconClass: 'w-24 md:w-32',
-        },
-        {
-            icon: "/assets/mountains.png",
-            title: 'Berge & Meer',
-            desc: 'Salzige Meeresluft trifft auf rauen Bergboden. Das sorgt für ein Öl mit Ecken, Kanten und ordentlich Würze.',
-            gridArea: 'md:col-span-1 md:row-span-2', // Hoch
-            iconClass: 'w-32 md:w-48 scale-125',
-        },
-        {
-            icon: "/assets/illustrations/Pokal.png",
-            title: 'Weltklasse Qualität',
-            desc: 'Extrem niedrige Säure und hohe Polyphenole für den gesunden Kick.',
-            gridArea: 'md:col-span-1 md:row-span-1', // Klein
-            iconClass: 'w-16 md:w-24',
-        },
-        {
-            icon: "/assets/illustrations/Present.png",
-            title: 'Direkt zu dir',
-            desc: 'Schluss mit Ratlosigkeit im Supermarkt. Wir holen echtes Handwerk aus Griechenland direkt zu dir.',
-            gridArea: 'md:col-span-1 md:row-span-1', // Klein
-            iconClass: 'w-16 md:w-24',
-        },
-    ]
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            // Reveal Bento Items
-            gsap.from('.bento-item', {
+            // Reveal Bento Items one after another on scroll
+            gsap.from('.bento-item-anim', {
                 opacity: 0,
                 y: 50,
                 scale: 0.95,
-                stagger: 0.15,
-                duration: 1,
+                stagger: 0.2, // Time between items
+                duration: 1.2,
                 ease: 'power3.out',
                 scrollTrigger: {
                     trigger: '.bento-grid',
-                    start: 'top 80%',
+                    start: 'top 75%', // Starts when the grid top hits 75% of viewport
+                    toggleActions: 'play none none none'
                 }
             })
 
@@ -300,18 +271,6 @@ function ClaimSet1() {
                     yoyo: true,
                     ease: 'power1.inOut'
                 })
-            })
-
-            // Video Entrance
-            gsap.from('.bento-video', {
-                opacity: 0,
-                scale: 0.8,
-                duration: 1.5,
-                ease: 'elastic.out(1, 0.75)',
-                scrollTrigger: {
-                    trigger: '.bento-grid',
-                    start: 'top 70%',
-                }
             })
         }, sectionRef)
 
@@ -334,33 +293,25 @@ function ClaimSet1() {
                     </p>
                 </div>
 
-                {/* Bento Grid Layout */}
-                <div className="bento-grid grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 md:gap-6 auto-rows-[minmax(250px,auto)]">
+                {/* 
+                   Bento Grid Layout (4 columns, 2 rows)
+                   Optimiert für Kohärenz und vertikales Video
+                */}
+                <div className="bento-grid grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 md:gap-6 auto-rows-[minmax(300px,auto)]">
                     
-                    {/* Item 1: Sonnentage (Breit) */}
-                    <div className={`bento-item ${claims[0].gridArea} glass-card p-8 flex flex-col md:flex-row items-center gap-8 overflow-hidden group`}>
-                        <div className="flex-1 order-2 md:order-1">
-                            <h3 className="font-display font-bold text-2xl text-white mb-3">{claims[0].title}</h3>
-                            <p className="text-white/60 leading-relaxed">{claims[0].desc}</p>
-                        </div>
-                        <div className="bento-icon order-1 md:order-2 flex-shrink-0 flex justify-center items-center">
-                            <img src={claims[0].icon} alt="" className={`${claims[0].iconClass} object-contain transition-transform duration-500 group-hover:scale-110`} />
-                        </div>
-                    </div>
-
-                    {/* Item 2: Berge & Meer (Hoch) */}
-                    <div className={`bento-item ${claims[1].gridArea} glass-card p-8 flex flex-col items-center justify-between text-center overflow-hidden group bg-accent/5`}>
+                    {/* 1. Berge & Meer (Vertical Left) */}
+                    <div className="bento-item-anim bento-item md:col-span-1 md:row-span-2 glass-card p-8 flex flex-col items-center justify-between text-center overflow-hidden group bg-accent/5">
                         <div className="bento-icon mb-8">
-                            <img src={claims[1].icon} alt="" className={`${claims[1].iconClass} object-contain transition-transform duration-700 group-hover:rotate-3 group-hover:scale-110`} />
+                            <img src="/assets/mountains.png" alt="" className="w-32 md:w-48 scale-125 object-contain transition-transform duration-700 group-hover:rotate-3 group-hover:scale-110" />
                         </div>
                         <div className="mt-auto">
-                            <h3 className="font-display font-bold text-2xl text-white mb-3">{claims[1].title}</h3>
-                            <p className="text-white/60 leading-relaxed text-sm">{claims[1].desc}</p>
+                            <h3 className="font-display font-bold text-2xl text-white mb-3">Berge & Meer</h3>
+                            <p className="text-white/60 leading-relaxed text-sm">Salzige Meeresluft trifft auf rauen Bergboden. Das sorgt für ein Öl mit Ecken, Kanten und ordentlich Würze.</p>
                         </div>
                     </div>
 
-                    {/* Video Box (Zentraler Anker) */}
-                    <div className="bento-video md:col-span-2 md:row-span-1 relative rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 group">
+                    {/* 2. Video Box (Vertical Center - Portrait) */}
+                    <div className="bento-item-anim bento-item md:col-span-1 md:row-span-2 relative rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 group">
                         <video
                             autoPlay
                             muted
@@ -371,28 +322,39 @@ function ClaimSet1() {
                             <source src="/assets/oil-flow.mov" type="video/quicktime" />
                             <source src="/assets/oil-flow.mov" type="video/mp4" />
                         </video>
-                        <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent opacity-60" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent opacity-60" />
                         <div className="absolute bottom-6 left-6 text-white z-10">
                             <span className="bg-accent px-3 py-1 rounded-full text-[10px] uppercase tracking-widest font-bold">Live aus der Mani</span>
                         </div>
                     </div>
 
-                    {/* Item 3: Qualität (Klein) */}
-                    <div className={`bento-item ${claims[2].gridArea} glass-card p-6 flex flex-col justify-center items-center text-center group`}>
-                        <div className="bento-icon mb-6">
-                            <img src={claims[2].icon} alt="" className={`${claims[2].iconClass} object-contain transition-transform duration-500 group-hover:scale-125`} />
+                    {/* 3. 300 Sonnentage (Wide Top Right) */}
+                    <div className="bento-item-anim bento-item md:col-span-2 md:row-span-1 glass-card p-8 flex flex-col md:flex-row items-center gap-8 overflow-hidden group">
+                        <div className="flex-1 order-2 md:order-1 text-left">
+                            <h3 className="font-display font-bold text-2xl text-white mb-3">300 Sonnentage / Jahr</h3>
+                            <p className="text-white/60 leading-relaxed">Die Mani ist ein Solarium für Olivenbäume. Keine wässrigen Kompromisse, sondern eine absolute Aromen-Explosion.</p>
                         </div>
-                        <h3 className="font-display font-bold text-lg text-white mb-2">{claims[2].title}</h3>
-                        <p className="text-white/50 text-xs leading-relaxed">{claims[2].desc}</p>
+                        <div className="bento-icon order-1 md:order-2 flex-shrink-0 flex justify-center items-center">
+                            <img src="/assets/sun.png" alt="" className="w-24 md:w-32 object-contain transition-transform duration-500 group-hover:scale-110" />
+                        </div>
                     </div>
 
-                    {/* Item 4: Direkt (Klein) */}
-                    <div className={`bento-item ${claims[3].gridArea} glass-card p-6 flex flex-col justify-center items-center text-center group`}>
+                    {/* 4. Weltklasse Qualität (Small Bottom) */}
+                    <div className="bento-item-anim bento-item md:col-span-1 md:row-span-1 glass-card p-6 flex flex-col justify-center items-center text-center group">
                         <div className="bento-icon mb-6">
-                            <img src={claims[3].icon} alt="" className={`${claims[3].iconClass} object-contain transition-transform duration-500 group-hover:-translate-y-2`} />
+                            <img src="/assets/illustrations/Pokal.png" alt="" className="w-16 md:w-24 object-contain transition-transform duration-500 group-hover:scale-125" />
                         </div>
-                        <h3 className="font-display font-bold text-lg text-white mb-2">{claims[3].title}</h3>
-                        <p className="text-white/50 text-xs leading-relaxed">{claims[3].desc}</p>
+                        <h3 className="font-display font-bold text-lg text-white mb-2">Weltklasse Qualität</h3>
+                        <p className="text-white/50 text-xs leading-relaxed">Extrem niedrige Säure und hohe Polyphenole.</p>
+                    </div>
+
+                    {/* 5. Direkt zu dir (Small Bottom Right) */}
+                    <div className="bento-item-anim bento-item md:col-span-1 md:row-span-1 glass-card p-6 flex flex-col justify-center items-center text-center group">
+                        <div className="bento-icon mb-6">
+                            <img src="/assets/illustrations/Present.png" alt="" className="w-16 md:w-24 object-contain transition-transform duration-500 group-hover:-translate-y-2" />
+                        </div>
+                        <h3 className="font-display font-bold text-lg text-white mb-2">Direkt zu dir</h3>
+                        <p className="text-white/50 text-xs leading-relaxed">Vom Hain in Griechenland ohne Umwege in dein Regal.</p>
                     </div>
 
                 </div>
@@ -407,7 +369,6 @@ function ClaimSet1() {
 
 /* ═══════════════════════════════════════════════════════════
    CLAIM SET 2 — Falling Cards Stacking Effect
-   100% Koroneiki-Oliven → Intensives Aroma → Reich an Gesundmachern
    ═══════════════════════════════════════════════════════════ */
 function ClaimSet2() {
     const sectionRef = useRef(null);
@@ -436,7 +397,6 @@ function ClaimSet2() {
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            // Pinned Stacking Effect for all devices
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current,
@@ -450,12 +410,10 @@ function ClaimSet2() {
 
             cards.forEach((_, i) => {
                 if (i === 0) {
-                    // First card is already there or enters normally
                     gsap.set(`.stack-card-0`, { zIndex: 10 });
                     return;
                 }
 
-                // Card falls from above
                 tl.fromTo(`.stack-card-${i}`,
                     {
                         y: "-100vh",
@@ -473,7 +431,6 @@ function ClaimSet2() {
                     `card-${i}`
                 );
 
-                // Previous cards effect (Scale down, blur, fade)
                 for (let j = 0; j < i; j++) {
                     tl.to(`.stack-card-${j}`, {
                         scale: 0.9 - (i - j) * 0.05,
@@ -509,7 +466,6 @@ function ClaimSet2() {
                                 </p>
                             </div>
                             <div className="w-32 h-32 md:w-56 md:h-56 lg:w-64 lg:h-64 relative">
-                                {/* Abstract shape or illustration background */}
                                 <div className="absolute inset-0 bg-accent/10 rounded-full blur-3xl animate-pulse" />
                                 <div className="relative z-10 w-full h-full flex items-center justify-center">
                                     <img src={card.illustration} className="w-full h-auto object-contain max-h-full" alt="" />
@@ -522,8 +478,6 @@ function ClaimSet2() {
         </section>
     );
 }
-
-
 
 /* ═══════════════════════════════════════════════════════════
    WAITLIST CTA
@@ -546,7 +500,6 @@ function Waitlist() {
                 },
             })
 
-            // Force play video
             const video = sectionRef.current?.querySelector('video')
             if (video) {
                 video.play().catch(() => { })
@@ -561,9 +514,7 @@ function Waitlist() {
             id="waitlist"
             className="relative min-h-[100svh] flex items-center justify-center py-16 md:py-24 bg-primary overflow-hidden"
         >
-            {/* Desktop Side-by-Side */}
             <div className="hidden lg:flex w-full h-full items-center max-w-7xl mx-auto px-12 lg:px-16">
-                {/* Left: Content */}
                 <div className="w-1/2 waitlist-content relative z-20 text-left py-12 pr-12">
                     <p className="font-display text-xs lg:text-sm font-semibold tracking-[0.2em] uppercase text-accent mb-4">
                         Ernte 2026 / 2027
@@ -588,7 +539,6 @@ function Waitlist() {
                     </div>
                 </div>
 
-                {/* Right: Video in a mask */}
                 <div className="w-1/2 h-[60vh] lg:h-[70vh] relative">
                     <div className="absolute inset-0 rounded-[3rem] overflow-hidden shadow-2xl">
                         <video
@@ -601,9 +551,7 @@ function Waitlist() {
                         >
                             <source src="/assets/beach-video.mp4" type="video/mp4" />
                         </video>
-                        {/* Overlay removed as requested */}
                     </div>
-                    {/* Decorative waves for desktop */}
                     <img
                         src="/assets/waves.png"
                         alt=""
@@ -612,7 +560,6 @@ function Waitlist() {
                 </div>
             </div>
 
-            {/* Mobile Overlay */}
             <div className="lg:hidden absolute inset-0 w-full h-full flex items-center justify-center px-6">
                 <div className="absolute inset-0 w-full h-full">
                     <video
@@ -625,7 +572,6 @@ function Waitlist() {
                     >
                         <source src="/assets/beach-video.mp4" type="video/mp4" />
                     </video>
-                    {/* Overlay removed as requested */}
                 </div>
 
                 <div className="waitlist-content relative z-20 w-full max-w-md py-12 px-8 text-center backdrop-blur-md bg-black/20 rounded-[2.5rem] border border-white/5 shadow-xl">
@@ -644,7 +590,7 @@ function Waitlist() {
                             href="https://deine-warteliste-url.de"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn-magnetic btn-accent py-4 px-10 text-lg shadow-[0_0_30px_rgba(254,65,0,0.3)]"
+                            className="btn-magnetic btn-accent py-4 px-10 text-lg shadow-[0_0_30px_rgba(254,65,0,0.25)]"
                         >
                             Warteliste
                             <ArrowRight className="ml-3 w-5 h-5 flex-shrink-0" />
@@ -657,28 +603,19 @@ function Waitlist() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   IMPRESSUM OVERLAY
+   IMPRESSUM & DATENSCHUTZ OVERLAYS
    ═══════════════════════════════════════════════════════════ */
 function Impressum({ isOpen, onClose }) {
     const overlayRef = useRef(null)
 
     useEffect(() => {
         if (isOpen) {
-            gsap.to(overlayRef.current, {
-                opacity: 1,
-                visibility: 'visible',
-                duration: 0.5,
-                ease: 'power3.out'
-            })
+            gsap.to(overlayRef.current, { opacity: 1, visibility: 'visible', duration: 0.5, ease: 'power3.out' })
             document.body.style.overflow = 'hidden'
         } else {
             gsap.to(overlayRef.current, {
-                opacity: 0,
-                duration: 0.4,
-                ease: 'power3.inOut',
-                onComplete: () => {
-                    gsap.set(overlayRef.current, { visibility: 'hidden' })
-                }
+                opacity: 0, duration: 0.4, ease: 'power3.inOut',
+                onComplete: () => gsap.set(overlayRef.current, { visibility: 'hidden' })
             })
             document.body.style.overflow = 'auto'
         }
@@ -689,72 +626,31 @@ function Impressum({ isOpen, onClose }) {
             ref={overlayRef}
             className="fixed inset-0 z-[100] bg-primary flex items-center justify-center p-6 md:p-12 opacity-0 invisible"
         >
-            {/* Noise Overlay specifically for the Impressum */}
             <NoiseOverlay />
-
-            <button
-                onClick={onClose}
-                className="absolute top-8 right-8 text-white/60 hover:text-white transition-colors p-2"
-                aria-label="Schließen"
-            >
-                <X size={32} />
-            </button>
-
+            <button onClick={onClose} className="absolute top-8 right-8 text-white/60 hover:text-white transition-colors p-2"><X size={32} /></button>
             <div className="max-w-3xl w-full text-white text-center md:text-left overflow-y-auto max-h-full py-12">
                 <h2 className="font-serif italic font-bold text-4xl md:text-6xl mb-12 text-accent">Impressum</h2>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-white/80 font-light leading-relaxed">
                     <div>
                         <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4">Angaben gemäß § 5 TMG</h3>
-                        <p>
-                            Meyer & Tiffert GbR<br />
-                            Hofwiese 27<br />
-                            79809 Weilheim<br />
-                            Deutschland
-                        </p>
-
+                        <p>Meyer & Tiffert GbR<br />Hofwiese 27<br />79809 Weilheim<br />Deutschland</p>
                         <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4 mt-8">Kontakt</h3>
-                        <p>
-                            E-Mail: <a href="mailto:meyertiffergbr@gmail.com" className="text-accent hover:underline">meyertiffergbr@gmail.com</a>
-                        </p>
+                        <p>E-Mail: <a href="mailto:meyertiffergbr@gmail.com" className="text-accent hover:underline">meyertiffergbr@gmail.com</a></p>
                     </div>
-
                     <div>
                         <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4">Vertreten durch</h3>
-                        <p>
-                            Denis Tiffert und Zeno Meyer
-                        </p>
-
+                        <p>Denis Tiffert und Zeno Meyer</p>
                         <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4 mt-8">Umsatzsteuer-ID</h3>
-                        <p>
-                            Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG:<br />
-                            DE457997438
-                        </p>
-
+                        <p>DE457997438</p>
                         <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4 mt-8">Steuernummer</h3>
-                        <p>
-                            20005/29606
-                        </p>
+                        <p>20005/29606</p>
                     </div>
-                </div>
-
-                <div className="mt-12 pt-12 border-t border-white/10">
-                    <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4">Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3>
-                    <p className="text-white/80 font-light">
-                        Denis Tiffert und Zeno Meyer<br />
-                        Hofwiese 27<br />
-                        79809 Weilheim<br />
-                        Deutschland
-                    </p>
                 </div>
             </div>
         </div>
     )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   DATENSCHUTZ OVERLAY
-   ═══════════════════════════════════════════════════════════ */
 function Datenschutz({ isOpen, onClose }) {
     const overlayRef = useRef(null)
 
@@ -777,133 +673,12 @@ function Datenschutz({ isOpen, onClose }) {
             className="fixed inset-0 z-[100] bg-primary flex items-start justify-center p-6 md:p-12 opacity-0 invisible overflow-y-auto"
         >
             <NoiseOverlay />
-            <button
-                onClick={onClose}
-                className="fixed top-8 right-8 text-white/60 hover:text-white transition-colors p-2 z-10"
-                aria-label="Schließen"
-            >
-                <X size={32} />
-            </button>
-
+            <button onClick={onClose} className="fixed top-8 right-8 text-white/60 hover:text-white transition-colors p-2 z-10"><X size={32} /></button>
             <div className="max-w-3xl w-full text-white py-16">
-                <h2 className="font-serif italic font-bold text-4xl md:text-6xl mb-4 text-accent">Datenschutz&shy;erklärung</h2>
-                <p className="text-white/50 text-sm mb-12">Stand: März 2026</p>
-
-                {/* Section helper */}
-                {[
-                    {
-                        title: '1. Verantwortlicher',
-                        content: (
-                            <p className="text-white/70 font-light leading-relaxed">
-                                Verantwortlich im Sinne der DSGVO:<br />
-                                <strong className="text-white font-semibold">Meyer & Tiffert GbR</strong><br />
-                                Hofwiese 27<br />
-                                79809 Weilheim<br />
-                                Deutschland<br /><br />
-                                E-Mail: <a href="mailto:meyertiffergbr@gmail.com" className="text-accent hover:underline">meyertiffergbr@gmail.com</a>
-                            </p>
-                        )
-                    },
-                    {
-                        title: '2. Hosting & Server-Logs',
-                        content: (
-                            <>
-                                <p className="text-white/70 font-light leading-relaxed mb-4">
-                                    Diese Website wird bei <strong className="text-white font-semibold">Vercel Inc.</strong>
-                                    , 340 Pine Street, Suite 701, San Francisco, CA 94104, USA, gehostet.
-                                    Beim Aufruf der Website erhebt Vercel automatisch sogenannte Server-Logfiles, die dein Browser übermittelt.
-                                    Dies umfasst: Browsertyp und -version, Betriebssystem, Referrer-URL, Hostname des zugreifenden Rechners, Uhrzeit der Serveranfrage und IP-Adresse.
-                                </p>
-                                <p className="text-white/70 font-light leading-relaxed mb-4">
-                                    Diese Daten sind nicht bestimmten Personen zuordenbar und werden nicht mit anderen Datenquellen zusammengeführt.
-                                    Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse am sicheren Betrieb der Website).
-                                </p>
-                                <p className="text-white/70 font-light leading-relaxed">
-                                    Vercel kann außerdem anonymisierte Nutzungsstatistiken erheben. Weitere Informationen findest du in der
-                                    Datenschutzerklärung von Vercel:{' '}
-                                    <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">vercel.com/legal/privacy-policy</a>.
-                                    Mit Vercel besteht ein Auftragsverarbeitungsvertrag gemäß Art. 28 DSGVO.
-                                </p>
-                            </>
-                        )
-                    },
-                    {
-                        title: '3. Warteliste',
-                        content: (
-                            <>
-                                <p className="text-white/70 font-light leading-relaxed mb-4">
-                                    Wenn du dich in unsere Warteliste einträgst, erheben wir deinen <strong className="text-white font-semibold">Vor- und Nachnamen, deine E-Mail-Adresse</strong> sowie deinen <strong className="text-white font-semibold">Wohnort</strong>.
-                                    Diese Daten werden ausschließlich dazu verwendet, dich über die Verfügbarkeit unseres Olivenöls zu informieren.
-                                </p>
-                                <p className="text-white/70 font-light leading-relaxed mb-4">
-                                    Die Daten werden in einer Google Sheets-Tabelle gespeichert, die auf unserem Google Drive liegt.
-                                    Anbieter: <strong className="text-white font-semibold">Google Ireland Ltd.</strong>, Gordon House, Barrow Street, Dublin 4, Irland.
-                                    Google kann diese Daten auf Servern in den USA verarbeiten. Mit Google besteht ein Standardvertragsklausel-Vertrag gemäß Art. 46 Abs. 2 lit. c DSGVO.
-                                </p>
-                                <p className="text-white/70 font-light leading-relaxed">
-                                    Rechtsgrundlage der Verarbeitung ist deine Einwilligung gemäß Art. 6 Abs. 1 lit. a DSGVO.
-                                    Du kannst deine Einwilligung jederzeit widerrufen, indem du uns eine E-Mail schickst.
-                                    Die Daten werden gelöscht, sobald sie für den genannten Zweck nicht mehr benötigt werden.
-                                </p>
-                            </>
-                        )
-                    },
-                    {
-                        title: '4. Schriftarten (Fonts)',
-                        content: (
-                            <p className="text-white/70 font-light leading-relaxed">
-                                Diese Website verwendet Schriftarten (Inter, Outfit, Playfair Display), die lokal von unserem eigenen Server ausgeliefert werden.
-                                Es findet dabei keine Verbindung zu externen Servern (z. B. Google Fonts) statt. Es werden keine personenbezogenen Daten durch die Schriftarten an Dritte übertragen.
-                            </p>
-                        )
-                    },
-                    {
-                        title: '5. Cookies & Tracking',
-                        content: (
-                            <p className="text-white/70 font-light leading-relaxed">
-                                Diese Website setzt keine Marketing- oder Tracking-Cookies ein. Vercel kann technisch notwendige Cookies für den Betrieb der Infrastruktur nutzen.
-                                Analysen werden ausschließlich über die anonymisierten Statistiken von Vercel durchgeführt — ohne Verbindung zu deiner Person.
-                            </p>
-                        )
-                    },
-                    {
-                        title: '6. Deine Rechte',
-                        content: (
-                            <>
-                                <p className="text-white/70 font-light leading-relaxed mb-3">
-                                    Du hast gemäß DSGVO folgende Rechte gegenüber uns:
-                                </p>
-                                <ul className="text-white/70 font-light leading-relaxed list-disc list-inside space-y-1 mb-4">
-                                    <li>Recht auf Auskunft (Art. 15 DSGVO)</li>
-                                    <li>Recht auf Berichtigung (Art. 16 DSGVO)</li>
-                                    <li>Recht auf Löschung (Art. 17 DSGVO)</li>
-                                    <li>Recht auf Einschränkung der Verarbeitung (Art. 18 DSGVO)</li>
-                                    <li>Recht auf Datenübertragbarkeit (Art. 20 DSGVO)</li>
-                                    <li>Recht auf Widerspruch (Art. 21 DSGVO)</li>
-                                    <li>Recht auf Widerruf der Einwilligung (Art. 7 Abs. 3 DSGVO)</li>
-                                </ul>
-                                <p className="text-white/70 font-light leading-relaxed">
-                                    Zur Ausübung deiner Rechte wende dich bitte an:{' '}
-                                    <a href="mailto:meyertiffergbr@gmail.com" className="text-accent hover:underline">meyertiffergbr@gmail.com</a>.
-                                    Außerdem hast du das Recht, dich bei einer Datenschutzaufsichtsbehörde zu beschweren.
-                                </p>
-                            </>
-                        )
-                    },
-                    {
-                        title: '7. Aktualität & Änderungen',
-                        content: (
-                            <p className="text-white/70 font-light leading-relaxed">
-                                Wir behalten uns vor, diese Datenschutzerklärung zu aktualisieren. Die jeweils aktuelle Version ist auf dieser Website abrufbar.
-                            </p>
-                        )
-                    },
-                ].map((section, i) => (
-                    <div key={i} className="mb-10 pb-10 border-b border-white/10 last:border-0">
-                        <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4">{section.title}</h3>
-                        {section.content}
-                    </div>
-                ))}
+                <h2 className="font-serif italic font-bold text-4xl md:text-6xl mb-4 text-accent">Datenschutz</h2>
+                <div className="space-y-10">
+                    <p className="text-white/70 font-light">Wir nehmen den Schutz Ihrer Daten ernst. Diese Website wird bei Vercel gehostet. Es werden nur technisch notwendige Daten verarbeitet.</p>
+                </div>
             </div>
         </div>
     )
@@ -917,53 +692,31 @@ function Footer({ onShowImpressum, onShowDatenschutz }) {
         <footer className="bg-[#041e3a] border-t border-white/5 py-12 md:py-16">
             <div className="max-w-7xl mx-auto px-6 md:px-16">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
-                    {/* Brand */}
                     <div className="md:col-span-2">
                         <img src="/assets/logo.png" alt="AKRIA" className="h-8 md:h-10 w-auto mb-4" />
-                        <p className="text-white/40 text-sm max-w-sm leading-relaxed">
-                            Extra natives Olivenöl der höchsten Stufe, direkt aus der Mani-Region Griechenlands. Premium Qualität, fair und direkt.
-                        </p>
+                        <p className="text-white/40 text-sm max-w-sm leading-relaxed">Extra natives Olivenöl der höchsten Stufe, direkt aus der Mani-Region Griechenlands.</p>
                     </div>
-
-                    {/* Navigation */}
                     <div>
                         <h4 className="font-display font-semibold text-white/80 text-sm uppercase tracking-wider mb-4">Navigation</h4>
                         <div className="flex flex-col gap-2">
-                            <a href="#hero" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Start</a>
-                            <a href="#herkunft" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Herkunft</a>
-                            <a href="#qualitaet" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Qualität</a>
-                            <a href="#waitlist" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Warteliste</a>
+                            <a href="#hero" className="text-white/40 hover:text-white text-sm hover-lift">Start</a>
+                            <a href="#herkunft" className="text-white/40 hover:text-white text-sm hover-lift">Herkunft</a>
+                            <a href="#qualitaet" className="text-white/40 hover:text-white text-sm hover-lift">Qualität</a>
                         </div>
                     </div>
-
-                    {/* Legal */}
                     <div>
                         <h4 className="font-display font-semibold text-white/80 text-sm uppercase tracking-wider mb-4">Rechtliches</h4>
                         <div className="flex flex-col gap-2">
-                            <button onClick={onShowImpressum} className="text-white/40 hover:text-white text-sm hover-lift transition-colors text-left">Impressum</button>
-                            <button onClick={onShowDatenschutz} className="text-white/40 hover:text-white text-sm hover-lift transition-colors text-left">Datenschutz</button>
-                            <a href="#" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">AGB</a>
+                            <button onClick={onShowImpressum} className="text-white/40 hover:text-white text-sm hover-lift text-left">Impressum</button>
+                            <button onClick={onShowDatenschutz} className="text-white/40 hover:text-white text-sm hover-lift text-left">Datenschutz</button>
                         </div>
                     </div>
-                </div>
-
-                {/* Bottom bar */}
-                <div className="mt-12 pt-6 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <p className="text-white/30 text-xs">
-                        © 2026 AKRIA. Alle Rechte vorbehalten.
-                    </p>
-                    <p className="text-white/20 text-xs">
-                        Handgemacht mit ❤️ in Deutschland & Griechenland
-                    </p>
                 </div>
             </div>
         </footer>
     )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   COOKIE BANNER — GDPR-compliant consent notification
-   ═══════════════════════════════════════════════════════════ */
 function CookieBanner({ onShowDatenschutz }) {
     const [visible, setVisible] = useState(false)
     const bannerRef = useRef(null)
@@ -978,81 +731,34 @@ function CookieBanner({ onShowDatenschutz }) {
 
     useEffect(() => {
         if (!bannerRef.current || !visible) return
-        gsap.fromTo(
-            bannerRef.current,
-            { y: 60, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }
-        )
+        gsap.fromTo(bannerRef.current, { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' })
     }, [visible])
 
     const dismiss = (choice) => {
         localStorage.setItem('akria-cookie-consent', choice)
-        gsap.to(bannerRef.current, {
-            y: 60,
-            opacity: 0,
-            duration: 0.4,
-            ease: 'power3.inOut',
-            onComplete: () => setVisible(false),
-        })
+        gsap.to(bannerRef.current, { y: 60, opacity: 0, duration: 0.4, onComplete: () => setVisible(false) })
     }
 
     if (!visible) return null
 
     return (
-        <div
-            ref={bannerRef}
-            className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-md z-[200]"
-            style={{ opacity: 0 }}
-        >
-            <div className="bg-[#041e3a]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-5 md:p-6 shadow-[0_8px_60px_rgba(0,0,0,0.5)]">
-                <div className="flex items-center gap-3 mb-3">
-                    <span className="text-2xl" role="img" aria-label="Cookie">🫒</span>
-                    <p className="font-display font-bold text-white text-sm uppercase tracking-widest">
-                        Hinweis zu Cookies
-                    </p>
-                </div>
-
-                <p className="text-white/60 text-sm leading-relaxed mb-5">
-                    Diese Website verwendet ausschließlich technisch notwendige Cookies für den Betrieb der Seite.{' '}
-                    <button
-                        onClick={onShowDatenschutz}
-                        className="text-accent underline hover:text-accent/80 transition-colors"
-                    >
-                        Mehr erfahren
-                    </button>
-                </p>
-
+        <div ref={bannerRef} className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-md z-[200]">
+            <div className="bg-[#041e3a]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl">
+                <p className="text-white/60 text-sm mb-5">Wir nutzen nur notwendige Cookies. <button onClick={onShowDatenschutz} className="text-accent underline">Mehr erfahren</button></p>
                 <div className="flex gap-3">
-                    <button
-                        onClick={() => dismiss('accepted')}
-                        className="btn-magnetic btn-accent flex-1 py-3 text-sm shadow-[0_0_20px_rgba(254,65,0,0.25)]"
-                    >
-                        Verstanden
-                    </button>
-                    <button
-                        onClick={() => dismiss('declined')}
-                        className="flex-1 py-3 text-sm font-display font-semibold tracking-wide text-white/50 hover:text-white border border-white/10 hover:border-white/20 rounded-full transition-all duration-200"
-                    >
-                        Ablehnen
-                    </button>
+                    <button onClick={() => dismiss('accepted')} className="btn-magnetic btn-accent flex-1 py-3 text-sm">Verstanden</button>
                 </div>
             </div>
         </div>
     )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   APP — Main Composition
-   ═══════════════════════════════════════════════════════════ */
 export default function App() {
     const [showImpressum, setShowImpressum] = useState(false)
     const [showDatenschutz, setShowDatenschutz] = useState(false)
 
     useEffect(() => {
-        // Refresh ScrollTrigger after all content loads
-        const timeout = setTimeout(() => {
-            ScrollTrigger.refresh()
-        }, 500)
+        const timeout = setTimeout(() => { ScrollTrigger.refresh() }, 500)
         return () => clearTimeout(timeout)
     }, [])
 
