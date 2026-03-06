@@ -302,7 +302,7 @@ function ClaimSet1({ isLoaded }) {
                     </div>
 
                     <div className="oil-video-container relative flex items-center justify-center lg:justify-end order-1 lg:order-2">
-                        <div className="video-mask w-full max-w-[280px] md:max-w-sm lg:max-w-md xl:max-w-lg aspect-[3/4] relative overflow-hidden shadow-2xl rounded-3xl">
+                        <div className="video-mask w-full md:max-w-sm lg:max-w-md xl:max-w-lg aspect-[3/4] relative overflow-hidden shadow-2xl rounded-3xl">
                             <video autoPlay muted loop playsInline preload="auto" className="absolute inset-0 w-full h-full object-cover">
                                 <source src="/assets/oil-flow.mov" type="video/quicktime" />
                                 <source src="/assets/oil-flow.mov" type="video/mp4" />
