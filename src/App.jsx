@@ -193,7 +193,7 @@ function Hero() {
             </div>
 
             {/* Sun Illustration — top right */}
-            <div ref={sunRef} className="absolute top-12 md:top-16 lg:top-20 right-6 md:right-12 lg:right-16 w-20 md:w-32 lg:w-44 z-30 pointer-events-none">
+            <div ref={sunRef} className="absolute top-12 md:top-16 lg:top-20 right-6 md:right-12 lg:right-16 w-16 md:w-24 lg:w-32 z-30 pointer-events-none">
                 <img src="/assets/sun.png" alt="" className="w-full h-auto" />
             </div>
 
@@ -209,22 +209,22 @@ function Hero() {
                         Extra Natives Olivenöl aus der Mani
                     </p>
                     <h1 className="mb-4 md:mb-6 text-center flex flex-col items-center">
-                        <span className="hero-line-2 block font-display font-800 text-5xl md:text-6xl lg:text-7xl tracking-tight text-white leading-[1.1]">
+                        <span className="hero-line-2 block font-display font-800 text-4xl md:text-5xl lg:text-6xl tracking-tight text-white leading-[1.1]">
                             Upgrade
                         </span>
-                        <span className="hero-line-3 small-line block font-display font-800 text-3xl md:text-4xl lg:text-5xl tracking-tight text-white/90 leading-[0.9] -mt-1 md:-mt-2">
+                        <span className="hero-line-3 small-line block font-display font-800 text-2xl md:text-3xl lg:text-4xl tracking-tight text-white/90 leading-[0.9] -mt-1">
                             für
                         </span>
-                        <span className="hero-line-4 block font-serif italic font-900 text-6xl md:text-8xl lg:text-[9rem] tracking-tight text-accent leading-[0.8] -mt-1 md:-mt-2">
+                        <span className="hero-line-4 block font-serif italic font-900 text-5xl md:text-7xl lg:text-[7.5rem] tracking-tight text-accent leading-[0.8] -mt-1 md:-mt-2">
                             alles.
                         </span>
                     </h1>
-                    <p className="hero-line-3 desc-line text-white/80 text-base md:text-lg lg:text-xl max-w-xl mb-6 md:mb-8 font-light leading-relaxed">
+                    <p className="hero-line-3 desc-line text-white/60 text-sm md:text-base lg:text-lg max-w-lg mb-6 md:mb-8 font-light leading-relaxed">
                         Wir bringen Olivenöl der besten Qualität zu einem fairen Preis in deine Küche.
                     </p>
-                    <a href="#waitlist" className="hero-cta btn-magnetic btn-accent text-sm md:text-base py-3 md:py-4 px-8 md:px-10 relative z-10">
+                    <a href="#waitlist" className="hero-cta btn-magnetic btn-accent text-sm py-3 px-8 relative z-10">
                         Auf die Warteliste
-                        <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
+                        <ArrowRight className="ml-2 w-4 h-4" />
                     </a>
 
                     {/* Scroll hint — now under CTA/Logo area */}
@@ -367,16 +367,16 @@ function ClaimSet1() {
                         {claims.map((claim, i) => (
                             <div key={i} className="relative">
                                 <div
-                                    className={`claim-card-${i} glass-card p-4 md:p-6 flex items-center gap-4 md:gap-6 group hover:bg-white/10 ${i % 2 === 0 ? 'md:translate-x-[-1rem]' : 'md:translate-x-[1rem]'}`}
+                                    className={`claim-card-${i} glass-card p-3 md:p-4 flex items-center gap-4 group hover:bg-white/10 ${i % 2 === 0 ? 'md:translate-x-[-1rem]' : 'md:translate-x-[1rem]'}`}
                                 >
-                                    <div className="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 flex items-center justify-center">
+                                    <div className="flex-shrink-0 w-10 h-10 md:w-14 md:h-14 flex items-center justify-center">
                                         {claim.icon}
                                     </div>
                                     <div className="flex-1">
-                                        <h3 className="font-display font-bold text-lg md:text-2xl text-white mb-1">
+                                        <h3 className="font-display font-bold text-base md:text-xl text-white mb-0.5">
                                             {claim.title}
                                         </h3>
-                                        <p className="text-white/80 text-sm md:text-base leading-snug md:leading-relaxed">
+                                        <p className="text-white/60 text-xs md:text-sm leading-tight md:leading-relaxed">
                                             {claim.desc}
                                         </p>
                                     </div>
