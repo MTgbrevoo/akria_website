@@ -283,7 +283,14 @@ function ClaimSet1() {
             id="herkunft"
             className="relative min-h-screen w-full bg-primary py-24 md:py-32 flex items-center overflow-hidden"
         >
-            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 w-full">
+            {/* Background Illustration: Waves - Now without filter and naturally placed */}
+            <img 
+                src="/assets/waves.png" 
+                alt="" 
+                className="absolute -bottom-10 left-0 w-full opacity-20 pointer-events-none z-0" 
+            />
+
+            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 w-full relative z-10">
                 <div className="mb-12 md:mb-20 text-center md:text-left">
                     <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-black text-white mb-4 leading-tight">
                         Besser geht <span className="text-accent italic font-serif">nicht.</span>
@@ -299,15 +306,10 @@ function ClaimSet1() {
                 */}
                 <div className="bento-grid grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 md:gap-6 auto-rows-[minmax(300px,auto)]">
                     
-                    {/* 1. Berge & Meer (Vertical Left) */}
-                    <div className="bento-item-anim bento-item md:col-span-1 md:row-span-2 glass-card p-8 flex flex-col items-center justify-between text-center overflow-hidden group bg-accent/5">
-                        <div className="bento-icon mb-8">
-                            <img src="/assets/mountains.png" alt="" className="w-32 md:w-48 scale-125 object-contain transition-transform duration-700 group-hover:rotate-3 group-hover:scale-110" />
-                        </div>
-                        <div className="mt-auto">
-                            <h3 className="font-display font-bold text-2xl text-white mb-3">Berge & Meer</h3>
-                            <p className="text-white/60 leading-relaxed text-sm">Salzige Meeresluft trifft auf rauen Bergboden. Das sorgt für ein Öl mit Ecken, Kanten und ordentlich Würze.</p>
-                        </div>
+                    {/* 1. Harvest Image (Small Top Left) */}
+                    <div className="bento-item-anim bento-item md:col-span-1 md:row-span-1 relative rounded-[2rem] overflow-hidden border border-white/10 group shadow-lg">
+                        <img src="/assets/harvest.jpg" alt="Ernte" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+                        <div className="absolute inset-0 bg-primary/20 group-hover:bg-transparent transition-colors duration-500" />
                     </div>
 
                     {/* 2. Video Box (Vertical Center - Portrait) */}
@@ -339,7 +341,16 @@ function ClaimSet1() {
                         </div>
                     </div>
 
-                    {/* 4. Weltklasse Qualität (Small Bottom) */}
+                    {/* 4. Berge & Meer (Small Bottom Left) */}
+                    <div className="bento-item-anim bento-item md:col-span-1 md:row-span-1 glass-card p-6 flex flex-col justify-center items-center text-center group">
+                        <div className="bento-icon mb-4">
+                            <img src="/assets/mountains.png" alt="" className="w-16 md:w-24 object-contain transition-transform duration-500 group-hover:scale-110" />
+                        </div>
+                        <h3 className="font-display font-bold text-lg text-white mb-1">Berge & Meer</h3>
+                        <p className="text-white/50 text-xs leading-relaxed">Salzige Meeresluft trifft auf rauen Bergboden.</p>
+                    </div>
+
+                    {/* 5. Weltklasse Qualität (Small Bottom) */}
                     <div className="bento-item-anim bento-item md:col-span-1 md:row-span-1 glass-card p-6 flex flex-col justify-center items-center text-center group">
                         <div className="bento-icon mb-6">
                             <img src="/assets/illustrations/Pokal.png" alt="" className="w-16 md:w-24 object-contain transition-transform duration-500 group-hover:scale-125" />
@@ -348,7 +359,7 @@ function ClaimSet1() {
                         <p className="text-white/50 text-xs leading-relaxed">Extrem niedrige Säure und hohe Polyphenole.</p>
                     </div>
 
-                    {/* 5. Direkt zu dir (Small Bottom Right) */}
+                    {/* 6. Direkt zu dir (Small Bottom Right) */}
                     <div className="bento-item-anim bento-item md:col-span-1 md:row-span-1 glass-card p-6 flex flex-col justify-center items-center text-center group">
                         <div className="bento-icon mb-6">
                             <img src="/assets/illustrations/Present.png" alt="" className="w-16 md:w-24 object-contain transition-transform duration-500 group-hover:-translate-y-2" />
@@ -359,9 +370,6 @@ function ClaimSet1() {
 
                 </div>
             </div>
-
-            {/* Background elements */}
-            <img src="/assets/waves.png" alt="" className="absolute -bottom-20 -left-20 w-96 opacity-10 pointer-events-none rotate-12" />
         </section>
     )
 }
@@ -766,7 +774,7 @@ export default function App() {
         <>
             <NoiseOverlay />
             <Impressum isOpen={showImpressum} onClose={() => setShowImpressum(false)} />
-            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(false)} />
+            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(true)} />
             <CookieBanner onShowDatenschutz={() => setShowDatenschutz(true)} />
             <main>
                 <Hero />
