@@ -283,11 +283,11 @@ function ClaimSet1() {
             id="herkunft"
             className="relative min-h-screen w-full bg-primary py-24 md:py-32 flex items-center overflow-hidden"
         >
-            {/* Background Illustration: Waves - Now without filter and naturally placed */}
+            {/* Background Illustration: Waves - Now in original color (opacity 100) */}
             <img 
                 src="/assets/waves.png" 
                 alt="" 
-                className="absolute -bottom-10 left-0 w-full opacity-20 pointer-events-none z-0" 
+                className="absolute -bottom-10 left-0 w-full opacity-100 pointer-events-none z-0" 
             />
 
             <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 w-full relative z-10">
