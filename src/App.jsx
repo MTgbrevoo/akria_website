@@ -193,7 +193,7 @@ function Hero() {
             </div>
 
             {/* Sun Illustration — top right */}
-            <div ref={sunRef} className="absolute top-16 md:top-20 right-6 md:right-16 w-24 md:w-40 lg:w-52 z-30 pointer-events-none">
+            <div ref={sunRef} className="absolute top-12 md:top-16 lg:top-20 right-6 md:right-12 lg:right-16 w-16 md:w-24 lg:w-32 z-30 pointer-events-none">
                 <img src="/assets/sun.png" alt="" className="w-full h-auto" />
             </div>
 
@@ -201,36 +201,36 @@ function Hero() {
             <div ref={textRef} className="absolute inset-0 flex flex-col items-center justify-center z-20 px-6 text-center">
                 <div className="max-w-4xl flex flex-col items-center">
                     {/* Centered Logo */}
-                    <div className="hero-logo mb-12 transform hover:scale-[1.02] transition-transform duration-500 cursor-pointer">
-                        <img src="/assets/logo.png" alt="AKRIA" className="h-32 md:h-48 lg:h-56 w-auto" />
+                    <div className="hero-logo mb-6 md:mb-8 lg:mb-10 transform hover:scale-[1.02] transition-transform duration-500 cursor-pointer">
+                        <img src="/assets/logo.png" alt="AKRIA" className="h-20 md:h-24 lg:h-32 w-auto" />
                     </div>
 
-                    <p className="hero-line-1 font-display text-sm md:text-base font-semibold tracking-[0.2em] uppercase text-white/70 mb-4 md:mb-6">
+                    <p className="hero-line-1 font-display text-xs md:text-sm lg:text-base font-semibold tracking-[0.2em] uppercase text-white/70 mb-3 md:mb-4">
                         Extra Natives Olivenöl aus der Mani
                     </p>
-                    <h1 className="mb-6 md:mb-8 text-center flex flex-col items-center">
-                        <span className="hero-line-2 block font-display font-800 text-5xl md:text-7xl lg:text-8xl tracking-tight text-white leading-[1.1]">
+                    <h1 className="mb-4 md:mb-6 text-center flex flex-col items-center">
+                        <span className="hero-line-2 block font-display font-800 text-4xl md:text-5xl lg:text-6xl tracking-tight text-white leading-[1.1]">
                             Upgrade
                         </span>
-                        <span className="hero-line-3 small-line block font-display font-800 text-3xl md:text-5xl lg:text-6xl tracking-tight text-white/90 leading-[0.9] -mt-2">
+                        <span className="hero-line-3 small-line block font-display font-800 text-2xl md:text-3xl lg:text-4xl tracking-tight text-white/90 leading-[0.9] -mt-1">
                             für
                         </span>
-                        <span className="hero-line-4 block font-serif italic font-900 text-6xl md:text-9xl lg:text-[12rem] tracking-tight text-accent leading-[0.8] -mt-2">
+                        <span className="hero-line-4 block font-serif italic font-900 text-5xl md:text-7xl lg:text-[7.5rem] tracking-tight text-accent leading-[0.8] -mt-1 md:-mt-2">
                             alles.
                         </span>
                     </h1>
-                    <p className="hero-line-3 desc-line text-white/60 text-base md:text-xl max-w-xl mb-10 font-light leading-relaxed">
+                    <p className="hero-line-3 desc-line text-white/60 text-sm md:text-base lg:text-lg max-w-lg mb-6 md:mb-8 font-light leading-relaxed">
                         Wir bringen Olivenöl der besten Qualität zu einem fairen Preis in deine Küche.
                     </p>
-                    <a href="#waitlist" className="hero-cta btn-magnetic btn-accent text-base md:text-lg py-4 px-10 relative z-10">
+                    <a href="#waitlist" className="hero-cta btn-magnetic btn-accent text-sm py-3 px-8 relative z-10">
                         Auf die Warteliste
-                        <ArrowRight className="ml-2 w-5 h-5" />
+                        <ArrowRight className="ml-2 w-4 h-4" />
                     </a>
 
                     {/* Scroll hint — now under CTA/Logo area */}
-                    <div className="hero-scroll-hint mt-12 flex flex-col items-center text-white/60 animate-bounce z-30">
-                        <span className="text-xs tracking-widest uppercase mb-1">Scroll</span>
-                        <ChevronDown className="w-4 h-4" />
+                    <div className="hero-scroll-hint mt-6 flex flex-col items-center text-white/60 animate-bounce z-30">
+                        <span className="text-[10px] md:text-xs tracking-widest uppercase mb-1">Scroll</span>
+                        <ChevronDown className="w-3 h-3 md:w-4 md:h-4" />
                     </div>
                 </div>
             </div>
@@ -536,16 +536,16 @@ function ClaimSet2() {
                         className={`stack-card-${i} absolute w-full max-w-4xl px-4 md:px-0 flex items-center justify-center`}
                         style={{ zIndex: 10 + i }}
                     >
-                        <div className={`w-full ${card.bg} rounded-[2.5rem] p-8 md:p-20 shadow-[-20px_40px_80px_rgba(0,0,0,0.4)] border border-white/10 flex flex-col md:flex-row gap-6 md:gap-16 items-center`}>
+                        <div className={`w-full ${card.bg} rounded-[2.5rem] p-8 md:p-12 lg:p-16 shadow-[-20px_40px_80px_rgba(0,0,0,0.4)] border border-white/10 flex flex-col md:flex-row gap-6 md:gap-12 lg:gap-16 items-center`}>
                             <div className="flex-1 text-center md:text-left">
-                                <h2 className="font-serif italic font-900 text-4xl md:text-7xl text-white mb-4 md:mb-6 leading-tight">
+                                <h2 className="font-serif italic font-900 text-3xl md:text-5xl lg:text-6xl text-white mb-4 md:mb-6 leading-tight">
                                     {card.headline}
                                 </h2>
-                                <p className="text-white/70 text-base md:text-xl font-light leading-relaxed mb-4">
+                                <p className="text-white/70 text-sm md:text-base lg:text-lg font-light leading-relaxed mb-4">
                                     {card.desc}
                                 </p>
                             </div>
-                            <div className="w-32 h-32 md:w-72 md:h-72 relative">
+                            <div className="w-32 h-32 md:w-56 md:h-56 lg:w-64 lg:h-64 relative">
                                 {/* Abstract shape or illustration background */}
                                 <div className="absolute inset-0 bg-accent/10 rounded-full blur-3xl animate-pulse" />
                                 <div className="relative z-10 w-full h-full flex items-center justify-center">
@@ -596,19 +596,19 @@ function Waitlist() {
         <section
             ref={sectionRef}
             id="waitlist"
-            className="relative min-h-[100svh] flex items-center justify-center py-24 md:py-32 bg-primary overflow-hidden"
+            className="relative min-h-[100svh] flex items-center justify-center py-16 md:py-24 bg-primary overflow-hidden"
         >
             {/* Desktop Side-by-Side */}
-            <div className="hidden lg:flex w-full h-full items-center max-w-7xl mx-auto px-16">
+            <div className="hidden lg:flex w-full h-full items-center max-w-7xl mx-auto px-12 lg:px-16">
                 {/* Left: Content */}
-                <div className="w-1/2 waitlist-content relative z-20 text-left py-16 pr-12">
-                    <p className="font-display text-sm font-semibold tracking-[0.2em] uppercase text-accent mb-4">
+                <div className="w-1/2 waitlist-content relative z-20 text-left py-12 pr-12">
+                    <p className="font-display text-xs lg:text-sm font-semibold tracking-[0.2em] uppercase text-accent mb-4">
                         Ernte 2026 / 2027
                     </p>
-                    <h2 className="font-serif italic font-bold text-5xl xl:text-6xl text-white mb-6 leading-tight">
+                    <h2 className="font-serif italic font-bold text-4xl lg:text-5xl xl:text-6xl text-white mb-6 leading-tight">
                         Sicher dir deinen Platz.
                     </h2>
-                    <p className="text-white/60 text-lg xl:text-xl max-w-md leading-relaxed mb-10 font-light">
+                    <p className="text-white/60 text-base lg:text-lg xl:text-xl max-w-md leading-relaxed mb-8 lg:mb-10 font-light">
                         Trag dich für die nächste Ernte ein! Wir informieren dich, sobald der erste Tropfen fließt.
                     </p>
 
@@ -617,7 +617,7 @@ function Waitlist() {
                             href="https://deine-warteliste-url.de"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn-magnetic btn-accent py-4 px-12 text-xl shadow-[0_0_30px_rgba(254,65,0,0.3)]"
+                            className="btn-magnetic btn-accent py-3 px-10 lg:py-4 lg:px-12 text-lg lg:text-xl shadow-[0_0_30px_rgba(254,65,0,0.3)]"
                         >
                             Warteliste
                             <ArrowRight className="ml-3 w-5 h-5 flex-shrink-0" />
@@ -626,7 +626,7 @@ function Waitlist() {
                 </div>
 
                 {/* Right: Video in a mask */}
-                <div className="w-1/2 h-[70vh] relative">
+                <div className="w-1/2 h-[60vh] lg:h-[70vh] relative">
                     <div className="absolute inset-0 rounded-[3rem] overflow-hidden shadow-2xl">
                         <video
                             autoPlay
