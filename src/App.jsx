@@ -181,7 +181,7 @@ function ClaimSet1({ isLoaded }) {
         {
             icon: <img src="/assets/sun.png" alt="" className="w-full h-full object-contain" />,
             title: '300 Sonnentage / Jahr',
-            desc: 'Die Mani ist ein Solarium für Olivenbäume. Keine wässrigen Kompromisse, sondern eine absolute Aromen-Explosion auf deinem Teller.',
+            desc: 'Die Mani ist ein Solarium für Oliven bäume. Keine wässrigen Kompromisse, sondern eine absolute Aromen-Explosion auf deinem Teller.',
         },
         {
             icon: <img src="/assets/mountains.png" alt="" className="w-full h-full object-contain scale-[1.5]" />,
@@ -302,7 +302,7 @@ function ClaimSet1({ isLoaded }) {
                     </div>
 
                     <div className="oil-video-container relative flex items-center justify-center lg:justify-end order-1 lg:order-2">
-                        <div className="video-mask w-full max-w-[180px] md:max-w-xs aspect-[3/4] relative overflow-hidden shadow-2xl">
+                        <div className="video-mask w-full max-w-[280px] md:max-w-sm lg:max-w-md xl:max-w-lg aspect-[3/4] relative overflow-hidden shadow-2xl rounded-3xl">
                             <video autoPlay muted loop playsInline preload="auto" className="absolute inset-0 w-full h-full object-cover">
                                 <source src="/assets/oil-flow.mov" type="video/quicktime" />
                                 <source src="/assets/oil-flow.mov" type="video/mp4" />
