@@ -273,9 +273,9 @@ function ClaimSet1() {
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            const isMobile = window.innerWidth < 1024; // Pinned behavior for mobile/tablets too
+            const isMobile = window.innerWidth < 1024;
 
-            // Initial setup: hide cards and arrows
+            // Initial setup
             claims.forEach((_, i) => {
                 gsap.set(`.claim-card-${i}`, { 
                     opacity: 0, 
@@ -287,12 +287,12 @@ function ClaimSet1() {
                 }
             })
 
-            // Unified Pinned Timeline
+            // Timeline with Pinning
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current,
-                    start: 'top top',
-                    end: `+=${claims.length * 100}%`, // Sufficient scroll distance
+                    start: 'top top', // Section stops when top of section hits top of screen
+                    end: `+=${claims.length * 100}%`,
                     pin: true,
                     scrub: 1.5,
                     anticipatePin: 1,
@@ -319,11 +319,8 @@ function ClaimSet1() {
                 }
             })
 
-            // Force play video
             const video = sectionRef.current?.querySelector('video')
-            if (video) {
-                video.play().catch(() => { })
-            }
+            if (video) video.play().catch(() => { })
         }, sectionRef)
 
         return () => ctx.revert()
@@ -333,77 +330,79 @@ function ClaimSet1() {
         <section
             ref={sectionRef}
             id="herkunft"
-            className="relative min-h-[100svh] w-full bg-primary overflow-hidden py-16 md:py-24 flex items-center"
+            className="relative min-h-[100svh] w-full bg-primary overflow-hidden pt-20 md:pt-32 pb-16"
         >
-            <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start lg:items-center">
-                {/* Left: Claims */}
-                <div className="relative flex flex-col gap-2 md:gap-3 order-2 lg:order-1">
-                    <h2 className="font-display text-2xl md:text-3xl font-bold mb-4 md:mb-8 text-white/90 text-center lg:text-left">
-                        Von der Mani zu dir.
-                    </h2>
-                    {claims.map((claim, i) => (
-                        <div key={i} className="relative">
-                            <div
-                                className={`claim-card-${i} glass-card p-3 md:p-4 flex items-center gap-4 group hover:bg-white/10 ${!window.innerWidth < 1024 ? (i % 2 === 0 ? 'md:translate-x-[-1rem]' : 'md:translate-x-[1rem]') : ''}`}
-                            >
-                                <div className="flex-shrink-0 w-10 h-10 md:w-14 md:h-14 flex items-center justify-center">
-                                    {claim.icon}
+            <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex flex-col h-full">
+                {/* Headline at the very top of content */}
+                <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold mb-8 md:mb-16 text-white/90 text-center lg:text-left">
+                    Von der Mani zu dir.
+                </h2>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start lg:items-center flex-1">
+                    {/* Left: Claims */}
+                    <div className="relative flex flex-col gap-2 md:gap-3 order-2 lg:order-1">
+                        {claims.map((claim, i) => (
+                            <div key={i} className="relative">
+                                <div
+                                    className={`claim-card-${i} glass-card p-3 md:p-4 flex items-center gap-4 group hover:bg-white/10`}
+                                >
+                                    <div className="flex-shrink-0 w-10 h-10 md:w-14 md:h-14 flex items-center justify-center">
+                                        {claim.icon}
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="font-display font-bold text-base md:text-xl text-white mb-0.5">
+                                            {claim.title}
+                                        </h3>
+                                        <p className="text-white/60 text-xs md:text-sm leading-tight md:leading-relaxed">
+                                            {claim.desc}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="flex-1">
-                                    <h3 className="font-display font-bold text-base md:text-xl text-white mb-0.5">
-                                        {claim.title}
-                                    </h3>
-                                    <p className="text-white/60 text-xs md:text-sm leading-tight md:leading-relaxed">
-                                        {claim.desc}
-                                    </p>
-                                </div>
+
+                                {i < claims.length - 1 && (
+                                    <div className="py-2 md:py-0">
+                                        <svg
+                                            className={`claim-arrow-${i} w-10 h-10 md:w-20 md:h-20 mx-auto my-[-1.5rem] md:my-[-2rem] text-accent z-20 ${i % 2 === 0 ? 'lg:translate-x-[0.5rem] lg:rotate-[15deg]' : 'lg:translate-x-[-0.5rem] lg:rotate-[-15deg]'}`}
+                                            viewBox="0 0 100 100"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/center"
+                                        >
+                                            <path
+                                                d="M50 10 C 40 35, 60 45, 50 80 M 35 65 C 40 75, 50 85, 50 80 M 65 65 C 60 75, 50 85, 50 80"
+                                                stroke="currentColor"
+                                                strokeWidth="4"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                            />
+                                        </svg>
+                                    </div>
+                                )}
                             </div>
-
-                            {/* Hand-drawn arrow SVG between claims */}
-                            {i < claims.length - 1 && (
-                                <div className="py-2 md:py-0">
-                                    <svg
-                                        className={`claim-arrow-${i} w-10 h-10 md:w-20 md:h-20 mx-auto my-[-1.5rem] md:my-[-2rem] text-accent z-20 ${i % 2 === 0 ? 'lg:translate-x-[0.5rem] lg:rotate-[15deg]' : 'lg:translate-x-[-0.5rem] lg:rotate-[-15deg]'}`}
-                                        viewBox="0 0 100 100"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/center"
-                                    >
-                                        <path
-                                            d="M50 10 C 40 35, 60 45, 50 80 M 35 65 C 40 75, 50 85, 50 80 M 65 65 C 60 75, 50 85, 50 80"
-                                            stroke="currentColor"
-                                            strokeWidth="4"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                    </svg>
-                                </div>
-                            )}
-                        </div>
-                    ))}
-                </div>
-
-                {/* Right: Oil flowing video */}
-                <div className="oil-video-container relative flex items-center justify-center lg:justify-end order-1 lg:order-2">
-                    <div className="video-mask w-full max-w-[200px] md:max-w-md aspect-[3/4] relative overflow-hidden shadow-2xl">
-                        <video
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                            preload="auto"
-                            className="absolute inset-0 w-full h-full object-cover"
-                        >
-                            <source src="/assets/oil-flow.mov" type="video/quicktime" />
-                            <source src="/assets/oil-flow.mov" type="video/mp4" />
-                        </video>
-                        <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent" />
+                        ))}
                     </div>
-                    {/* Decorative waves illustration */}
-                    <img
-                        src="/assets/waves.png"
-                        alt=""
-                        className="absolute -bottom-8 -right-8 w-32 md:w-48 opacity-20 pointer-events-none"
-                    />
+
+                    {/* Right: Oil flowing video */}
+                    <div className="oil-video-container relative flex items-center justify-center lg:justify-end order-1 lg:order-2">
+                        <div className="video-mask w-full max-w-[180px] md:max-w-xs aspect-[3/4] relative overflow-hidden shadow-2xl">
+                            <video
+                                autoPlay
+                                muted
+                                loop
+                                playsInline
+                                preload="auto"
+                                className="absolute inset-0 w-full h-full object-cover"
+                            >
+                                <source src="/assets/oil-flow.mov" type="video/quicktime" />
+                                <source src="/assets/oil-flow.mov" type="video/mp4" />
+                            </video>
+                            <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent" />
+                        </div>
+                        <img
+                            src="/assets/waves.png"
+                            alt=""
+                            className="absolute -bottom-8 -right-8 w-24 md:w-48 opacity-20 pointer-events-none"
+                        />
+                    </div>
                 </div>
             </div>
         </section>
@@ -442,7 +441,6 @@ function ClaimSet2() {
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            // Pinned Stacking Effect for all devices
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current,
@@ -456,12 +454,10 @@ function ClaimSet2() {
 
             cards.forEach((_, i) => {
                 if (i === 0) {
-                    // First card is already there or enters normally
                     gsap.set(`.stack-card-0`, { zIndex: 10 });
                     return;
                 }
 
-                // Card falls from above
                 tl.fromTo(`.stack-card-${i}`,
                     {
                         y: "-100vh",
@@ -479,7 +475,6 @@ function ClaimSet2() {
                     `card-${i}`
                 );
 
-                // Previous cards effect (Scale down, blur, fade)
                 for (let j = 0; j < i; j++) {
                     tl.to(`.stack-card-${j}`, {
                         scale: 0.9 - (i - j) * 0.05,
@@ -515,7 +510,6 @@ function ClaimSet2() {
                                 </p>
                             </div>
                             <div className="w-32 h-32 md:w-56 md:h-56 lg:w-64 lg:h-64 relative">
-                                {/* Abstract shape or illustration background */}
                                 <div className="absolute inset-0 bg-accent/10 rounded-full blur-3xl animate-pulse" />
                                 <div className="relative z-10 w-full h-full flex items-center justify-center">
                                     <img src={card.illustration} className="w-full h-auto object-contain max-h-full" alt="" />
@@ -552,11 +546,8 @@ function Waitlist() {
                 },
             })
 
-            // Force play video
             const video = sectionRef.current?.querySelector('video')
-            if (video) {
-                video.play().catch(() => { })
-            }
+            if (video) video.play().catch(() => { })
         }, sectionRef)
         return () => ctx.revert()
     }, [])
@@ -567,9 +558,7 @@ function Waitlist() {
             id="waitlist"
             className="relative min-h-[100svh] flex items-center justify-center py-16 md:py-24 bg-primary overflow-hidden"
         >
-            {/* Desktop Side-by-Side */}
             <div className="hidden lg:flex w-full h-full items-center max-w-7xl mx-auto px-12 lg:px-16">
-                {/* Left: Content */}
                 <div className="w-1/2 waitlist-content relative z-20 text-left py-12 pr-12">
                     <p className="font-display text-xs lg:text-sm font-semibold tracking-[0.2em] uppercase text-accent mb-4">
                         Ernte 2026 / 2027
@@ -594,7 +583,6 @@ function Waitlist() {
                     </div>
                 </div>
 
-                {/* Right: Video in a mask */}
                 <div className="w-1/2 h-[60vh] lg:h-[70vh] relative">
                     <div className="absolute inset-0 rounded-[3rem] overflow-hidden shadow-2xl">
                         <video
@@ -607,9 +595,7 @@ function Waitlist() {
                         >
                             <source src="/assets/beach-video.mp4" type="video/mp4" />
                         </video>
-                        {/* Overlay removed as requested */}
                     </div>
-                    {/* Decorative waves for desktop */}
                     <img
                         src="/assets/waves.png"
                         alt=""
@@ -618,7 +604,6 @@ function Waitlist() {
                 </div>
             </div>
 
-            {/* Mobile Overlay */}
             <div className="lg:hidden absolute inset-0 w-full h-full flex items-center justify-center px-6">
                 <div className="absolute inset-0 w-full h-full">
                     <video
@@ -631,7 +616,6 @@ function Waitlist() {
                     >
                         <source src="/assets/beach-video.mp4" type="video/mp4" />
                     </video>
-                    {/* Overlay removed as requested */}
                 </div>
 
                 <div className="waitlist-content relative z-20 w-full max-w-md py-12 px-8 text-center backdrop-blur-md bg-black/20 rounded-[2.5rem] border border-white/5 shadow-xl">
@@ -650,7 +634,7 @@ function Waitlist() {
                             href="https://deine-warteliste-url.de"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn-magnetic btn-accent py-4 px-10 text-lg shadow-[0_0_30px_rgba(254,65,0,0.3)]"
+                            className="btn-magnetic btn-accent py-4 px-10 text-lg shadow-[0_0_30px_rgba(254,65,0,0.25)]"
                         >
                             Warteliste
                             <ArrowRight className="ml-3 w-5 h-5 flex-shrink-0" />
@@ -695,7 +679,6 @@ function Impressum({ isOpen, onClose }) {
             ref={overlayRef}
             className="fixed inset-0 z-[100] bg-primary flex items-center justify-center p-6 md:p-12 opacity-0 invisible"
         >
-            {/* Noise Overlay specifically for the Impressum */}
             <NoiseOverlay />
 
             <button
@@ -795,7 +778,6 @@ function Datenschutz({ isOpen, onClose }) {
                 <h2 className="font-serif italic font-bold text-4xl md:text-6xl mb-4 text-accent">Datenschutz&shy;erklärung</h2>
                 <p className="text-white/50 text-sm mb-12">Stand: März 2026</p>
 
-                {/* Section helper */}
                 {[
                     {
                         title: '1. Verantwortlicher',
@@ -817,18 +799,6 @@ function Datenschutz({ isOpen, onClose }) {
                                 <p className="text-white/70 font-light leading-relaxed mb-4">
                                     Diese Website wird bei <strong className="text-white font-semibold">Vercel Inc.</strong>
                                     , 340 Pine Street, Suite 701, San Francisco, CA 94104, USA, gehostet.
-                                    Beim Aufruf der Website erhebt Vercel automatisch sogenannte Server-Logfiles, die dein Browser übermittelt.
-                                    Dies umfasst: Browsertyp und -version, Betriebssystem, Referrer-URL, Hostname des zugreifenden Rechners, Uhrzeit der Serveranfrage und IP-Adresse.
-                                </p>
-                                <p className="text-white/70 font-light leading-relaxed mb-4">
-                                    Diese Daten sind nicht bestimmten Personen zuordenbar und werden nicht mit anderen Datenquellen zusammengeführt.
-                                    Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse am sicheren Betrieb der Website).
-                                </p>
-                                <p className="text-white/70 font-light leading-relaxed">
-                                    Vercel kann außerdem anonymisierte Nutzungsstatistiken erheben. Weitere Informationen findest du in der
-                                    Datenschutzerklärung von Vercel:{' '}
-                                    <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">vercel.com/legal/privacy-policy</a>.
-                                    Mit Vercel besteht ein Auftragsverarbeitungsvertrag gemäß Art. 28 DSGVO.
                                 </p>
                             </>
                         )
@@ -839,17 +809,6 @@ function Datenschutz({ isOpen, onClose }) {
                             <>
                                 <p className="text-white/70 font-light leading-relaxed mb-4">
                                     Wenn du dich in unsere Warteliste einträgst, erheben wir deinen <strong className="text-white font-semibold">Vor- und Nachnamen, deine E-Mail-Adresse</strong> sowie deinen <strong className="text-white font-semibold">Wohnort</strong>.
-                                    Diese Daten werden ausschließlich dazu verwendet, dich über die Verfügbarkeit unseres Olivenöls zu informieren.
-                                </p>
-                                <p className="text-white/70 font-light leading-relaxed mb-4">
-                                    Die Daten werden in einer Google Sheets-Tabelle gespeichert, die auf unserem Google Drive liegt.
-                                    Anbieter: <strong className="text-white font-semibold">Google Ireland Ltd.</strong>, Gordon House, Barrow Street, Dublin 4, Irland.
-                                    Google kann diese Daten auf Servern in den USA verarbeiten. Mit Google besteht ein Standardvertragsklausel-Vertrag gemäß Art. 46 Abs. 2 lit. c DSGVO.
-                                </p>
-                                <p className="text-white/70 font-light leading-relaxed">
-                                    Rechtsgrundlage der Verarbeitung ist deine Einwilligung gemäß Art. 6 Abs. 1 lit. a DSGVO.
-                                    Du kannst deine Einwilligung jederzeit widerrufen, indem du uns eine E-Mail schickst.
-                                    Die Daten werden gelöscht, sobald sie für den genannten Zweck nicht mehr benötigt werden.
                                 </p>
                             </>
                         )
@@ -858,8 +817,7 @@ function Datenschutz({ isOpen, onClose }) {
                         title: '4. Schriftarten (Fonts)',
                         content: (
                             <p className="text-white/70 font-light leading-relaxed">
-                                Diese Website verwendet Schriftarten (Inter, Outfit, Playfair Display), die lokal von unserem eigenen Server ausgeliefert werden.
-                                Es findet dabei keine Verbindung zu externen Servern (z. B. Google Fonts) statt. Es werden keine personenbezogenen Daten durch die Schriftarten an Dritte übertragen.
+                                Diese Website verwendet Schriftarten, die lokal von unserem eigenen Server ausgeliefert werden.
                             </p>
                         )
                     },
@@ -867,40 +825,23 @@ function Datenschutz({ isOpen, onClose }) {
                         title: '5. Cookies & Tracking',
                         content: (
                             <p className="text-white/70 font-light leading-relaxed">
-                                Diese Website setzt keine Marketing- oder Tracking-Cookies ein. Vercel kann technisch notwendige Cookies für den Betrieb der Infrastruktur nutzen.
-                                Analysen werden ausschließlich über die anonymisierten Statistiken von Vercel durchgeführt — ohne Verbindung zu deiner Person.
+                                Diese Website setzt keine Marketing- oder Tracking-Cookies ein.
                             </p>
                         )
                     },
                     {
                         title: '6. Deine Rechte',
                         content: (
-                            <>
-                                <p className="text-white/70 font-light leading-relaxed mb-3">
-                                    Du hast gemäß DSGVO folgende Rechte gegenüber uns:
-                                </p>
-                                <ul className="text-white/70 font-light leading-relaxed list-disc list-inside space-y-1 mb-4">
-                                    <li>Recht auf Auskunft (Art. 15 DSGVO)</li>
-                                    <li>Recht auf Berichtigung (Art. 16 DSGVO)</li>
-                                    <li>Recht auf Löschung (Art. 17 DSGVO)</li>
-                                    <li>Recht auf Einschränkung der Verarbeitung (Art. 18 DSGVO)</li>
-                                    <li>Recht auf Datenübertragbarkeit (Art. 20 DSGVO)</li>
-                                    <li>Recht auf Widerspruch (Art. 21 DSGVO)</li>
-                                    <li>Recht auf Widerruf der Einwilligung (Art. 7 Abs. 3 DSGVO)</li>
-                                </ul>
-                                <p className="text-white/70 font-light leading-relaxed">
-                                    Zur Ausübung deiner Rechte wende dich bitte an:{' '}
-                                    <a href="mailto:meyertiffergbr@gmail.com" className="text-accent hover:underline">meyertiffergbr@gmail.com</a>.
-                                    Außerdem hast du das Recht, dich bei einer Datenschutzaufsichtsbehörde zu beschweren.
-                                </p>
-                            </>
+                            <p className="text-white/70 font-light leading-relaxed">
+                                Du hast das Recht auf Auskunft, Berichtigung, Löschung und Widerspruch.
+                            </p>
                         )
                     },
                     {
                         title: '7. Aktualität & Änderungen',
                         content: (
                             <p className="text-white/70 font-light leading-relaxed">
-                                Wir behalten uns vor, diese Datenschutzerklärung zu aktualisieren. Die jeweils aktuelle Version ist auf dieser Website abrufbar.
+                                Wir behalten uns vor, diese Datenschutzerklärung zu aktualisieren.
                             </p>
                         )
                     },
@@ -923,7 +864,6 @@ function Footer({ onShowImpressum, onShowDatenschutz }) {
         <footer className="bg-[#041e3a] border-t border-white/5 py-12 md:py-16">
             <div className="max-w-7xl mx-auto px-6 md:px-16">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
-                    {/* Brand */}
                     <div className="md:col-span-2">
                         <img src="/assets/logo.png" alt="AKRIA" className="h-8 md:h-10 w-auto mb-4" />
                         <p className="text-white/40 text-sm max-w-sm leading-relaxed">
@@ -931,7 +871,6 @@ function Footer({ onShowImpressum, onShowDatenschutz }) {
                         </p>
                     </div>
 
-                    {/* Navigation */}
                     <div>
                         <h4 className="font-display font-semibold text-white/80 text-sm uppercase tracking-wider mb-4">Navigation</h4>
                         <div className="flex flex-col gap-2">
@@ -942,7 +881,6 @@ function Footer({ onShowImpressum, onShowDatenschutz }) {
                         </div>
                     </div>
 
-                    {/* Legal */}
                     <div>
                         <h4 className="font-display font-semibold text-white/80 text-sm uppercase tracking-wider mb-4">Rechtliches</h4>
                         <div className="flex flex-col gap-2">
@@ -953,7 +891,6 @@ function Footer({ onShowImpressum, onShowDatenschutz }) {
                     </div>
                 </div>
 
-                {/* Bottom bar */}
                 <div className="mt-12 pt-6 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
                     <p className="text-white/30 text-xs">
                         © 2026 AKRIA. Alle Rechte vorbehalten.
@@ -1055,7 +992,6 @@ export default function App() {
     const [showDatenschutz, setShowDatenschutz] = useState(false)
 
     useEffect(() => {
-        // Refresh ScrollTrigger after all content loads
         const timeout = setTimeout(() => {
             ScrollTrigger.refresh()
         }, 500)
@@ -1066,7 +1002,7 @@ export default function App() {
         <>
             <NoiseOverlay />
             <Impressum isOpen={showImpressum} onClose={() => setShowImpressum(false)} />
-            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(false)} />
+            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(true)} />
             <CookieBanner onShowDatenschutz={() => setShowDatenschutz(true)} />
             <main>
                 <Hero />
