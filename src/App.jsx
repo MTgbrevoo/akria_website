@@ -9,15 +9,9 @@ import Preloader from './components/Preloader'
 
 gsap.registerPlugin(ScrollTrigger)
 
-// Assets, die sofort für den ersten Eindruck (Hero) gebraucht werden
-const CRITICAL_ASSETS = [
+const ASSETS = [
     '/assets/logo.png',
     '/assets/sun.png',
-    '/assets/hero-drone.mp4'
-]
-
-// Assets, die im Hintergrund geladen werden können
-const LAZY_ASSETS = [
     '/assets/mountains.png',
     '/assets/illustrations/Pokal.png',
     '/assets/illustrations/Present.png',
@@ -25,6 +19,7 @@ const LAZY_ASSETS = [
     '/assets/illustrations/Olive.png',
     '/assets/illustrations/Aroma.png',
     '/assets/illustrations/Herz.png',
+    '/assets/hero-drone.mp4',
     '/assets/oil-flow.mov',
     '/assets/beach-video.mp4'
 ]
@@ -55,9 +50,6 @@ function Hero({ isLoaded }) {
         if (!isLoaded) return;
 
         const video = heroRef.current?.querySelector('video')
-        if (video) {
-            video.pause();
-        }
 
         const ctx = gsap.context(() => {
             // Initial animation for Logo and Sun
@@ -126,6 +118,7 @@ function Hero({ isLoaded }) {
         <section ref={heroRef} className="relative h-[100svh] w-full overflow-hidden bg-primary" id="hero">
             <div className="hero-video-wrap absolute inset-0 w-full h-full">
                 <video
+                    autoPlay
                     muted
                     playsInline
                     preload="auto"
@@ -186,7 +179,7 @@ function ClaimSet1({ isLoaded }) {
         {
             icon: <img src="/assets/sun.png" alt="" className="w-full h-full object-contain" />,
             title: '300 Sonnentage / Jahr',
-            desc: 'Die Mani ist ein Solarium für Oliven bäume. Keine wässrigen Kompromisse, sondern eine absolute Aromen-Explosion auf deinem Teller.',
+            desc: 'Die Mani ist ein Solarium für Olivenbäume. Keine wässrigen Kompromisse, sondern eine absolute Aromen-Explosion auf deinem Teller.',
         },
         {
             icon: <img src="/assets/mountains.png" alt="" className="w-full h-full object-contain scale-[1.5]" />,
@@ -211,53 +204,45 @@ function ClaimSet1({ isLoaded }) {
         const ctx = gsap.context(() => {
             const isMobile = window.innerWidth < 1024;
 
-            // Initial states: hide everything
-            gsap.set('.oil-video-container', { opacity: 0, scale: 0.9 })
             claims.forEach((_, i) => {
                 gsap.set(`.claim-card-${i}`, { 
                     opacity: 0, 
-                    y: 30,
-                    x: isMobile ? 0 : (i % 2 === 0 ? -20 : 20)
+                    x: isMobile ? 0 : (i % 2 === 0 ? -40 : 40), 
+                    y: isMobile ? 40 : 0 
                 })
                 if (i < claims.length - 1) {
                     gsap.set(`.claim-arrow-${i}`, { opacity: 0, strokeDashoffset: 200 })
                 }
             })
 
-            // Timeline that triggers once section is in view
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current,
-                    start: 'top 70%', // Trigger earlier when coming from top
-                    toggleActions: 'play none none reverse',
+                    start: 'top top',
+                    end: `+=${claims.length * 100}%`,
+                    pin: true,
+                    scrub: 1.5,
+                    anticipatePin: 1,
                 },
             })
 
-            // Fade in video container
-            tl.to('.oil-video-container', {
-                opacity: 1,
-                scale: 1,
-                duration: 1,
-                ease: 'power3.out'
-            })
-
-            // Stagger claims one after another
             claims.forEach((_, i) => {
+                const startTime = i * 1.5
                 tl.to(`.claim-card-${i}`, {
                     opacity: 1,
                     x: 0,
                     y: 0,
-                    duration: 0.6,
+                    duration: 1,
                     ease: 'power2.out',
-                }, "-=0.3") // Slight overlap for smoothness
+                }, startTime)
 
                 if (i < claims.length - 1) {
                     tl.to(`.claim-arrow-${i}`, {
                         opacity: 1,
                         strokeDashoffset: 0,
-                        duration: 0.4,
-                        ease: 'power1.inOut',
-                    }, "-=0.1")
+                        duration: 0.6,
+                        ease: 'power2.inOut',
+                    }, startTime + 0.8)
                 }
             })
 
@@ -269,13 +254,13 @@ function ClaimSet1({ isLoaded }) {
     }, [isLoaded])
 
     return (
-        <section ref={sectionRef} id="herkunft" className="relative min-h-[100svh] w-full bg-primary overflow-hidden pt-20 md:pt-32 pb-16 flex items-center">
-            <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex flex-col justify-center">
-                <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold mb-8 md:mb-12 text-white/90 text-center lg:text-left">
+        <section ref={sectionRef} id="herkunft" className="relative min-h-[100svh] w-full bg-primary overflow-hidden pt-20 md:pt-32 pb-16">
+            <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex flex-col h-full">
+                <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold mb-8 md:mb-16 text-white/90 text-center lg:text-left">
                     Von der Mani zu dir.
                 </h2>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start lg:items-center flex-1">
                     <div className="relative flex flex-col gap-2 md:gap-3 order-2 lg:order-1">
                         {claims.map((claim, i) => (
                             <div key={i} className="relative">
@@ -315,7 +300,7 @@ function ClaimSet1({ isLoaded }) {
                     </div>
 
                     <div className="oil-video-container relative flex items-center justify-center lg:justify-end order-1 lg:order-2">
-                        <div className="video-mask w-full md:max-w-sm lg:max-w-md xl:max-w-lg aspect-[3/4] relative overflow-hidden shadow-2xl rounded-3xl">
+                        <div className="video-mask w-full max-w-[180px] md:max-w-xs aspect-[3/4] relative overflow-hidden shadow-2xl">
                             <video autoPlay muted loop playsInline preload="auto" className="absolute inset-0 w-full h-full object-cover">
                                 <source src="/assets/oil-flow.mov" type="video/quicktime" />
                                 <source src="/assets/oil-flow.mov" type="video/mp4" />
@@ -572,61 +557,47 @@ function Footer({ onShowImpressum, onShowDatenschutz }) {
    MAIN PAGE
    ═══════════════════════════════════════════════════════════ */
 function Index() {
+    const [loadingProgress, setLoadingProgress] = useState(0)
     const [isLoaded, setIsLoaded] = useState(false)
     const [showImpressum, setShowImpressum] = useState(false)
     const [showDatenschutz, setShowDatenschutz] = useState(false)
 
     useEffect(() => {
-        let criticalLoadedCount = 0;
-        const totalCritical = CRITICAL_ASSETS.length;
+        let loadedCount = 0;
+        const totalAssets = ASSETS.length;
 
-        const updateCriticalProgress = () => {
-            criticalLoadedCount++;
-            
-            if (criticalLoadedCount === totalCritical) {
+        const updateProgress = () => {
+            loadedCount++;
+            const progress = (loadedCount / totalAssets) * 100;
+            setLoadingProgress(progress);
+            if (loadedCount === totalAssets) {
+                // Small delay for smooth transition
                 setTimeout(() => {
                     setIsLoaded(true);
                     ScrollTrigger.refresh();
-                    
-                    // Nachdem die kritischen Assets geladen sind, laden wir den Rest im Hintergrund
-                    loadLazyAssets();
-                }, 400);
+                }, 500);
             }
         };
 
-        const loadLazyAssets = () => {
-            LAZY_ASSETS.forEach(path => {
-                if (path.endsWith('.mp4') || path.endsWith('.mov')) {
-                    const video = document.createElement('video');
-                    video.src = path;
-                    video.preload = 'auto';
-                } else {
-                    const img = new Image();
-                    img.src = path;
-                }
-            });
-        };
-
-        // Starte Laden der kritischen Assets
-        CRITICAL_ASSETS.forEach(path => {
+        ASSETS.forEach(path => {
             if (path.endsWith('.mp4') || path.endsWith('.mov')) {
                 const video = document.createElement('video');
                 video.src = path;
                 video.preload = 'auto';
-                video.oncanplaythrough = updateCriticalProgress;
-                video.onerror = updateCriticalProgress;
+                video.oncanplaythrough = updateProgress;
+                video.onerror = updateProgress; // Don't block on error
             } else {
                 const img = new Image();
                 img.src = path;
-                img.onload = updateCriticalProgress;
-                img.onerror = updateCriticalProgress;
+                img.onload = updateProgress;
+                img.onerror = updateProgress;
             }
         });
     }, []);
 
     return (
         <>
-            <Preloader isLoaded={isLoaded} />
+            <Preloader progress={loadingProgress} isLoaded={isLoaded} />
             <NoiseOverlay />
             <Impressum isOpen={showImpressum} onClose={() => setShowImpressum(false)} />
             <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(false)} />
