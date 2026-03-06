@@ -28,7 +28,6 @@ Use the sample images as a guidance of how our general communication works.
 These rules apply to ALL presets. They are what make the output premium.
 
 ### Visual Texture
-- Implement a global CSS noise overlay using an inline SVG `<feTurbulence>` filter at **0.05 opacity** to eliminate flat digital gradients. Don't apply this to the hero video.
 - Use Images, Videos and Illustrations as provided in the folder Image_and_video_assets.
 - The provided illustrations should be used as complimentary visual elements next to the text. If applicable trade illustrations in a style similar to the provided ones which are animated and used as decorative elements as well. The illustrated sun which is provided should be used on top of the hero video.
 
@@ -88,7 +87,7 @@ Next to this the olive oil flowing video should appear. The video should play in
 - **Stack:** React 19, Tailwind CSS v3.4.17, GSAP 3 (with ScrollTrigger plugin), Lucide React for icons.
 - **Fonts:** Load via Google Fonts `<link>` tags in `index.html` based on the selected preset. For GDPR reasons, make sure they are loaded from a local source.
 - **Images:** Use real Unsplash URLs. Select images matching the preset's `imageMood`. Never use placeholder URLs.
-- **File structure:** Single `App.jsx` with components defined in the same file (or split into `components/` if >600 lines). Single `index.css` for Tailwind directives + noise overlay + custom utilities.
+- **File structure:** Single `App.jsx` with components defined in the same file (or split into `components/` if >600 lines). Single `index.css` for Tailwind directives + custom utilities.
 - **No placeholders.** Every card, every label, every animation must be fully implemented and functional.
 - **Responsive:** Mobile-first. Stack cards vertically on mobile. Reduce hero font sizes. Collapse navbar into a minimal version.
 
