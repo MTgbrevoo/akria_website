@@ -50,6 +50,9 @@ function Hero({ isLoaded }) {
         if (!isLoaded) return;
 
         const video = heroRef.current?.querySelector('video')
+        if (video) {
+            video.pause();
+        }
 
         const ctx = gsap.context(() => {
             // Initial animation for Logo and Sun
@@ -118,7 +121,6 @@ function Hero({ isLoaded }) {
         <section ref={heroRef} className="relative h-[100svh] w-full overflow-hidden bg-primary" id="hero">
             <div className="hero-video-wrap absolute inset-0 w-full h-full">
                 <video
-                    autoPlay
                     muted
                     playsInline
                     preload="auto"
