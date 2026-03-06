@@ -202,29 +202,29 @@ function Hero() {
                 <div className="max-w-4xl flex flex-col items-center">
                     {/* Centered Logo */}
                     <div className="hero-logo mb-6 md:mb-8 lg:mb-10 transform hover:scale-[1.02] transition-transform duration-500 cursor-pointer">
-                        <img src="/assets/logo.png" alt="AKRIA" className="h-20 md:h-24 lg:h-32 w-auto" />
+                        <img src="/assets/logo.png" alt="AKRIA" className="h-24 md:h-32 lg:h-44 w-auto" />
                     </div>
 
-                    <p className="hero-line-1 font-display text-xs md:text-sm lg:text-base font-semibold tracking-[0.2em] uppercase text-white/70 mb-3 md:mb-4">
+                    <p className="hero-line-1 font-display text-sm md:text-base lg:text-lg font-semibold tracking-[0.2em] uppercase text-white/90 mb-3 md:mb-4">
                         Extra Natives Olivenöl aus der Mani
                     </p>
                     <h1 className="mb-4 md:mb-6 text-center flex flex-col items-center">
-                        <span className="hero-line-2 block font-display font-800 text-4xl md:text-5xl lg:text-6xl tracking-tight text-white leading-[1.1]">
+                        <span className="hero-line-2 block font-display font-800 text-5xl md:text-6xl lg:text-7xl tracking-tight text-white leading-[1.1]">
                             Upgrade
                         </span>
-                        <span className="hero-line-3 small-line block font-display font-800 text-2xl md:text-3xl lg:text-4xl tracking-tight text-white/90 leading-[0.9] -mt-1">
+                        <span className="hero-line-3 small-line block font-display font-800 text-3xl md:text-4xl lg:text-5xl tracking-tight text-white/90 leading-none py-2">
                             für
                         </span>
-                        <span className="hero-line-4 block font-serif italic font-900 text-5xl md:text-7xl lg:text-[7.5rem] tracking-tight text-accent leading-[0.8] -mt-1 md:-mt-2">
+                        <span className="hero-line-4 block font-serif italic font-900 text-6xl md:text-8xl lg:text-[9.5rem] tracking-tight text-accent leading-[0.8]">
                             alles.
                         </span>
                     </h1>
-                    <p className="hero-line-3 desc-line text-white/60 text-sm md:text-base lg:text-lg max-w-lg mb-6 md:mb-8 font-light leading-relaxed">
+                    <p className="hero-line-3 desc-line text-white/80 text-base md:text-lg lg:text-xl max-w-2xl mb-6 md:mb-8 font-light leading-relaxed">
                         Wir bringen Olivenöl der besten Qualität zu einem fairen Preis in deine Küche.
                     </p>
-                    <a href="#waitlist" className="hero-cta btn-magnetic btn-accent text-sm py-3 px-8 relative z-10">
+                    <a href="#waitlist" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 relative z-10">
                         Auf die Warteliste
-                        <ArrowRight className="ml-2 w-4 h-4" />
+                        <ArrowRight className="ml-2 w-5 h-5" />
                     </a>
 
                     {/* Scroll hint — now under CTA/Logo area */}
