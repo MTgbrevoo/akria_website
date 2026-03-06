@@ -273,73 +273,51 @@ function ClaimSet1() {
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            const isMobile = window.innerWidth < 768
+            const isMobile = window.innerWidth < 1024; // Pinned behavior for mobile/tablets too
 
-            // Hide all claims and arrows initially
+            // Initial setup: hide cards and arrows
             claims.forEach((_, i) => {
-                gsap.set(`.claim-card-${i}`, { opacity: 0, x: isMobile ? 0 : -40, y: isMobile ? 40 : 0 })
+                gsap.set(`.claim-card-${i}`, { 
+                    opacity: 0, 
+                    x: isMobile ? 0 : (i % 2 === 0 ? -40 : 40), 
+                    y: isMobile ? 40 : 0 
+                })
                 if (i < claims.length - 1) {
-                    gsap.set(`.claim-arrow-${i}`, { opacity: 0 })
+                    gsap.set(`.claim-arrow-${i}`, { opacity: 0, strokeDashoffset: 200 })
                 }
             })
 
-            if (isMobile) {
-                // Mobile: Natural scroll with simple reveal
-                claims.forEach((_, i) => {
-                    gsap.to(`.claim-card-${i}`, {
-                        opacity: 1,
-                        y: 0,
-                        duration: 0.8,
-                        ease: 'power2.out',
-                        scrollTrigger: {
-                            trigger: `.claim-card-${i}`,
-                            start: 'top 85%',
-                        }
-                    })
-                    if (i < claims.length - 1) {
-                        gsap.to(`.claim-arrow-${i}`, {
-                            opacity: 1,
-                            duration: 0.8,
-                            ease: 'power2.inOut',
-                            scrollTrigger: {
-                                trigger: `.claim-arrow-${i}`,
-                                start: 'top 90%',
-                            }
-                        })
-                    }
-                })
-            } else {
-                // Desktop: Pinned sequential reveal
-                const tl = gsap.timeline({
-                    scrollTrigger: {
-                        trigger: sectionRef.current,
-                        start: 'top top',
-                        end: `+=${claims.length * 150}%`,
-                        pin: true,
-                        scrub: 2,
-                        anticipatePin: 1,
-                    },
-                })
+            // Unified Pinned Timeline
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: sectionRef.current,
+                    start: 'top top',
+                    end: `+=${claims.length * 100}%`, // Sufficient scroll distance
+                    pin: true,
+                    scrub: 1.5,
+                    anticipatePin: 1,
+                },
+            })
 
-                claims.forEach((_, i) => {
-                    const startTime = i * 1.5
-                    tl.to(`.claim-card-${i}`, {
-                        opacity: 1,
-                        x: 0,
-                        duration: 1,
-                        ease: 'power2.out',
-                    }, startTime)
+            claims.forEach((_, i) => {
+                const startTime = i * 1.5
+                tl.to(`.claim-card-${i}`, {
+                    opacity: 1,
+                    x: 0,
+                    y: 0,
+                    duration: 1,
+                    ease: 'power2.out',
+                }, startTime)
 
-                    if (i < claims.length - 1) {
-                        tl.to(`.claim-arrow-${i}`, {
-                            opacity: 1,
-                            strokeDashoffset: 0,
-                            duration: 0.6,
-                            ease: 'power2.inOut',
-                        }, startTime + 0.8)
-                    }
-                })
-            }
+                if (i < claims.length - 1) {
+                    tl.to(`.claim-arrow-${i}`, {
+                        opacity: 1,
+                        strokeDashoffset: 0,
+                        duration: 0.6,
+                        ease: 'power2.inOut',
+                    }, startTime + 0.8)
+                }
+            })
 
             // Force play video
             const video = sectionRef.current?.querySelector('video')
@@ -357,84 +335,75 @@ function ClaimSet1() {
             id="herkunft"
             className="relative min-h-[100svh] w-full bg-primary overflow-hidden py-16 md:py-24 flex items-center"
         >
-            <div className="flex items-center justify-center">
-                <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start lg:items-center">
-                    {/* Left: Claims */}
-                    <div className="relative flex flex-col gap-2 md:gap-3">
-                        <h2 className="font-display text-2xl md:text-3xl font-bold mb-4 md:mb-8 text-white/90">
-                            Von der Mani zu dir.
-                        </h2>
-                        {claims.map((claim, i) => (
-                            <div key={i} className="relative">
-                                <div
-                                    className={`claim-card-${i} glass-card p-3 md:p-4 flex items-center gap-4 group hover:bg-white/10 ${i % 2 === 0 ? 'md:translate-x-[-1rem]' : 'md:translate-x-[1rem]'}`}
-                                >
-                                    <div className="flex-shrink-0 w-10 h-10 md:w-14 md:h-14 flex items-center justify-center">
-                                        {claim.icon}
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="font-display font-bold text-base md:text-xl text-white mb-0.5">
-                                            {claim.title}
-                                        </h3>
-                                        <p className="text-white/60 text-xs md:text-sm leading-tight md:leading-relaxed">
-                                            {claim.desc}
-                                        </p>
-                                    </div>
-                                    {claim.illustration && (
-                                        <img
-                                            src={claim.illustration}
-                                            alt=""
-                                            className="hidden md:block absolute -right-4 top-1/2 -translate-y-1/2 w-16 h-auto pointer-events-none"
-                                        />
-                                    )}
-                                </div>
-
-                                {/* Hand-drawn arrow SVG between claims */}
-                                {i < claims.length - 1 && (
-                                    <div className="py-2 md:py-0">
-                                        <svg
-                                            className={`claim-arrow-${i} w-10 h-10 md:w-20 md:h-20 mx-auto my-[-1.5rem] md:my-[-2rem] text-accent z-20 ${i % 2 === 0 ? 'md:translate-x-[0.5rem] md:rotate-[15deg]' : 'md:translate-x-[-0.5rem] md:rotate-[-15deg]'}`}
-                                            viewBox="0 0 100 100"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/center"
-                                        >
-                                            <path
-                                                d="M50 10 C 40 35, 60 45, 50 80 M 35 65 C 40 75, 50 85, 50 80 M 65 65 C 60 75, 50 85, 50 80"
-                                                stroke="currentColor"
-                                                strokeWidth="4"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                            />
-                                        </svg>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Right: Oil flowing video */}
-                    <div className="oil-video-container relative flex items-center justify-center lg:justify-end">
-                        <div className="video-mask w-full max-w-[280px] md:max-w-md aspect-[3/4] relative overflow-hidden shadow-2xl">
-                            <video
-                                autoPlay
-                                muted
-                                loop
-                                playsInline
-                                preload="auto"
-                                className="absolute inset-0 w-full h-full object-cover"
+            <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start lg:items-center">
+                {/* Left: Claims */}
+                <div className="relative flex flex-col gap-2 md:gap-3 order-2 lg:order-1">
+                    <h2 className="font-display text-2xl md:text-3xl font-bold mb-4 md:mb-8 text-white/90 text-center lg:text-left">
+                        Von der Mani zu dir.
+                    </h2>
+                    {claims.map((claim, i) => (
+                        <div key={i} className="relative">
+                            <div
+                                className={`claim-card-${i} glass-card p-3 md:p-4 flex items-center gap-4 group hover:bg-white/10 ${!window.innerWidth < 1024 ? (i % 2 === 0 ? 'md:translate-x-[-1rem]' : 'md:translate-x-[1rem]') : ''}`}
                             >
-                                <source src="/assets/oil-flow.mov" type="video/quicktime" />
-                                <source src="/assets/oil-flow.mov" type="video/mp4" />
-                            </video>
-                            <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent" />
+                                <div className="flex-shrink-0 w-10 h-10 md:w-14 md:h-14 flex items-center justify-center">
+                                    {claim.icon}
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="font-display font-bold text-base md:text-xl text-white mb-0.5">
+                                        {claim.title}
+                                    </h3>
+                                    <p className="text-white/60 text-xs md:text-sm leading-tight md:leading-relaxed">
+                                        {claim.desc}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Hand-drawn arrow SVG between claims */}
+                            {i < claims.length - 1 && (
+                                <div className="py-2 md:py-0">
+                                    <svg
+                                        className={`claim-arrow-${i} w-10 h-10 md:w-20 md:h-20 mx-auto my-[-1.5rem] md:my-[-2rem] text-accent z-20 ${i % 2 === 0 ? 'lg:translate-x-[0.5rem] lg:rotate-[15deg]' : 'lg:translate-x-[-0.5rem] lg:rotate-[-15deg]'}`}
+                                        viewBox="0 0 100 100"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/center"
+                                    >
+                                        <path
+                                            d="M50 10 C 40 35, 60 45, 50 80 M 35 65 C 40 75, 50 85, 50 80 M 65 65 C 60 75, 50 85, 50 80"
+                                            stroke="currentColor"
+                                            strokeWidth="4"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        />
+                                    </svg>
+                                </div>
+                            )}
                         </div>
-                        {/* Decorative waves illustration */}
-                        <img
-                            src="/assets/waves.png"
-                            alt=""
-                            className="absolute -bottom-8 -right-8 w-32 md:w-48 opacity-20 pointer-events-none"
-                        />
+                    ))}
+                </div>
+
+                {/* Right: Oil flowing video */}
+                <div className="oil-video-container relative flex items-center justify-center lg:justify-end order-1 lg:order-2">
+                    <div className="video-mask w-full max-w-[200px] md:max-w-md aspect-[3/4] relative overflow-hidden shadow-2xl">
+                        <video
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            preload="auto"
+                            className="absolute inset-0 w-full h-full object-cover"
+                        >
+                            <source src="/assets/oil-flow.mov" type="video/quicktime" />
+                            <source src="/assets/oil-flow.mov" type="video/mp4" />
+                        </video>
+                        <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent" />
                     </div>
+                    {/* Decorative waves illustration */}
+                    <img
+                        src="/assets/waves.png"
+                        alt=""
+                        className="absolute -bottom-8 -right-8 w-32 md:w-48 opacity-20 pointer-events-none"
+                    />
                 </div>
             </div>
         </section>
@@ -833,7 +802,7 @@ function Datenschutz({ isOpen, onClose }) {
                         content: (
                             <p className="text-white/70 font-light leading-relaxed">
                                 Verantwortlich im Sinne der DSGVO:<br />
-                                <strong className="text-white font-semibold">Meyer &amp; Tiffert GbR</strong><br />
+                                <strong className="text-white font-semibold">Meyer & Tiffert GbR</strong><br />
                                 Hofwiese 27<br />
                                 79809 Weilheim<br />
                                 Deutschland<br /><br />
