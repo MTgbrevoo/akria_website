@@ -382,8 +382,8 @@ function ClaimSet1() {
 
                     {/* Right: Oil flowing video */}
                     <div className="oil-video-container relative flex items-center justify-center lg:justify-end order-1 lg:order-2">
-                        {/* Modified: w-full and responsive max-width to match the claims cards container */}
-                        <div className="video-mask w-full max-w-sm lg:max-w-md aspect-[3/4] relative overflow-hidden shadow-2xl">
+                        {/* Modified: Added rounded-3xl to match claim card rounding */}
+                        <div className="video-mask w-full max-w-sm lg:max-w-md aspect-[3/4] relative overflow-hidden shadow-2xl rounded-3xl">
                             <video
                                 autoPlay
                                 muted
