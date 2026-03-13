@@ -91,9 +91,10 @@ function Hero() {
         const video = heroRef.current?.querySelector('video')
 
         const ctx = gsap.context(() => {
-            // Initial animation for Logo and Sun
+            // Initial animation for Logo, Sun, and CTA
             const introTl = gsap.timeline({ defaults: { ease: 'power3.out' } })
             introTl.from('.hero-logo', { scale: 0.8, opacity: 0, duration: 1.2, delay: 0.3 })
+                   .from('.hero-cta', { y: 20, opacity: 0, duration: 1 }, "-=0.8")
 
             if (sunRef.current) {
                 gsap.to(sunRef.current, {
@@ -105,8 +106,8 @@ function Hero() {
                 })
             }
 
-            // Hide other elements initially
-            gsap.set(['.hero-line-1', '.hero-line-2', '.hero-line-3', '.hero-line-4', '.hero-cta'], {
+            // Hide other elements initially (CTA is handled by introTl now)
+            gsap.set(['.hero-line-1', '.hero-line-2', '.hero-line-3', '.hero-line-4'], {
                 opacity: 0,
                 y: 30
             })
@@ -130,7 +131,7 @@ function Hero() {
                     start: 'top top',
                     end: '+=200%', // Scroll distance
                     pin: true,
-                    scrub: true, // Use boolean scrub for most responsive mobile behavior
+                    scrub: true, 
                     anticipatePin: 1,
                     onUpdate: (self) => {
                         if (video && video.duration) {
@@ -148,13 +149,11 @@ function Hero() {
                 .to('.hero-line-4', { opacity: 1, y: 0, duration: 1 }, 0.3) // "alles."
                 .to('.hero-line-1', { opacity: 0.7, y: 0, duration: 1 }, 0.5) // Subclaim 1
                 .to('.hero-line-3.desc-line', { opacity: 0.6, y: 0, duration: 1 }, 0.6) // Subclaim 2
-                .to('.hero-cta', { opacity: 1, y: 0, duration: 1 }, 0.8)
 
         }, heroRef)
 
         // Ensure video metadata is loaded for scrubbing
         if (video) {
-            // Prime the video for mobile browsers
             video.addEventListener('loadedmetadata', () => {
                 video.play().then(() => {
                     video.pause();
@@ -291,7 +290,7 @@ function ClaimSet1() {
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current,
-                    start: 'top top', // Section stops when top of section hits top of screen
+                    start: 'top top', 
                     end: `+=${claims.length * 100}%`,
                     pin: true,
                     scrub: 1.5,
@@ -383,7 +382,8 @@ function ClaimSet1() {
 
                     {/* Right: Oil flowing video */}
                     <div className="oil-video-container relative flex items-center justify-center lg:justify-end order-1 lg:order-2">
-                        <div className="video-mask w-full max-w-[180px] md:max-w-xs aspect-[3/4] relative overflow-hidden shadow-2xl">
+                        {/* Modified: w-full and responsive max-width to match the claims cards container */}
+                        <div className="video-mask w-full max-w-sm lg:max-w-md aspect-[3/4] relative overflow-hidden shadow-2xl">
                             <video
                                 autoPlay
                                 muted
@@ -412,7 +412,6 @@ function ClaimSet1() {
 
 /* ═══════════════════════════════════════════════════════════
    CLAIM SET 2 — Falling Cards Stacking Effect
-   100% Koroneiki-Oliven → Intensives Aroma → Reich an Gesundmachern
    ═══════════════════════════════════════════════════════════ */
 function ClaimSet2() {
     const sectionRef = useRef(null);
@@ -1002,7 +1001,7 @@ export default function App() {
         <>
             <NoiseOverlay />
             <Impressum isOpen={showImpressum} onClose={() => setShowImpressum(false)} />
-            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(true)} />
+            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(false)} />
             <CookieBanner onShowDatenschutz={() => setShowDatenschutz(true)} />
             <main>
                 <Hero />
