@@ -247,19 +247,19 @@ function ClaimSet1() {
         {
             icon: <img src="/assets/sun.png" alt="" className="w-full h-full object-contain" />,
             title: '300 Sonnentage / Jahr',
-            desc: 'Die Mani ist ein Solarium für Olivenbäume. Keine wässrigen Kompromisse, sondern eine absolute Aromen-Explosion auf deinem Teller. So muss Sommer schmecken.',
+            desc: 'Die Mani in Griechenland ist rau, trocken und voller Olivenbäume. Viel Sonne, nix regen. Früh geerntet, kalt gepresst und direkt auf deinen Teller.',
             illustration: null,
         },
         {
             icon: <img src="/assets/mountains.png" alt="" className="w-full h-full object-contain scale-[1.5]" />,
             title: 'Berge & Meer',
-            desc: 'Salzige Meeresluft trifft auf rauen Bergboden. Das sorgt für ein Öl, das nicht langweilig und flach schmeckt, sondern Ecken, Kanten und ordentlich Würze hat.',
+            desc: 'Berge, Meer und eine salzige Meerbrise. Nicht gemütlich für viele Pflanzen. Aber ziemlich gut für Oliven.',
             illustration: null,
         },
         {
             icon: <img src="/assets/illustrations/Pokal.png" alt="" className="w-12 h-12 md:w-16 md:h-16 object-contain" />,
             title: 'Weltklasse Qualität',
-            desc: 'Unsere Laborwerte zeigen schwarz auf weiß: Extrem niedrige Säure für weichen Geschmack und hohe Polyphenole für den gesunden Kick.',
+            desc: 'Jede Charge geht ins Labor. Getestet von einem vom International Olive Council zertifizierten Institut. Wir kennen genau unsere Säure, Polyphenole, Reinheit.',
             illustration: null,
         },
         {
