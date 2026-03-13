@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
+import App from './App'
 
 // ── Lokale Fonts (DSGVO-konform, kein Google-Server-Request) ──
 import '@fontsource/inter/300.css'
@@ -24,7 +24,7 @@ import '@fontsource/playfair-display/900-italic.css'
 
 import './index.css'
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
         <App />
     </React.StrictMode>,
