@@ -1,10 +1,69 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ArrowRight, ChevronDown, X } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { ArrowRight, ChevronDown, Leaf, Sun, Mountain, Truck, Droplets, Flame, Heart, X } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
+
+/* ═══════════════════════════════════════════════════════════
+   HAND-DRAWN ICONS SYSTEM
+   ═══════════════════════════════════════════════════════════ */
+const HandDrawnIcon = {
+    Sun: ({ className }) => (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z" />
+            <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+        </svg>
+    ),
+    Mountain: ({ className }) => (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="m8 3 4 8 5-5 5 15H2L8 3z" />
+        </svg>
+    ),
+    Leaf: ({ className }) => (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 1 8s-3 12-10 10c-4.012 0-7.305-3.044-7.928-7" />
+            <path d="M7 22l5-5" />
+        </svg>
+    ),
+    Truck: ({ className }) => (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
+            <path d="M15 18H9" />
+            <path d="M19 18h2a1 1 0 0 0 1-1v-5l-4-4h-3v10a2 2 0 0 0 2 2Z" />
+            <circle cx="7" cy="18" r="2" />
+            <circle cx="17" cy="18" r="2" />
+        </svg>
+    ),
+    Badge: ({ className }) => (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M3.85 8.62a4 4 0 0 1 4.77-4.77 4 4 0 0 1 6.76 0 4 4 0 0 1 4.77 4.77 4 4 0 0 1 0 6.76 4 4 0 0 1-4.77 4.77 4 4 0 0 1-6.76 0 4 4 0 0 1-4.77-4.77 4 4 0 0 1 0-6.76Z" />
+            <path d="m9 12 2 2 4-4" />
+        </svg>
+    ),
+    Box: ({ className }) => (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+            <path d="m3.3 7 8.7 5 8.7-5" />
+            <path d="M12 22V12" />
+        </svg>
+    ),
+    Droplet: ({ className }) => (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-4-4-4-4-2 2.4-4 4-3 3.5-3 5.5a7 7 0 0 0 7 7z" />
+        </svg>
+    ),
+    Flame: ({ className }) => (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.56-2.63-1.46-3.53l-.04-.04c-.38-.38-.6-.94-.6-2.43 0-2.81 3.12-4.56 5.25-2.75l.17.14c.45.39.71.95.71 1.55 0 1.25-.79 2.43-1.84 3.03l-.11.05c-1.1.54-1.14 2-.11 2.6l.3.17c1.32.74 2.13 2.1 2.13 3.58a5 5 0 0 1-5 5H11a5 5 0 0 1-5-5v-2c0-.55.45-1 1-1h1.5z" />
+        </svg>
+    ),
+    Heart: ({ className }) => (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.51 4.05 3 5.5l7 7Z" />
+        </svg>
+    ),
+}
 
 /* ═══════════════════════════════════════════════════════════
    NOISE OVERLAY — SVG turbulence for texture
@@ -24,9 +83,9 @@ function NoiseOverlay() {
    HERO — The Opening Shot
    ═══════════════════════════════════════════════════════════ */
 function Hero() {
-    const heroRef = useRef<HTMLElement>(null)
-    const textRef = useRef<HTMLDivElement>(null)
-    const sunRef = useRef<HTMLDivElement>(null)
+    const heroRef = useRef(null)
+    const textRef = useRef(null)
+    const sunRef = useRef(null)
 
     useEffect(() => {
         const video = heroRef.current?.querySelector('video')
@@ -162,10 +221,10 @@ function Hero() {
                     <p className="hero-line-3 desc-line text-white/80 text-base md:text-lg lg:text-xl max-w-2xl mb-6 md:mb-8 font-light leading-relaxed">
                         Wir bringen Olivenöl der besten Qualität zu einem fairen Preis in deine Küche.
                     </p>
-                    <Link to="/warteliste" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 relative z-10">
+                    <a href="#waitlist" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 relative z-10">
                         Auf die Warteliste
                         <ArrowRight className="ml-2 w-5 h-5" />
-                    </Link>
+                    </a>
 
                     {/* Scroll hint — now under CTA/Logo area */}
                     <div className="hero-scroll-hint mt-6 flex flex-col items-center text-white/60 animate-bounce z-30">
@@ -183,7 +242,7 @@ function Hero() {
    300 Sonnentage → Berge & Meer → Weltklasse Qualität → Direkt zu dir
    ═══════════════════════════════════════════════════════════ */
 function ClaimSet1() {
-    const sectionRef = useRef<HTMLElement>(null)
+    const sectionRef = useRef(null)
     const claims = [
         {
             icon: <img src="/assets/sun.png" alt="" className="w-full h-full object-contain" />,
@@ -355,8 +414,8 @@ function ClaimSet1() {
    CLAIM SET 2 — Falling Cards Stacking Effect
    ═══════════════════════════════════════════════════════════ */
 function ClaimSet2() {
-    const sectionRef = useRef<HTMLElement>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
+    const sectionRef = useRef(null);
+    const containerRef = useRef(null);
 
     const cards = [
         {
@@ -469,7 +528,7 @@ function ClaimSet2() {
    WAITLIST CTA
    ═══════════════════════════════════════════════════════════ */
 function Waitlist() {
-    const sectionRef = useRef<HTMLElement>(null)
+    const sectionRef = useRef(null)
 
     useEffect(() => {
         const ctx = gsap.context(() => {
@@ -511,13 +570,15 @@ function Waitlist() {
                     </p>
 
                     <div className="flex justify-start">
-                        <Link
-                            to="/warteliste"
+                        <a
+                            href="https://deine-warteliste-url.de"
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="btn-magnetic btn-accent py-3 px-10 lg:py-4 lg:px-12 text-lg lg:text-xl shadow-[0_0_30px_rgba(254,65,0,0.3)]"
                         >
                             Warteliste
                             <ArrowRight className="ml-3 w-5 h-5 flex-shrink-0" />
-                        </Link>
+                        </a>
                     </div>
                 </div>
 
@@ -568,13 +629,15 @@ function Waitlist() {
                     </p>
 
                     <div className="flex justify-center">
-                        <Link
-                            to="/warteliste"
+                        <a
+                            href="https://deine-warteliste-url.de"
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="btn-magnetic btn-accent py-4 px-10 text-lg shadow-[0_0_30px_rgba(254,65,0,0.25)]"
                         >
                             Warteliste
                             <ArrowRight className="ml-3 w-5 h-5 flex-shrink-0" />
-                        </Link>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -585,8 +648,8 @@ function Waitlist() {
 /* ═══════════════════════════════════════════════════════════
    IMPRESSUM OVERLAY
    ═══════════════════════════════════════════════════════════ */
-function Impressum({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
-    const overlayRef = useRef<HTMLDivElement>(null)
+function Impressum({ isOpen, onClose }) {
+    const overlayRef = useRef(null)
 
     useEffect(() => {
         if (isOpen) {
@@ -680,8 +743,8 @@ function Impressum({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }
 /* ═══════════════════════════════════════════════════════════
    DATENSCHUTZ OVERLAY
    ═══════════════════════════════════════════════════════════ */
-function Datenschutz({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
-    const overlayRef = useRef<HTMLDivElement>(null)
+function Datenschutz({ isOpen, onClose }) {
+    const overlayRef = useRef(null)
 
     useEffect(() => {
         if (isOpen) {
@@ -795,7 +858,7 @@ function Datenschutz({ isOpen, onClose }: { isOpen: boolean, onClose: () => void
 /* ═══════════════════════════════════════════════════════════
    FOOTER
    ═══════════════════════════════════════════════════════════ */
-function Footer({ onShowImpressum, onShowDatenschutz }: { onShowImpressum: () => void, onShowDatenschutz: () => void }) {
+function Footer({ onShowImpressum, onShowDatenschutz }) {
     return (
         <footer className="bg-[#041e3a] border-t border-white/5 py-12 md:py-16">
             <div className="max-w-7xl mx-auto px-6 md:px-16">
@@ -813,7 +876,7 @@ function Footer({ onShowImpressum, onShowDatenschutz }: { onShowImpressum: () =>
                             <a href="#hero" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Start</a>
                             <a href="#herkunft" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Herkunft</a>
                             <a href="#qualitaet" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Qualität</a>
-                            <Link to="/warteliste" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Warteliste</Link>
+                            <a href="#waitlist" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Warteliste</a>
                         </div>
                     </div>
 
@@ -843,9 +906,9 @@ function Footer({ onShowImpressum, onShowDatenschutz }: { onShowImpressum: () =>
 /* ═══════════════════════════════════════════════════════════
    COOKIE BANNER — GDPR-compliant consent notification
    ═══════════════════════════════════════════════════════════ */
-function CookieBanner({ onShowDatenschutz }: { onShowDatenschutz: () => void }) {
+function CookieBanner({ onShowDatenschutz }) {
     const [visible, setVisible] = useState(false)
-    const bannerRef = useRef<HTMLDivElement>(null)
+    const bannerRef = useRef(null)
 
     useEffect(() => {
         const consent = localStorage.getItem('akria-cookie-consent')
@@ -864,7 +927,7 @@ function CookieBanner({ onShowDatenschutz }: { onShowDatenschutz: () => void }) 
         )
     }, [visible])
 
-    const dismiss = (choice: string) => {
+    const dismiss = (choice) => {
         localStorage.setItem('akria-cookie-consent', choice)
         gsap.to(bannerRef.current, {
             y: 60,
@@ -921,9 +984,9 @@ function CookieBanner({ onShowDatenschutz }: { onShowDatenschutz: () => void }) 
 }
 
 /* ═══════════════════════════════════════════════════════════
-   INDEX PAGE — Main Composition
+   APP — Main Composition
    ═══════════════════════════════════════════════════════════ */
-export default function Index() {
+export default function App() {
     const [showImpressum, setShowImpressum] = useState(false)
     const [showDatenschutz, setShowDatenschutz] = useState(false)
 
