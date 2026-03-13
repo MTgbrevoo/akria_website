@@ -420,13 +420,13 @@ function ClaimSet2() {
     const cards = [
         {
             headline: "100% Koroneiki-Oliven",
-            desc: "Koroneiki-Oliven sind klein, aber haben es in sich. Intensiver Geschmack und einer der höchsten Polyphenolgehalte aller Sorten.",
+            desc: "Koroneiki-Oliven sind klein, wachsen gut im trockenen Klima der Mani und gehören zu den Sorten mit besonders vielen natürlich vorkommenden Polyphenolen.",
             bg: "bg-[#0c5eaf]",
             illustration: "/assets/illustrations/Olive.png"
         },
         {
             headline: "Intensives Aroma",
-            desc: "Vergiss fades Öl, das nur fettig ist. Unser Öl hat echten Charakter und macht sogar trockenes Brot zum Highlight.",
+            desc: "Vergiss fades Supermarktöl, das nichts zum Kochen beiträgt. Unser Öl hat Charakter und macht ein trockenes Brot mit Salz zu einem Geschmackshighlight.",
             bg: "bg-[#0c5eaf]",
             illustration: "/assets/illustrations/Aroma.png"
         },
