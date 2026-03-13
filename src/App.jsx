@@ -329,17 +329,17 @@ function ClaimSet1() {
         <section
             ref={sectionRef}
             id="herkunft"
-            className="relative min-h-[100svh] w-full bg-primary overflow-hidden pt-20 md:pt-32 pb-16"
+            className="relative min-h-[100svh] w-full bg-primary overflow-hidden pt-10 md:pt-32 pb-16"
         >
             <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex flex-col h-full">
                 {/* Headline at the very top of content */}
-                <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold mb-8 md:mb-16 text-white/90 text-center lg:text-left">
+                <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold mb-6 md:mb-16 text-white/90 text-center lg:text-left">
                     Von der Mani zu dir.
                 </h2>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start lg:items-center flex-1">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-16 items-start lg:items-center flex-1">
                     {/* Left: Claims */}
-                    <div className="relative flex flex-col gap-2 md:gap-3 order-2 lg:order-1">
+                    <div className="relative flex flex-col gap-2 md:gap-3 order-1">
                         {claims.map((claim, i) => (
                             <div key={i} className="relative">
                                 <div
@@ -381,9 +381,9 @@ function ClaimSet1() {
                     </div>
 
                     {/* Right: Oil flowing video */}
-                    <div className="oil-video-container relative flex items-center justify-center lg:justify-end order-1 lg:order-2">
+                    <div className="oil-video-container relative flex items-center justify-center lg:justify-end order-2">
                         {/* Modified: Added rounded-3xl to match claim card rounding */}
-                        <div className="video-mask w-full max-w-sm lg:max-w-md aspect-[3/4] relative overflow-hidden shadow-2xl rounded-3xl">
+                        <div className="video-mask w-full max-w-[260px] md:max-w-sm lg:max-w-md aspect-[3/4] relative overflow-hidden shadow-2xl rounded-3xl">
                             <video
                                 autoPlay
                                 muted
