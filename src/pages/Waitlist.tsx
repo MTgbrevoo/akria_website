@@ -145,7 +145,7 @@ export default function Waitlist() {
                                             value={formData.firstname}
                                             onChange={handleChange}
                                             className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all"
-                                            placeholder="Zeno"
+                                            placeholder=""
                                         />
                                     </div>
                                     <div className="waitlist-element">
@@ -160,7 +160,7 @@ export default function Waitlist() {
                                             value={formData.lastname}
                                             onChange={handleChange}
                                             className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all"
-                                            placeholder="Meyer"
+                                            placeholder=""
                                         />
                                     </div>
                                 </div>
@@ -177,7 +177,7 @@ export default function Waitlist() {
                                         value={formData.email}
                                         onChange={handleChange}
                                         className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all"
-                                        placeholder="zeno@akria.de"
+                                        placeholder=""
                                     />
                                 </div>
 
@@ -193,7 +193,7 @@ export default function Waitlist() {
                                         value={formData.location}
                                         onChange={handleChange}
                                         className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all"
-                                        placeholder="Berlin, Deutschland"
+                                        placeholder=""
                                     />
                                 </div>
 
@@ -208,7 +208,7 @@ export default function Waitlist() {
                                         value={formData.notes}
                                         onChange={handleChange}
                                         className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all resize-none"
-                                        placeholder="Hast du besondere Wünsche oder Fragen?"
+                                        placeholder="Was würdest Du gerne von uns sehen? Oder lass einfach Grüße da! :)"
                                     />
                                 </div>
 
