@@ -64,7 +64,7 @@ export default function Waitlist() {
 
         try {
             const { error } = await supabase
-                .from('waitlist')
+                .from('ernte2026')
                 .insert([
                     { 
                         firstname: formData.firstname, 
