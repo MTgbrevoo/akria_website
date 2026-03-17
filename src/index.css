@@ -49,29 +49,39 @@ body {
   cursor: pointer;
   border: none;
   overflow: hidden;
-  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translateY(0);
 }
 
 .btn-magnetic:hover {
-  transform: scale(1.03);
+  transform: scale(1.03) translateY(-2px);
+}
+
+.btn-magnetic:active {
+  transform: scale(1.01) translateY(4px);
 }
 
 .btn-accent {
   background-color: #fe4100;
   color: #ffffff;
-  box-shadow: 0 0 20px rgba(254, 65, 0, 0.3), 0 0 60px rgba(254, 65, 0, 0.1);
+  /* Shadow simulates the "depth" or base of the button */
+  box-shadow: 0 6px 0 #b32e00, 0 12px 24px rgba(254, 65, 0, 0.3);
 }
 
 .btn-accent:hover {
-  box-shadow: 0 0 30px rgba(254, 65, 0, 0.5), 0 0 80px rgba(254, 65, 0, 0.2);
+  box-shadow: 0 8px 0 #b32e00, 0 15px 30px rgba(254, 65, 0, 0.4);
+}
+
+.btn-accent:active {
+  /* Shadow shrinks as button moves down, creating the press effect */
+  box-shadow: 0 2px 0 #b32e00, 0 4px 10px rgba(254, 65, 0, 0.3);
 }
 
 .btn-accent::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 50%);
   opacity: 0;
   transition: opacity 0.4s ease;
 }
@@ -84,12 +94,16 @@ body {
   background: transparent;
   color: #ffffff;
   border: 1.5px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 0 rgba(255, 255, 255, 0.1);
 }
 
 .btn-outline:hover {
   border-color: rgba(255, 255, 255, 0.6);
-  box-shadow: 0 0 25px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 6px 0 rgba(255, 255, 255, 0.15);
+}
+
+.btn-outline:active {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 /* ── Interactive lift ─────────────────────────────────── */
@@ -112,13 +126,10 @@ body {
 
 /* ── Sun Pulsate Animation ────────────────────────────── */
 @keyframes sunPulsate {
-
-  0%,
-  100% {
+  0%, 100% {
     transform: scale(1);
     opacity: 0.9;
   }
-
   50% {
     transform: scale(1.05);
     opacity: 1;
@@ -130,20 +141,13 @@ body {
 }
 
 @keyframes sunRotate {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .sun-rotate {
   animation: sunRotate 30s linear infinite;
 }
-
-
 
 /* ── Stacking Cards ───────────────────────────────────── */
 .stack-card {
