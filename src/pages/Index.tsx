@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -34,8 +36,14 @@ function Hero() {
         const ctx = gsap.context(() => {
             // Initial animation for Logo, Sun, and CTA
             const introTl = gsap.timeline({ defaults: { ease: 'power3.out' } })
-            introTl.from('.hero-logo', { scale: 0.8, opacity: 0, duration: 1.2, delay: 0.3 })
-                   .from('.hero-cta', { y: 20, opacity: 0, duration: 1 }, "-=0.8")
+            
+            gsap.set(['.hero-line-1', '.hero-line-2', '.hero-line-3', '.hero-line-4', '.hero-cta'], {
+                opacity: 0,
+                y: 30
+            })
+
+            introTl.to('.hero-logo', { scale: 1, opacity: 1, duration: 1.2, delay: 0.3 })
+                   .to('.hero-cta', { y: 0, opacity: 1, duration: 1 }, "-=0.8")
 
             if (sunRef.current) {
                 gsap.to(sunRef.current, {
@@ -46,12 +54,6 @@ function Hero() {
                     ease: 'power1.inOut',
                 })
             }
-
-            // Hide other elements initially (CTA is handled by introTl now)
-            gsap.set(['.hero-line-1', '.hero-line-2', '.hero-line-3', '.hero-line-4'], {
-                opacity: 0,
-                y: 30
-            })
 
             // Scroll hint is visible initially, then fades as soon as user scrolls
             gsap.to('.hero-scroll-hint', {
@@ -162,8 +164,8 @@ function Hero() {
                     <p className="hero-line-3 desc-line text-white/80 text-base md:text-lg lg:text-xl max-w-2xl mb-6 md:mb-8 font-light leading-relaxed">
                         Wir bringen Olivenöl der besten Qualität zu einem fairen Preis in deine Küche.
                     </p>
-                    <Link to="/waitlist" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 relative z-10">
-                        Auf die Warteliste
+                    <Link to="/waitlist" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 relative z-30">
+                        Hol es dir
                         <ArrowRight className="ml-2 w-5 h-5" />
                     </Link>
 
@@ -933,7 +935,7 @@ export default function Index() {
         <div className="bg-primary min-h-screen">
             <NoiseOverlay />
             <Impressum isOpen={showImpressum} onClose={() => setShowImpressum(false)} />
-            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(false)} />
+            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(true)} />
             <CookieBanner onShowDatenschutz={() => setShowDatenschutz(true)} />
             <main>
                 <Hero />
