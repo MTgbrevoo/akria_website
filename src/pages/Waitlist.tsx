@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ArrowLeft, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { supabase } from '../lib/supabaseClient';
+import { supabase } from '../integrations/supabase/client';
 
 /* ═══════════════════════════════════════════════════════════
    NOISE OVERLAY — SVG turbulence for texture
@@ -78,7 +78,6 @@ export default function Waitlist() {
             if (error) throw error;
 
             setStatus('success');
-            // GSAP animation for success message
             gsap.from('.success-message', {
                 scale: 0.9,
                 opacity: 0,
@@ -96,7 +95,6 @@ export default function Waitlist() {
         <div ref={formRef} className="min-h-[100svh] w-full bg-primary relative flex items-center justify-center p-6 overflow-hidden">
             <NoiseOverlay />
             
-            {/* Background elements to match brand style */}
             <div className="absolute top-[-10%] right-[-10%] w-[40%] aspect-square bg-accent/10 rounded-full blur-[120px] pointer-events-none" />
             <div className="absolute bottom-[-10%] left-[-10%] w-[40%] aspect-square bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
 
