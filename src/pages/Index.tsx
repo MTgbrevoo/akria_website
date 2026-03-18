@@ -90,8 +90,7 @@ function Hero() {
                 .to('.hero-line-2', { opacity: 1, y: 0, duration: 1 }, 0.1) // "Upgrade"
                 .to('.hero-line-3.small-line', { opacity: 0.7, y: 0, duration: 1 }, 0.2) // "für"
                 .to('.hero-line-4', { opacity: 1, y: 0, duration: 1 }, 0.3) // "alles."
-                .to('.hero-line-1', { opacity: 0.7, y: 0, duration: 1 }, 0.5) // Subclaim 1
-                .to('.hero-line-3.desc-line', { opacity: 0.6, y: 0, duration: 1 }, 0.6) // Subclaim 2
+                .to('.hero-line-1', { opacity: 1, y: 0, duration: 1 }, 0.5) // Subclaim 1
 
         }, heroRef)
 
@@ -147,30 +146,28 @@ function Hero() {
                         <img src="/assets/logo.png" alt="AKRIA" className="h-24 md:h-32 lg:h-44 w-auto" />
                     </div>
 
-                    <p className="hero-line-1 font-display text-sm md:text-base lg:text-lg font-semibold tracking-[0.2em] uppercase text-white/90 mb-3 md:mb-4">
+                    <p className="hero-line-1 font-display text-sm md:text-base lg:text-lg font-bold tracking-[0.25em] uppercase text-white mb-3 md:mb-4 drop-shadow-lg">
                         Extra Natives Olivenöl aus der Mani
                     </p>
-                    <h1 className="mb-4 md:mb-6 text-center flex flex-col items-center">
+                    <h1 className="mb-6 md:mb-8 text-center flex flex-col items-center">
                         <span className="hero-line-2 block font-display font-800 text-5xl md:text-6xl lg:text-7xl tracking-tight text-white leading-[1.1]">
                             Upgrade
                         </span>
-                        <span className="hero-line-3 small-line block font-display font-800 text-3xl md:text-4xl lg:text-5xl tracking-tight text-white/90 leading-none py-2">
+                        <span className="hero-line-3 small-line block font-display font-800 text-3xl md:text-4xl lg:text-5xl tracking-tight text-white leading-none py-2">
                             für
                         </span>
                         <span className="hero-line-4 block font-serif italic font-900 text-6xl md:text-8xl lg:text-[9.5rem] tracking-tight text-accent leading-[0.8]">
                             alles.
                         </span>
                     </h1>
-                    <p className="hero-line-3 desc-line text-white/80 text-base md:text-lg lg:text-xl max-w-2xl mb-6 md:mb-8 font-light leading-relaxed">
-                        Wir bringen Olivenöl der besten Qualität zu einem fairen Preis in deine Küche.
-                    </p>
+                    
                     <Link to="/waitlist" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 relative z-30">
                         Hol es dir
                         <ArrowRight className="ml-2 w-5 h-5" />
                     </Link>
 
                     {/* Scroll hint — now under CTA/Logo area */}
-                    <div className="hero-scroll-hint mt-6 flex flex-col items-center text-white/60 animate-bounce z-30">
+                    <div className="hero-scroll-hint mt-8 flex flex-col items-center text-white/60 animate-bounce z-30">
                         <span className="text-[10px] md:text-xs tracking-widest uppercase mb-1">Scroll</span>
                         <ChevronDown className="w-3 h-3 md:w-4 md:h-4" />
                     </div>
@@ -750,7 +747,7 @@ function Datenschutz({ isOpen, onClose }: { isOpen: boolean, onClose: () => void
                         title: '4. Schriftarten (Fonts)',
                         content: (
                             <p className="text-white/70 font-light leading-relaxed">
-                                Diese Website verwendet Schriftarten, die lokal von unserem eigenen Server ausgeliefert werden.
+                                Diese Website verwendet Schriftarten, die lokal von unserem eigenen server ausgeliefert werden.
                             </p>
                         )
                     },
