@@ -453,7 +453,7 @@ function ClaimSet2() {
 
 
 /* ═══════════════════════════════════════════════════════════
-   WAITLIST CTA
+   WAITLIST CTA — Unified Full-Bleed Design
    ═══════════════════════════════════════════════════════════ */
 function WaitlistSection() {
     const sectionRef = useRef<HTMLElement>(null)
@@ -485,81 +485,40 @@ function WaitlistSection() {
         <section
             ref={sectionRef}
             id="waitlist"
-            className="relative min-h-[100svh] flex items-center justify-center py-16 md:py-24 bg-primary overflow-hidden"
+            className="relative min-h-[100svh] flex items-center justify-center bg-primary overflow-hidden"
         >
-            <div className="hidden lg:flex w-full h-full items-center max-w-7xl mx-auto px-12 lg:px-16">
-                <div className="w-1/2 waitlist-content relative z-20 text-left py-12 pr-12">
+            {/* Background Video — Full Bleed without bars */}
+            <div className="absolute inset-0 w-full h-full z-0">
+                <div className="absolute inset-0 bg-black/30 z-10" /> {/* Dark overlay for better text contrast */}
+                <video
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    className="absolute inset-0 w-full h-full object-cover"
+                >
+                    <source src="/assets/beach-video.mp4" type="video/mp4" />
+                </video>
+            </div>
+
+            {/* Content Overlay */}
+            <div className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex items-center h-full min-h-[100svh]">
+                <div className="waitlist-content w-full lg:w-1/2 text-center lg:text-left py-12 backdrop-blur-sm lg:backdrop-blur-none bg-black/20 lg:bg-transparent p-8 lg:p-0 rounded-[2.5rem] lg:rounded-none border border-white/5 lg:border-none shadow-2xl lg:shadow-none">
                     <p className="font-display text-xs lg:text-sm font-semibold tracking-[0.2em] uppercase text-accent mb-4">
                         Ernte 2026 / 2027
                     </p>
-                    <h2 className="font-serif italic font-bold text-4xl lg:text-5xl xl:text-6xl text-white mb-6 leading-tight">
+                    <h2 className="font-serif italic font-bold text-4xl lg:text-5xl xl:text-7xl text-white mb-6 leading-tight drop-shadow-2xl">
                         Sicher dir deinen Platz.
                     </h2>
-                    <p className="text-white/60 text-base lg:text-lg xl:text-xl max-w-md leading-relaxed mb-8 lg:mb-10 font-light">
+                    <p className="text-white/80 text-base lg:text-lg xl:text-xl max-w-md mx-auto lg:mx-0 leading-relaxed mb-8 lg:mb-10 font-light drop-shadow-lg">
                         Trag dich für die nächste Ernte ein! Wir informieren dich, sobald der erste Tropfen fließt.
                     </p>
 
-                    <div className="flex justify-start">
+                    <div className="flex justify-center lg:justify-start">
                         <Link
                             to="/waitlist"
-                            className="btn-magnetic btn-accent py-3 px-10 lg:py-4 lg:px-12 text-lg lg:text-xl shadow-[0_0_30px_rgba(254,65,0,0.3)]"
-                        >
-                            Warteliste
-                            <ArrowRight className="ml-3 w-5 h-5 flex-shrink-0" />
-                        </Link>
-                    </div>
-                </div>
-
-                <div className="w-1/2 h-[60vh] lg:h-[70vh] relative">
-                    <div className="absolute inset-0 rounded-[3rem] overflow-hidden shadow-2xl">
-                        <video
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                            preload="auto"
-                            className="absolute inset-0 w-full h-full object-cover"
-                        >
-                            <source src="/assets/beach-video.mp4" type="video/mp4" />
-                        </video>
-                    </div>
-                    <img
-                        src="/assets/waves.png"
-                        alt=""
-                        className="absolute -bottom-10 -right-10 w-48 opacity-30 pointer-events-none"
-                    />
-                </div>
-            </div>
-
-            <div className="lg:hidden absolute inset-0 w-full h-full flex items-center justify-center px-6">
-                <div className="absolute inset-0 w-full h-full">
-                    <video
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="auto"
-                        className="absolute inset-0 w-full h-full object-cover"
-                    >
-                        <source src="/assets/beach-video.mp4" type="video/mp4" />
-                    </video>
-                </div>
-
-                <div className="waitlist-content relative z-20 w-full max-w-md py-12 px-8 text-center backdrop-blur-md bg-black/20 rounded-[2.5rem] border border-white/5 shadow-xl">
-                    <p className="font-display text-xs font-semibold tracking-[0.2em] uppercase text-accent mb-3">
-                        Ernte 2026 / 2027
-                    </p>
-                    <h2 className="font-serif italic font-bold text-3xl text-white mb-4 leading-tight">
-                        Sicher dir deinen Platz.
-                    </h2>
-                    <p className="text-white/60 text-base leading-relaxed mb-8 font-light">
-                        Trag dich für die nächste Ernte ein!
-                    </p>
-
-                    <div className="flex justify-center">
-                        <Link
-                            to="/waitlist"
-                            className="btn-magnetic btn-accent py-4 px-10 text-lg shadow-[0_0_30px_rgba(254,65,0,0.25)]"
+                            className="btn-magnetic btn-accent py-4 px-12 text-lg lg:text-xl shadow-[0_0_30px_rgba(254,65,0,0.4)]"
                         >
                             Warteliste
                             <ArrowRight className="ml-3 w-5 h-5 flex-shrink-0" />
