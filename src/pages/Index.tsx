@@ -88,10 +88,10 @@ function Hero() {
             // Staggered reveal linked to scroll
             scrollTl
                 .to('.hero-line-2', { opacity: 1, y: 0, duration: 1 }, 0.1) // "Upgrade"
-                .to('.hero-line-3.small-line', { opacity: 1, y: 0, duration: 1 }, 0.2) // "für"
+                .to('.hero-line-3.small-line', { opacity: 0.7, y: 0, duration: 1 }, 0.2) // "für"
                 .to('.hero-line-4', { opacity: 1, y: 0, duration: 1 }, 0.3) // "alles."
-                .to('.hero-line-1', { opacity: 1, y: 0, duration: 1 }, 0.5) // Subclaim 1
-                .to('.hero-line-3.desc-line', { opacity: 1, y: 0, duration: 1 }, 0.6) // Subclaim 2
+                .to('.hero-line-1', { opacity: 0.7, y: 0, duration: 1 }, 0.5) // Subclaim 1
+                .to('.hero-line-3.desc-line', { opacity: 0.6, y: 0, duration: 1 }, 0.6) // Subclaim 2
 
         }, heroRef)
 
@@ -132,39 +132,36 @@ function Hero() {
                 >
                     <source src="/assets/hero-drone.mp4" type="video/mp4" />
                 </video>
-                {/* Darker Overlay for better text contrast */}
-                <div className="absolute inset-0 bg-black/20 z-10" />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/40 z-10" />
             </div>
 
             {/* Sun Illustration — top right */}
             <div ref={sunRef} className="absolute top-12 md:top-16 lg:top-20 right-6 md:right-12 lg:right-16 w-16 md:w-24 lg:w-32 z-30 pointer-events-none">
-                <img src="/assets/sun.png" alt="" className="w-full h-auto drop-shadow-2xl" />
+                <img src="/assets/sun.png" alt="" className="w-full h-auto" />
             </div>
 
             {/* Hero Content — Centered Layout */}
             <div ref={textRef} className="absolute inset-0 flex flex-col items-center justify-center z-20 px-6 text-center">
                 <div className="max-w-4xl flex flex-col items-center">
                     {/* Centered Logo */}
-                    <div className="hero-logo mb-6 md:mb-8 lg:mb-10 transform hover:scale-[1.02] transition-transform duration-500 cursor-pointer drop-shadow-xl">
+                    <div className="hero-logo mb-6 md:mb-8 lg:mb-10 transform hover:scale-[1.02] transition-transform duration-500 cursor-pointer">
                         <img src="/assets/logo.png" alt="AKRIA" className="h-24 md:h-32 lg:h-44 w-auto" />
                     </div>
 
-                    <p className="hero-line-1 font-display text-sm md:text-base lg:text-lg font-bold tracking-[0.2em] uppercase text-white mb-3 md:mb-4 drop-shadow-lg">
+                    <p className="hero-line-1 font-display text-sm md:text-base lg:text-lg font-semibold tracking-[0.2em] uppercase text-white/90 mb-3 md:mb-4">
                         Extra Natives Olivenöl aus der Mani
                     </p>
                     <h1 className="mb-4 md:mb-6 text-center flex flex-col items-center">
-                        <span className="hero-line-2 block font-display font-800 text-5xl md:text-6xl lg:text-7xl tracking-tight text-white leading-[1.1] drop-shadow-md">
+                        <span className="hero-line-2 block font-display font-800 text-5xl md:text-6xl lg:text-7xl tracking-tight text-white leading-[1.1]">
                             Upgrade
                         </span>
-                        <span className="hero-line-3 small-line block font-display font-800 text-3xl md:text-4xl lg:text-5xl tracking-tight text-white leading-none py-2 drop-shadow-lg">
+                        <span className="hero-line-3 small-line block font-display font-800 text-3xl md:text-4xl lg:text-5xl tracking-tight text-white/90 leading-none py-2">
                             für
                         </span>
-                        <span className="hero-line-4 block font-serif italic font-900 text-6xl md:text-8xl lg:text-[9.5rem] tracking-tight text-accent leading-[0.8] drop-shadow-2xl">
+                        <span className="hero-line-4 block font-serif italic font-900 text-6xl md:text-8xl lg:text-[9.5rem] tracking-tight text-accent leading-[0.8]">
                             alles.
                         </span>
                     </h1>
-                    <p className="hero-line-3 desc-line text-white text-base md:text-lg lg:text-xl max-w-2xl mb-6 md:mb-8 font-medium leading-relaxed drop-shadow-lg">
+                    <p className="hero-line-3 desc-line text-white/80 text-base md:text-lg lg:text-xl max-w-2xl mb-6 md:mb-8 font-light leading-relaxed">
                         Wir bringen Olivenöl der besten Qualität zu einem fairen Preis in deine Küche.
                     </p>
                     <Link to="/waitlist" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 relative z-30">
@@ -173,9 +170,9 @@ function Hero() {
                     </Link>
 
                     {/* Scroll hint — now under CTA/Logo area */}
-                    <div className="hero-scroll-hint mt-6 flex flex-col items-center text-white/80 animate-bounce z-30">
-                        <span className="text-[10px] md:text-xs tracking-widest uppercase mb-1 drop-shadow-md">Scroll</span>
-                        <ChevronDown className="w-3 h-3 md:w-4 md:h-4 drop-shadow-md" />
+                    <div className="hero-scroll-hint mt-6 flex flex-col items-center text-white/60 animate-bounce z-30">
+                        <span className="text-[10px] md:text-xs tracking-widest uppercase mb-1">Scroll</span>
+                        <ChevronDown className="w-3 h-3 md:w-4 md:h-4" />
                     </div>
                 </div>
             </div>
