@@ -146,10 +146,10 @@ function Hero() {
                         <img src="/assets/logo.png" alt="AKRIA" className="h-24 md:h-32 lg:h-44 w-auto" />
                     </div>
 
-                    <p className="hero-line-1 font-display text-sm md:text-base lg:text-lg font-bold tracking-[0.25em] uppercase text-white mb-3 md:mb-4 drop-shadow-lg">
+                    <p className="hero-line-1 font-display text-sm md:text-base lg:text-xl font-extrabold tracking-[0.2em] uppercase text-white mb-4 drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
                         Extra Natives Olivenöl aus der Mani
                     </p>
-                    <h1 className="mb-6 md:mb-8 text-center flex flex-col items-center">
+                    <h1 className="mb-6 md:mb-10 text-center flex flex-col items-center">
                         <span className="hero-line-2 block font-display font-800 text-5xl md:text-6xl lg:text-7xl tracking-tight text-white leading-[1.1]">
                             Upgrade
                         </span>
@@ -161,13 +161,15 @@ function Hero() {
                         </span>
                     </h1>
                     
-                    <Link to="/waitlist" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 relative z-30">
-                        Hol es dir
-                        <ArrowRight className="ml-2 w-5 h-5" />
-                    </Link>
+                    <div className="hero-cta-container flex justify-center w-full">
+                        <Link to="/waitlist" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 relative z-30 shadow-[0_10px_40px_rgba(254,65,0,0.4)]">
+                            Hol es dir
+                            <ArrowRight className="ml-2 w-5 h-5" />
+                        </Link>
+                    </div>
 
                     {/* Scroll hint — now under CTA/Logo area */}
-                    <div className="hero-scroll-hint mt-8 flex flex-col items-center text-white/60 animate-bounce z-30">
+                    <div className="hero-scroll-hint mt-10 flex flex-col items-center text-white/60 animate-bounce z-30">
                         <span className="text-[10px] md:text-xs tracking-widest uppercase mb-1">Scroll</span>
                         <ChevronDown className="w-3 h-3 md:w-4 md:h-4" />
                     </div>
