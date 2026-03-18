@@ -329,13 +329,7 @@ function ClaimSet1() {
                                 <source src="/assets/oil-flow.mov" type="video/quicktime" />
                                 <source src="/assets/oil-flow.mov" type="video/mp4" />
                             </video>
-                            <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent" />
                         </div>
-                        <img
-                            src="/assets/waves.png"
-                            alt=""
-                            className="absolute -bottom-8 -right-8 w-24 md:w-48 opacity-20 pointer-events-none"
-                        />
                     </div>
                 </div>
             </div>
