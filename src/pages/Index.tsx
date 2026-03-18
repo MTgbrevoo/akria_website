@@ -269,8 +269,9 @@ function ClaimSet1() {
             className="relative min-h-[100svh] w-full bg-primary overflow-hidden pt-10 md:pt-32 pb-16"
         >
             <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex flex-col h-full">
-                <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold mb-6 md:mb-16 text-white/90 text-center lg:text-left">
-                    Von der Mani zu dir.
+                <h2 className="font-display text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-8 md:mb-16 text-white/95 text-center lg:text-left leading-[1.1] max-w-5xl tracking-tight">
+                    Du hast dich schon immer gefragt, wo Du <span className="font-serif italic text-accent">weltklasse</span> Olivenöl bekommst? <br className="hidden md:block" />
+                    Wir bringen es von der Mani zu dir!
                 </h2>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-16 items-start lg:items-center flex-1">
