@@ -485,41 +485,40 @@ function WaitlistSection() {
         <section
             ref={sectionRef}
             id="waitlist"
-            className="relative h-[100svh] w-full flex items-center justify-center bg-black overflow-hidden"
+            className="relative min-h-[100svh] flex items-center justify-center bg-primary overflow-hidden"
         >
-            {/* Background Video — Force Full Bleed */}
-            <div className="absolute inset-0 w-full h-full z-0 pointer-events-none overflow-hidden">
-                <div className="absolute inset-0 bg-black/40 z-10" />
+            {/* Background Video — Full Bleed without bars */}
+            <div className="absolute inset-0 w-full h-full z-0">
+                <div className="absolute inset-0 bg-black/30 z-10" /> {/* Dark overlay for better text contrast */}
                 <video
                     autoPlay
                     muted
                     loop
                     playsInline
                     preload="auto"
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full w-auto h-auto object-cover"
-                    style={{ minWidth: '100%', minHeight: '100%' }}
+                    className="absolute inset-0 w-full h-full object-cover"
                 >
                     <source src="/assets/beach-video.mp4" type="video/mp4" />
                 </video>
             </div>
 
             {/* Content Overlay */}
-            <div className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex items-center h-full">
-                <div className="waitlist-content w-full lg:w-1/2 text-center lg:text-left py-12">
+            <div className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex items-center h-full min-h-[100svh]">
+                <div className="waitlist-content w-full lg:w-1/2 text-center lg:text-left py-12 backdrop-blur-sm lg:backdrop-blur-none bg-black/20 lg:bg-transparent p-8 lg:p-0 rounded-[2.5rem] lg:rounded-none border border-white/5 lg:border-none shadow-2xl lg:shadow-none">
                     <p className="font-display text-xs lg:text-sm font-semibold tracking-[0.2em] uppercase text-accent mb-4">
                         Ernte 2026 / 2027
                     </p>
                     <h2 className="font-serif italic font-bold text-4xl lg:text-5xl xl:text-7xl text-white mb-6 leading-tight drop-shadow-2xl">
                         Sicher dir deinen Platz.
                     </h2>
-                    <p className="text-white/90 text-base lg:text-lg xl:text-xl max-w-md mx-auto lg:mx-0 leading-relaxed mb-8 lg:mb-10 font-light drop-shadow-lg">
+                    <p className="text-white/80 text-base lg:text-lg xl:text-xl max-w-md mx-auto lg:mx-0 leading-relaxed mb-8 lg:mb-10 font-light drop-shadow-lg">
                         Trag dich für die nächste Ernte ein! Wir informieren dich, sobald der erste Tropfen fließt.
                     </p>
 
                     <div className="flex justify-center lg:justify-start">
                         <Link
                             to="/waitlist"
-                            className="btn-magnetic btn-accent py-4 px-12 text-lg lg:text-xl shadow-[0_0_40px_rgba(254,65,0,0.5)]"
+                            className="btn-magnetic btn-accent py-4 px-12 text-lg lg:text-xl shadow-[0_0_30px_rgba(254,65,0,0.4)]"
                         >
                             Warteliste
                             <ArrowRight className="ml-3 w-5 h-5 flex-shrink-0" />
