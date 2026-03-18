@@ -90,7 +90,8 @@ function Hero() {
                 .to('.hero-line-2', { opacity: 1, y: 0, duration: 1 }, 0.1) // "Upgrade"
                 .to('.hero-line-3.small-line', { opacity: 0.7, y: 0, duration: 1 }, 0.2) // "für"
                 .to('.hero-line-4', { opacity: 1, y: 0, duration: 1 }, 0.3) // "alles."
-                .to('.hero-line-1', { opacity: 1, y: 0, duration: 1 }, 0.5) // Subclaim 1 (Better readability)
+                .to('.hero-line-1', { opacity: 0.7, y: 0, duration: 1 }, 0.5) // Subclaim 1
+                .to('.hero-line-3.desc-line', { opacity: 0.6, y: 0, duration: 1 }, 0.6) // Subclaim 2
 
         }, heroRef)
 
@@ -146,10 +147,10 @@ function Hero() {
                         <img src="/assets/logo.png" alt="AKRIA" className="h-24 md:h-32 lg:h-44 w-auto" />
                     </div>
 
-                    <p className="hero-line-1 font-display text-sm md:text-base lg:text-lg font-bold tracking-[0.25em] uppercase text-white mb-4 md:mb-6 drop-shadow-md">
+                    <p className="hero-line-1 font-display text-sm md:text-base lg:text-lg font-semibold tracking-[0.2em] uppercase text-white/90 mb-3 md:mb-4">
                         Extra Natives Olivenöl aus der Mani
                     </p>
-                    <h1 className="mb-8 md:mb-10 text-center flex flex-col items-center">
+                    <h1 className="mb-4 md:mb-6 text-center flex flex-col items-center">
                         <span className="hero-line-2 block font-display font-800 text-5xl md:text-6xl lg:text-7xl tracking-tight text-white leading-[1.1]">
                             Upgrade
                         </span>
@@ -160,14 +161,16 @@ function Hero() {
                             alles.
                         </span>
                     </h1>
-                    
+                    <p className="hero-line-3 desc-line text-white/80 text-base md:text-lg lg:text-xl max-w-2xl mb-6 md:mb-8 font-light leading-relaxed">
+                        Wir bringen Olivenöl der besten Qualität zu einem fairen Preis in deine Küche.
+                    </p>
                     <Link to="/waitlist" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 relative z-30">
                         Hol es dir
                         <ArrowRight className="ml-2 w-5 h-5" />
                     </Link>
 
                     {/* Scroll hint — now under CTA/Logo area */}
-                    <div className="hero-scroll-hint mt-10 flex flex-col items-center text-white/60 animate-bounce z-30">
+                    <div className="hero-scroll-hint mt-6 flex flex-col items-center text-white/60 animate-bounce z-30">
                         <span className="text-[10px] md:text-xs tracking-widest uppercase mb-1">Scroll</span>
                         <ChevronDown className="w-3 h-3 md:w-4 md:h-4" />
                     </div>
@@ -778,7 +781,7 @@ function Datenschutz({ isOpen, onClose }: { isOpen: boolean, onClose: () => void
                 ].map((section, i) => (
                     <div key={i} className="mb-10 pb-10 border-b border-white/10 last:border-0">
                         <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4">{section.title}</h3>
-                        {section.content} section.content}
+                        {section.content}
                     </div>
                 ))}
             </div>
