@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ArrowLeft, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
@@ -126,9 +128,12 @@ export default function Waitlist() {
                                 <p className="font-display text-xs font-semibold tracking-[0.2em] uppercase text-accent mb-2">
                                     Ernte 2026 / 2027
                                 </p>
-                                <h1 className="font-serif italic font-bold text-3xl md:text-4xl lg:text-5xl text-white leading-tight">
+                                <h1 className="font-serif italic font-bold text-3xl md:text-4xl lg:text-5xl text-white leading-tight mb-4">
                                     Sicher dir deinen Platz.
                                 </h1>
+                                <p className="text-white/60 text-sm md:text-base leading-relaxed">
+                                    Völlig unverbindlich. Du entscheidest erst zur Erntezeit im Herbst, ob du bestellen möchtest.
+                                </p>
                             </div>
 
                             <form onSubmit={handleSubmit} className="space-y-6">
