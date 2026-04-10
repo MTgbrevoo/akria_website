@@ -262,7 +262,7 @@ function ClaimSet1() {
         >
             <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex flex-col h-full">
                 <h2 className="font-display text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-8 md:mb-16 text-white/95 text-center lg:text-left leading-[1.1] max-w-5xl tracking-tight">
-                    Weltklasse Olivenöl direkt von der Ernte zu dir nach Hause.
+                    <span className="font-serif italic text-accent">Weltklasse</span> Olivenöl direkt von der Ernte zu dir nach Hause.
                 </h2>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-16 items-start lg:items-center flex-1">
