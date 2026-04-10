@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { ArrowLeft, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../integrations/supabase/client';
 
@@ -233,27 +233,30 @@ export default function Waitlist() {
                                     </div>
                                 )}
 
-                                <div className="waitlist-element flex items-start gap-3 mt-4 mb-6">
-                                    <div className="flex items-center h-6">
+                                <label htmlFor="marketingConsent" className="waitlist-element flex items-start gap-4 mt-6 mb-8 cursor-pointer group">
+                                    <div className="relative flex items-center justify-center mt-1 shrink-0">
                                         <input
                                             id="marketingConsent"
                                             name="marketingConsent"
                                             type="checkbox"
                                             checked={marketingConsent}
                                             onChange={(e) => setMarketingConsent(e.target.checked)}
-                                            className="w-5 h-5 rounded border-white/20 bg-white/5 text-accent focus:ring-accent/50 focus:ring-offset-0 cursor-pointer"
+                                            className="sr-only"
                                             required
                                         />
+                                        <div className={`w-6 h-6 rounded-md border flex items-center justify-center transition-all duration-300 ${marketingConsent ? 'bg-accent border-accent shadow-[0_0_10px_rgba(254,65,0,0.4)]' : 'bg-white/5 border-white/20 group-hover:border-white/40'}`}>
+                                            <Check className={`w-4 h-4 text-white transition-transform duration-300 ${marketingConsent ? 'scale-100' : 'scale-0'}`} strokeWidth={3} />
+                                        </div>
                                     </div>
-                                    <div className="text-sm">
-                                        <label htmlFor="marketingConsent" className="font-medium text-white/90 cursor-pointer">
-                                            Ich stimme zu, zur Ernte kontaktiert zu werden
-                                        </label>
-                                        <p className="text-white/50 text-xs mt-1">
-                                            Ich möchte den Newsletter erhalten und willige in die Verarbeitung meiner Daten gemäß der Datenschutzerklärung ein.
+                                    <div className="text-sm flex-1">
+                                        <span className="font-medium text-white/90 text-base group-hover:text-white transition-colors">
+                                            Ich stimme zu, kontaktiert zu werden.
+                                        </span>
+                                        <p className="text-white/50 text-xs mt-1.5 leading-relaxed">
+                                            Ich möchte zur Ernte und allen weiteren relevanten Informationen benachrichtigt werden und willige in die Verarbeitung meiner Daten gemäß der Datenschutzerklärung ein.
                                         </p>
                                     </div>
-                                </div>
+                                </label>
 
                                 <div className="waitlist-element pt-2">
                                     <button
