@@ -162,7 +162,7 @@ function Hero() {
                     </h1>
                     
                     <Link to="/waitlist" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 relative z-30">
-                        Hol es dir
+                        Jetzt sichern
                         <ArrowRight className="ml-2 w-5 h-5" />
                     </Link>
 
@@ -509,7 +509,7 @@ function WaitlistSection() {
                             to="/waitlist"
                             className="btn-magnetic btn-accent py-4 px-12 text-lg lg:text-xl shadow-[0_0_30px_rgba(254,65,0,0.4)]"
                         >
-                            Warteliste
+                            Jetzt sichern
                             <ArrowRight className="ml-3 w-5 h-5 flex-shrink-0" />
                         </Link>
                     </div>
