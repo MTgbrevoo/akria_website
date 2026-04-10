@@ -184,24 +184,16 @@ function ClaimSet1() {
     const sectionRef = useRef<HTMLElement>(null)
     const claims = [
         {
-            icon: <img src="/assets/sun.png" alt="" className="w-full h-full object-contain" />,
-            title: '300 Sonnentage/ Jahr',
-            desc: 'Die Mani in Griechenland ist rau, trocken und voller Olivenbäume. Viel Sonne, nix regen.',
+            title: 'Ernte & Pressung',
+            desc: 'Unsere Oliven werden zum perfekten Zeitpunkt geerntet und sofort schonend kalt gepresst, um alle Aromen zu bewahren.',
         },
         {
-            icon: <img src="/assets/mountains.png" alt="" className="w-full h-full object-contain scale-[1.5]" />,
-            title: 'Berge & Meer',
-            desc: 'Berge, Meer und eine salzige Meerbrise. Nicht gemütlich für viele Pflanzen. Aber ziemlich gut für Oliven.',
+            title: 'Geprüfte Qualität',
+            desc: 'Jede Charge wird im Labor analysiert und zertifiziert. Wir garantieren höchste Reinheit und einen extrem hohen Polyphenolgehalt.',
         },
         {
-            icon: <img src="/assets/illustrations/Pokal.png" alt="" className="w-12 h-12 md:w-16 md:h-16 object-contain" />,
-            title: 'Weltklasse Qualität',
-            desc: 'Jede Charge geht ins Labor. Getestet und zertifiziert von einem vom International Olive Council anerkannten Institut.',
-        },
-        {
-            icon: <img src="/assets/illustrations/Present.png" alt="" className="w-12 h-12 md:w-16 md:h-16 object-contain" />,
             title: 'Direkt zu dir',
-            desc: 'Wir bringen den Sommer in deine Küche! Schluss mit Ratlosigkeit vor dem Supermarkt-Regal. Wir holen echtes Handwerk aus Griechenland und machen es für dich verfügbar.',
+            desc: 'Vom Feld direkt in deine Küche. Wir verzichten auf Zwischenhändler, damit du die maximale Frische und faire Preise genießt.',
         },
     ]
 
@@ -211,10 +203,10 @@ function ClaimSet1() {
 
             // Initial setup
             claims.forEach((_, i) => {
-                gsap.set(`.claim-card-${i}`, { 
-                    opacity: 0, 
-                    x: isMobile ? 0 : (i % 2 === 0 ? -40 : 40), 
-                    y: isMobile ? 40 : 0 
+                gsap.set(`.claim-card-${i}`, {
+                    opacity: 0,
+                    x: isMobile ? 0 : (i % 2 === 0 ? -40 : 40),
+                    y: isMobile ? 40 : 0
                 })
                 if (i < claims.length - 1) {
                     gsap.set(`.claim-arrow-${i}`, { opacity: 0, strokeDashoffset: 200 })
@@ -225,7 +217,7 @@ function ClaimSet1() {
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current,
-                    start: 'top top', 
+                    start: 'top top',
                     end: `+=${claims.length * 100}%`,
                     pin: true,
                     scrub: 1.5,
@@ -270,8 +262,7 @@ function ClaimSet1() {
         >
             <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex flex-col h-full">
                 <h2 className="font-display text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-8 md:mb-16 text-white/95 text-center lg:text-left leading-[1.1] max-w-5xl tracking-tight">
-                    Du hast dich schon immer gefragt, wo Du <span className="font-serif italic text-accent">weltklasse</span> Olivenöl bekommst? <br className="hidden md:block" />
-                    Wir bringen es von der Mani zu dir!
+                    Weltklasse Olivenöl direkt von der <span className="font-serif italic text-accent">Ernte</span> zu dir nach Hause.
                 </h2>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-16 items-start lg:items-center flex-1">
@@ -279,19 +270,17 @@ function ClaimSet1() {
                         {claims.map((claim, i) => (
                             <div key={i} className="relative">
                                 <div
-                                    className={`claim-card-${i} glass-card p-3 md:p-4 flex items-center gap-4 group hover:bg-white/10`}
+                                    className={`claim-card-${i} glass-card p-5 md:p-8 flex flex-col gap-2 group hover:bg-white/10`}
                                 >
-                                    <div className="flex-shrink-0 w-10 h-10 md:w-14 md:h-14 flex items-center justify-center">
-                                        {claim.icon}
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="font-display font-bold text-base md:text-xl text-white mb-0.5">
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-accent font-serif italic text-2xl md:text-3xl font-bold opacity-50">0{i + 1}</span>
+                                        <h3 className="font-display font-bold text-lg md:text-2xl text-white">
                                             {claim.title}
                                         </h3>
-                                        <p className="text-white/60 text-xs md:text-sm leading-tight md:leading-relaxed">
-                                            {claim.desc}
-                                        </p>
                                     </div>
+                                    <p className="text-white/70 text-sm md:text-base leading-relaxed pl-10 md:pl-12">
+                                        {claim.desc}
+                                    </p>
                                 </div>
 
                                 {i < claims.length - 1 && (
