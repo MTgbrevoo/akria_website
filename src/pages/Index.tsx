@@ -184,16 +184,16 @@ function ClaimSet1() {
     const sectionRef = useRef<HTMLElement>(null)
     const claims = [
         {
-            title: 'Ernte & Pressung',
-            desc: 'Unsere Oliven werden zum perfekten Zeitpunkt geerntet und sofort schonend kalt gepresst, um alle Aromen zu bewahren.',
+            title: 'Unverbindlich reservieren',
+            desc: 'Trage dich in unsere Gästeliste ein. Damit sicherst du dir dein Anrecht auf die kommende Ernte (begrenzte Menge!).',
         },
         {
-            title: 'Geprüfte Qualität',
-            desc: 'Jede Charge wird im Labor analysiert und zertifiziert. Wir garantieren höchste Reinheit und einen extrem hohen Polyphenolgehalt.',
+            title: 'Ernte-Update erhalten',
+            desc: 'Sobald die Ernte kurz bevorsteht (ca. November), informieren wir dich per Mail über die Qualität und den genauen Ablauf.',
         },
         {
-            title: 'Direkt zu dir',
-            desc: 'Vom Feld direkt in deine Küche. Wir verzichten auf Zwischenhändler, damit du die maximale Frische und faire Preise genießt.',
+            title: 'Bestellen & Genießen',
+            desc: 'Du bestätigst deine Wunschmenge (Zielpreis 16-18 €/L) und wir schicken das frische Öl direkt nach der Pressung zu dir.',
         },
     ]
 
@@ -262,7 +262,7 @@ function ClaimSet1() {
         >
             <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex flex-col h-full">
                 <h2 className="font-display text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-8 md:mb-16 text-white/95 text-center lg:text-left leading-[1.1] max-w-5xl tracking-tight">
-                    Weltklasse Olivenöl direkt von der <span className="font-serif italic text-accent">Ernte</span> zu dir nach Hause.
+                    Weltklasse Olivenöl direkt von der Ernte zu dir nach Hause.
                 </h2>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-16 items-start lg:items-center flex-1">
@@ -797,7 +797,7 @@ function CookieBanner({ onShowDatenschutz }: { onShowDatenschutz: () => void }) 
         gsap.fromTo(
             bannerRef.current,
             { y: 60, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }
+            { y: 0, opacity: 1, duration: 0.6, peak: 'power3.out' }
         )
     }, [visible])
 
