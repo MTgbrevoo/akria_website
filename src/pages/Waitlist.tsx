@@ -24,6 +24,7 @@ export default function Waitlist() {
     const formRef = useRef<HTMLDivElement>(null);
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
+    const [marketingConsent, setMarketingConsent] = useState(false);
     
     const [formData, setFormData] = useState({
         firstname: '',
@@ -61,21 +62,30 @@ export default function Waitlist() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (!marketingConsent) {
+            setStatus('error');
+            setErrorMessage('Bitte stimme dem Newsletter-Empfang zu, um dich auf die Warteliste zu setzen.');
+            return;
+        }
+
         setStatus('loading');
         setErrorMessage('');
 
         try {
-            const { error } = await supabase
-                .from('ernte2026')
-                .insert([
-                    { 
-                        firstname: formData.firstname, 
-                        lastname: formData.lastname, 
-                        email: formData.email, 
-                        location: formData.location, 
-                        notes: formData.notes 
+            const { error } = await supabase.auth.signInWithOtp({
+                email: formData.email,
+                options: {
+                    emailRedirectTo: `${window.location.origin}/success`,
+                    data: {
+                        firstname: formData.firstname,
+                        lastname: formData.lastname,
+                        location: formData.location,
+                        notes: formData.notes,
+                        marketing_consent: marketingConsent
                     }
-                ]);
+                }
+            });
 
             if (error) throw error;
 
@@ -113,10 +123,10 @@ export default function Waitlist() {
                                 <CheckCircle2 className="w-20 h-20 text-accent" />
                             </div>
                             <h2 className="font-serif italic font-bold text-3xl md:text-4xl text-white mb-4">
-                                Fast geschafft!
+                                Bitte überprüfe deine E-Mails!
                             </h2>
                             <p className="text-white/70 text-lg mb-8 max-w-md mx-auto">
-                                Danke für dein Interesse an der nächsten AKRIA Ernte. Wir haben dich auf die Warteliste gesetzt und melden uns bei dir.
+                                Wir haben dir einen Bestätigungslink gesendet. Bitte klicke auf den Link in der E-Mail, um deine Anmeldung zur Ernte 2026 abzuschließen.
                             </p>
                             <Link to="/" className="btn-magnetic btn-accent py-3 px-10 inline-flex items-center">
                                 Zurück zur Übersicht
@@ -223,6 +233,28 @@ export default function Waitlist() {
                                     </div>
                                 )}
 
+                                <div className="waitlist-element flex items-start gap-3 mt-4 mb-6">
+                                    <div className="flex items-center h-6">
+                                        <input
+                                            id="marketingConsent"
+                                            name="marketingConsent"
+                                            type="checkbox"
+                                            checked={marketingConsent}
+                                            onChange={(e) => setMarketingConsent(e.target.checked)}
+                                            className="w-5 h-5 rounded border-white/20 bg-white/5 text-accent focus:ring-accent/50 focus:ring-offset-0 cursor-pointer"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="text-sm">
+                                        <label htmlFor="marketingConsent" className="font-medium text-white/90 cursor-pointer">
+                                            Ich stimme zu, zur Ernte kontaktiert zu werden
+                                        </label>
+                                        <p className="text-white/50 text-xs mt-1">
+                                            Ich möchte den Newsletter erhalten und willige in die Verarbeitung meiner Daten gemäß der Datenschutzerklärung ein.
+                                        </p>
+                                    </div>
+                                </div>
+
                                 <div className="waitlist-element pt-2">
                                     <button
                                         disabled={status === 'loading'}
@@ -242,10 +274,6 @@ export default function Waitlist() {
                                         )}
                                     </button>
                                 </div>
-                                
-                                <p className="waitlist-element text-center text-white/30 text-xs px-4">
-                                    Mit dem Absenden erklärst du dich damit einverstanden, dass wir dich über zukünftige Ernten informieren. Du kannst dich jederzeit wieder abmelden.
-                                </p>
                             </form>
                         </>
                     )}

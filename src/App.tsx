@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Index from './pages/Index';
 import Waitlist from './pages/Waitlist';
+import Success from './pages/Success';
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/waitlist" element={<Waitlist />} />
+        <Route path="/success" element={<Success />} />
       </Routes>
     </BrowserRouter>
   );
