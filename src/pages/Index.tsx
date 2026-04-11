@@ -442,6 +442,61 @@ function ClaimSet2() {
 
 
 /* ═══════════════════════════════════════════════════════════
+   IMAGE GALLERY — Horizontal Scroll Carousel
+   ═══════════════════════════════════════════════════════════ */
+function ImageGallery() {
+    const galleryRef = useRef<HTMLElement>(null)
+
+    // Placeholder images as per plan
+    const images = Array.from({ length: 9 }).map((_, i) => `/assets/gallery/image-${i + 1}.jpg`)
+
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            gsap.fromTo(galleryRef.current,
+                { y: 50, opacity: 0 },
+                {
+                    y: 0,
+                    opacity: 1,
+                    duration: 1,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: galleryRef.current,
+                        start: "top 80%",
+                        toggleActions: "play none none reverse"
+                    }
+                }
+            )
+        }, galleryRef)
+        return () => ctx.revert()
+    }, [])
+
+    return (
+        <section ref={galleryRef} className="py-12 md:py-24 bg-primary overflow-hidden">
+            <div className="w-full">
+                <div
+                    className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-6 px-6 md:px-12 lg:px-16 pb-8 scrollbar-hide"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                    {images.map((src, idx) => (
+                        <div
+                            key={idx}
+                            className="flex-none w-[85vw] sm:w-[60vw] md:w-[45vw] lg:w-[30vw] aspect-[4/3] snap-center"
+                        >
+                            <img
+                                src={src}
+                                alt={`Gallery image ${idx + 1}`}
+                                className="w-full h-full object-cover rounded-2xl md:rounded-3xl shadow-xl"
+                                loading="lazy"
+                            />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    )
+}
+
+/* ═══════════════════════════════════════════════════════════
    WAITLIST CTA — Unified Full-Bleed Design
    ═══════════════════════════════════════════════════════════ */
 function WaitlistSection() {
@@ -881,6 +936,7 @@ export default function Index() {
                 <Hero />
                 <ClaimSet1 />
                 <ClaimSet2 />
+                <ImageGallery />
                 <WaitlistSection />
             </main>
             <Footer onShowImpressum={() => setShowImpressum(true)} onShowDatenschutz={() => setShowDatenschutz(true)} />

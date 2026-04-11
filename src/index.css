@@ -178,6 +178,10 @@ body {
   background: rgba(254, 65, 0, 0.8);
 }
 
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* ── Claim arrow path ─────────────────────────────────── */
 .arrow-path {
   stroke-dasharray: 200;
