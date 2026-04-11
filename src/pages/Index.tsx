@@ -376,8 +376,8 @@ function ClaimSet2() {
 
                 tl.fromTo(`.stack-card-${i}`,
                     {
-                        y: "-100vh",
-                        rotateX: 15,
+                        y: "100vh", // Updated from -100vh to 100vh to slide in from bottom
+                        rotateX: -15, // Adjusted rotation for a more natural entry from bottom
                         scale: 1.1,
                         zIndex: 10 + i
                     },
