@@ -189,7 +189,7 @@ function ClaimSet1() {
         },
         {
             title: 'Ernte-Update erhalten',
-            desc: 'Sobald die Ernte kurz bevorsteht (ca. November), informieren wir dich per Mail über die Qualität und den genauen Ablauf.',
+            desc: 'Sobald die Ernte kurz bevorsteht (ca. November), informieren wir dich per Mail und Du kannst verbindlich bestellen.',
         },
         {
             title: 'Bestellen & Genießen',
