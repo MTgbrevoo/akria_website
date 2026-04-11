@@ -337,7 +337,7 @@ function ClaimSet2() {
     const cards = [
         {
             headline: "100% Koroneiki-Oliven",
-            desc: "Koroneiki-Oliven sind klein, wachsen gut im trockenen Klima der Mani und gehören zu den Sorten mit besonders vielen naturally vorkommenden Polyphenolen.",
+            desc: "Koroneiki-Oliven sind klein, wachsen gut im trockenen Klima der Mani und gehören zu den Sorten mit besonders vielen natürlich vorkommenden Polyphenolen.",
             bg: "bg-[#0c5eaf]",
             illustration: "/assets/illustrations/Olive.png"
         },
