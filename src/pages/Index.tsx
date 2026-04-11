@@ -447,8 +447,17 @@ function ClaimSet2() {
 function ImageGallery() {
     const galleryRef = useRef<HTMLElement>(null)
 
-    // Placeholder images as per plan
-    const images = Array.from({ length: 9 }).map((_, i) => `/assets/gallery/image-${i + 1}.jpg`)
+    const images = [
+        "/assets/gallery/DSCF4045.JPG",
+        "/assets/gallery/DSCF4042.JPG",
+        "/assets/gallery/DSCF4075.JPG",
+        "/assets/gallery/DSCF4085.JPG",
+        "/assets/gallery/DSCF4011.JPG",
+        "/assets/gallery/DSCF3997.JPG",
+        "/assets/gallery/DSCF3954.JPG",
+        "/assets/gallery/DJI_0340.JPG",
+        "/assets/gallery/DJI_0356.JPG"
+    ]
 
     useEffect(() => {
         const ctx = gsap.context(() => {
