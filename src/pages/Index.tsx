@@ -939,7 +939,7 @@ export default function Index() {
         <div className="bg-primary min-h-screen">
             <NoiseOverlay />
             <Impressum isOpen={showImpressum} onClose={() => setShowImpressum(false)} />
-            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(true)} />
+            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(false)} />
             <CookieBanner onShowDatenschutz={() => setShowDatenschutz(true)} />
             <main>
                 <Hero />
