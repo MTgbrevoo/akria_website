@@ -156,7 +156,7 @@ export default function Waitlist() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="waitlist-element">
                                         <label htmlFor="firstname" className="block text-xs font-semibold uppercase tracking-widest text-white/50 mb-2 ml-1">
-                                            Vorname
+                                            Vorname *
                                         </label>
                                         <input
                                             required
@@ -171,7 +171,7 @@ export default function Waitlist() {
                                     </div>
                                     <div className="waitlist-element">
                                         <label htmlFor="lastname" className="block text-xs font-semibold uppercase tracking-widest text-white/50 mb-2 ml-1">
-                                            Nachname
+                                            Nachname *
                                         </label>
                                         <input
                                             required
@@ -188,7 +188,7 @@ export default function Waitlist() {
 
                                 <div className="waitlist-element">
                                     <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-widest text-white/50 mb-2 ml-1">
-                                        E-Mail Adresse
+                                        E-Mail Adresse *
                                     </label>
                                     <input
                                         required
@@ -204,7 +204,7 @@ export default function Waitlist() {
 
                                 <div className="waitlist-element">
                                     <label htmlFor="location" className="block text-xs font-semibold uppercase tracking-widest text-white/50 mb-2 ml-1">
-                                        Wohnort
+                                        Wohnort *
                                     </label>
                                     <input
                                         required
@@ -256,7 +256,7 @@ export default function Waitlist() {
                                     </div>
                                     <div className="text-sm flex-1">
                                         <span className="font-medium text-white/90 text-base group-hover:text-white transition-colors">
-                                            Ich stimme zu, kontaktiert zu werden.
+                                            Ich stimme zu, kontaktiert zu werden. *
                                         </span>
                                         <p className="text-white/50 text-xs mt-1.5 leading-relaxed">
                                             Ich möchte zur Ernte und allen weiteren relevanten Informationen benachrichtigt werden und willige in die Verarbeitung meiner Daten gemäß der Datenschutzerklärung ein.
