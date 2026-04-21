@@ -156,7 +156,7 @@ export default function Waitlist() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="waitlist-element">
                                         <label htmlFor="firstname" className="block text-xs font-semibold uppercase tracking-widest text-white/50 mb-2 ml-1">
-                                            Vorname *
+                                            Vorname
                                         </label>
                                         <input
                                             required
@@ -165,13 +165,13 @@ export default function Waitlist() {
                                             name="firstname"
                                             value={formData.firstname}
                                             onChange={handleChange}
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all"
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
                                             placeholder=""
                                         />
                                     </div>
                                     <div className="waitlist-element">
                                         <label htmlFor="lastname" className="block text-xs font-semibold uppercase tracking-widest text-white/50 mb-2 ml-1">
-                                            Nachname *
+                                            Nachname
                                         </label>
                                         <input
                                             required
@@ -180,7 +180,7 @@ export default function Waitlist() {
                                             name="lastname"
                                             value={formData.lastname}
                                             onChange={handleChange}
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all"
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
                                             placeholder=""
                                         />
                                     </div>
@@ -188,7 +188,7 @@ export default function Waitlist() {
 
                                 <div className="waitlist-element">
                                     <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-widest text-white/50 mb-2 ml-1">
-                                        E-Mail Adresse *
+                                        E-Mail Adresse
                                     </label>
                                     <input
                                         required
@@ -197,14 +197,14 @@ export default function Waitlist() {
                                         name="email"
                                         value={formData.email}
                                         onChange={handleChange}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all"
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
                                         placeholder=""
                                     />
                                 </div>
 
                                 <div className="waitlist-element">
                                     <label htmlFor="location" className="block text-xs font-semibold uppercase tracking-widest text-white/50 mb-2 ml-1">
-                                        Wohnort *
+                                        Wohnort
                                     </label>
                                     <input
                                         required
@@ -213,7 +213,7 @@ export default function Waitlist() {
                                         name="location"
                                         value={formData.location}
                                         onChange={handleChange}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all"
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
                                         placeholder=""
                                     />
                                 </div>
@@ -228,7 +228,7 @@ export default function Waitlist() {
                                         rows={3}
                                         value={formData.notes}
                                         onChange={handleChange}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all resize-none"
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all resize-none"
                                         placeholder="Was würdest Du gerne von uns sehen? Oder lass einfach Grüße da! :)"
                                     />
                                 </div>
@@ -256,7 +256,7 @@ export default function Waitlist() {
                                     </div>
                                     <div className="text-sm flex-1">
                                         <span className="font-medium text-white/90 text-base group-hover:text-white transition-colors">
-                                            Ich stimme zu, kontaktiert zu werden. *
+                                            Ich stimme zu, kontaktiert zu werden.
                                         </span>
                                         <p className="text-white/50 text-xs mt-1.5 leading-relaxed">
                                             Ich möchte zur Ernte und allen weiteren relevanten Informationen benachrichtigt werden und willige in die Verarbeitung meiner Daten gemäß der Datenschutzerklärung ein.
