@@ -5,6 +5,7 @@ import { gsap } from 'gsap';
 import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../integrations/supabase/client';
+import { getStoredTrackingData } from '../hooks/useSourceTracking';
 
 /* ═══════════════════════════════════════════════════════════
    NOISE OVERLAY — SVG turbulence for texture
@@ -72,6 +73,8 @@ export default function Waitlist() {
         setStatus('loading');
         setErrorMessage('');
 
+        const trackingData = getStoredTrackingData();
+
         try {
             const { error } = await supabase.auth.signInWithOtp({
                 email: formData.email,
@@ -82,7 +85,10 @@ export default function Waitlist() {
                         lastname: formData.lastname,
                         location: formData.location,
                         notes: formData.notes,
-                        marketing_consent: marketingConsent
+                        marketing_consent: marketingConsent,
+                        acquisition_source_code: trackingData?.src || null,
+                        acquisition_source_type: trackingData?.trigger || null,
+                        source_captured_at: trackingData?.capturedAt || null
                     }
                 }
             });
