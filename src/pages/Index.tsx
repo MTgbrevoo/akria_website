@@ -328,7 +328,7 @@ function ClaimSet1() {
 
 
 /* ═══════════════════════════════════════════════════════════
-   CLAIM SET 2 — Falling Cards Stacking Effect
+   CLAIM SET 2 — Stacking Cards (Entering from Bottom)
    ═══════════════════════════════════════════════════════════ */
 function ClaimSet2() {
     const sectionRef = useRef<HTMLElement>(null);
@@ -376,8 +376,8 @@ function ClaimSet2() {
 
                 tl.fromTo(`.stack-card-${i}`,
                     {
-                        y: "-100vh",
-                        rotateX: 15,
+                        y: "100vh", // Changed from -100vh to 100vh to enter from bottom
+                        rotateX: -15, // Changed to match the rising motion
                         scale: 1.1,
                         zIndex: 10 + i
                     },
