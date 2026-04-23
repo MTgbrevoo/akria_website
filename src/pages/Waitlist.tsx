@@ -45,7 +45,7 @@ export default function Waitlist() {
         const requiredFields = [
             formData.firstname.trim().length > 0,
             formData.lastname.trim().length > 0,
-            formData.email.trim().length > 3 && formData.email.includes('@'),
+            formData.email.trim().length > 0 && formData.email.includes('@'),
             formData.location.trim().length > 0,
             marketingConsent === true
         ];
@@ -100,20 +100,18 @@ export default function Waitlist() {
             if (!path) return;
             const length = path.getTotalLength();
             
-            // Add slight buffer to dasharray to prevent sub-pixel gaps
-            gsap.set(path, { strokeDasharray: length + 2 });
+            // Set exact length
+            gsap.set(path, { strokeDasharray: length });
             
-            // If progress is 100%, force offset exactly to 0 for a perfect meet
-            const targetOffset = progress === 1 ? 0 : length * (1 - progress);
-            
+            // Animate exact pixel offset
             gsap.to(path, {
-                strokeDashoffset: targetOffset,
-                duration: progress === 1 ? 1.5 : 1.2,
-                ease: progress === 1 ? 'power3.inOut' : 'power2.out',
+                strokeDashoffset: length * (1 - progress),
+                duration: 1.2,
+                ease: 'power2.out',
                 opacity: progress > 0 ? 1 : 0
             });
         });
-    }, [progress, dimensions]); 
+    }, [progress, dimensions]); // Re-run when size or progress changes
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -168,10 +166,9 @@ export default function Waitlist() {
     };
 
     // Calculate exact SVG paths to match Tailwind rounded-[2.5rem] exactly (40px)
+    const r = 40; 
     const strokeWidth = 4;
-    const inset = strokeWidth / 2; // Offset to perfectly center the stroke inside the border-box
-    const outerRadius = 40; // 2.5rem
-    const r = outerRadius - inset; // Inner radius for the path to perfectly parallel the CSS border
+    const inset = strokeWidth / 2; // Offset to perfectly center the stroke on the edge
     
     const w = dimensions.w;
     const h = dimensions.h;
@@ -183,9 +180,9 @@ export default function Waitlist() {
 
     if (w > 0 && h > 0) {
         // Top Center -> Right Edge -> Bottom Right Corner -> Bottom Center
-        rightPathD = `M ${w/2},${inset} L ${ew - r},${inset} A ${r},${r} 0 0 1 ${ew},${inset + r} L ${ew},${eh - r} A ${r},${r} 0 0 1 ${ew - r},${eh} L ${w/2},${eh}`;
+        rightPathD = `M ${w/2},${inset} L ${ew - r},${inset} A ${r},${r} 0 0 1 ${ew},${r + inset} L ${ew},${eh - r} A ${r},${r} 0 0 1 ${ew - r},${eh} L ${w/2},${eh}`;
         // Top Center -> Left Edge -> Bottom Left Corner -> Bottom Center
-        leftPathD = `M ${w/2},${inset} L ${inset + r},${inset} A ${r},${r} 0 0 0 ${inset},${inset + r} L ${inset},${eh - r} A ${r},${r} 0 0 0 ${inset + r},${eh} L ${w/2},${eh}`;
+        leftPathD = `M ${w/2},${inset} L ${r + inset},${inset} A ${r},${r} 0 0 0 ${inset},${r + inset} L ${inset},${eh - r} A ${r},${r} 0 0 0 ${r + inset},${eh} L ${w/2},${eh}`;
     }
 
     return (
@@ -202,16 +199,17 @@ export default function Waitlist() {
                 </Link>
 
                 <div ref={cardRef} className="waitlist-card glass-card p-8 md:p-12 rounded-[2.5rem] border border-white/10 shadow-2xl relative">
-                    {/* Progressive Split Border Overlay (Pixel Perfect mapping, absolute position shifted by -1px to cover border) */}
+                    {/* Progressive Split Border Overlay (Pixel Perfect) */}
                     {status !== 'success' && w > 0 && (
                         <svg 
-                            className="absolute pointer-events-none z-50 overflow-visible" 
-                            style={{ top: -1, left: -1, width: w, height: h }}
+                            className="absolute inset-0 pointer-events-none z-50 overflow-visible" 
+                            width={w} 
+                            height={h} 
                             viewBox={`0 0 ${w} ${h}`}
                         >
                             <defs>
                                 <filter id="glow-bold" x="-50%" y="-50%" width="200%" height="200%">
-                                    <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                                    <feGaussianBlur stdDeviation="4" result="coloredBlur" />
                                     <feMerge>
                                         <feMergeNode in="coloredBlur" />
                                         <feMergeNode in="coloredBlur" />
@@ -355,7 +353,7 @@ export default function Waitlist() {
                                 </div>
 
                                 {status === 'error' && (
-                                    <div className="waitlist-element p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-sm relative z-10">
+                                    <div className="waitlist-element p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-sm">
                                         {errorMessage}
                                     </div>
                                 )}
