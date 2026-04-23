@@ -23,8 +23,7 @@ function NoiseOverlay() {
 
 export default function Waitlist() {
     const formRef = useRef<HTMLDivElement>(null);
-    const rightPathRef = useRef<SVGPathElement>(null);
-    const leftPathRef = useRef<SVGPathElement>(null);
+    const borderPathRef = useRef<SVGRectElement>(null);
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
     const [marketingConsent, setMarketingConsent] = useState(false);
@@ -73,24 +72,22 @@ export default function Waitlist() {
         return () => ctx.revert();
     }, []);
 
-    // Animate the split border progress
+    // Animate the border progress
     useEffect(() => {
-        const paths = [rightPathRef.current, leftPathRef.current];
+        if (!borderPathRef.current) return;
         
-        paths.forEach(path => {
-            if (!path) return;
-            const length = path.getTotalLength();
-            
-            // Set initial state
-            gsap.set(path, { strokeDasharray: length });
-            
-            // Animate offset
-            gsap.to(path, {
-                strokeDashoffset: length * (1 - progress),
-                duration: 0.8,
-                ease: 'power2.out',
-                opacity: progress > 0 ? 1 : 0
-            });
+        const path = borderPathRef.current;
+        const length = path.getTotalLength();
+        
+        // Ensure path starts hidden
+        gsap.set(path, { strokeDasharray: length });
+        
+        gsap.to(path, {
+            strokeDashoffset: length * (1 - progress),
+            duration: 0.6,
+            ease: 'power2.out',
+            stroke: progress === 1 ? '#fe4100' : '#fe4100', // Keep it orange
+            opacity: progress > 0 ? 1 : 0
         });
     }, [progress]);
 
@@ -160,34 +157,21 @@ export default function Waitlist() {
                 </Link>
 
                 <div className="waitlist-card glass-card p-8 md:p-12 rounded-[2.5rem] border border-white/10 shadow-2xl relative overflow-hidden">
-                    {/* Progressive Split Border Overlay */}
+                    {/* Progressive Border Overlay */}
                     {status !== 'success' && (
-                        <svg 
-                            className="absolute inset-0 w-full h-full pointer-events-none z-50 overflow-visible" 
-                            viewBox="0 0 100 100" 
-                            preserveAspectRatio="none"
-                        >
-                            {/* Right Path: Top Center -> Right -> Bottom Center */}
-                            <path
-                                ref={rightPathRef}
-                                d="M 50,0 L 92,0 C 96,0 100,4 100,8 L 100,92 C 100,96 96,100 92,100 L 50,100"
+                        <svg className="absolute inset-0 w-full h-full pointer-events-none z-50 overflow-visible" preserveAspectRatio="none">
+                            <rect
+                                ref={borderPathRef}
+                                x="1"
+                                y="1"
+                                width="calc(100% - 2px)"
+                                height="calc(100% - 2px)"
+                                rx="2.5rem"
                                 fill="none"
                                 stroke="#fe4100"
-                                strokeWidth="0.5"
-                                vectorEffect="non-scaling-stroke"
-                                style={{ strokeLinecap: 'round' }}
+                                strokeWidth="3"
                                 className="transition-opacity duration-300"
-                            />
-                            {/* Left Path: Top Center -> Left -> Bottom Center */}
-                            <path
-                                ref={leftPathRef}
-                                d="M 50,0 L 8,0 C 4,0 0,4 0,8 L 0,92 C 0,96 4,100 8,100 L 50,100"
-                                fill="none"
-                                stroke="#fe4100"
-                                strokeWidth="0.5"
-                                vectorEffect="non-scaling-stroke"
                                 style={{ strokeLinecap: 'round' }}
-                                className="transition-opacity duration-300"
                             />
                         </svg>
                     )}
