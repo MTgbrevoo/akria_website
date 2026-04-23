@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { gsap } from 'gsap';
 import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -23,6 +23,7 @@ function NoiseOverlay() {
 
 export default function Waitlist() {
     const formRef = useRef<HTMLDivElement>(null);
+    const borderPathRef = useRef<SVGRectElement>(null);
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
     const [marketingConsent, setMarketingConsent] = useState(false);
@@ -35,8 +36,22 @@ export default function Waitlist() {
         notes: ''
     });
 
+    // Calculate form progress (0 to 1)
+    const progress = useMemo(() => {
+        const requiredFields = [
+            formData.firstname.trim().length > 0,
+            formData.lastname.trim().length > 0,
+            formData.email.trim().length > 0 && formData.email.includes('@'),
+            formData.location.trim().length > 0,
+            marketingConsent === true
+        ];
+        const filledCount = requiredFields.filter(Boolean).length;
+        return filledCount / requiredFields.length;
+    }, [formData, marketingConsent]);
+
     useEffect(() => {
         const ctx = gsap.context(() => {
+            // Intro animations
             gsap.from('.waitlist-card', {
                 y: 40,
                 opacity: 0,
@@ -56,6 +71,25 @@ export default function Waitlist() {
         }, formRef);
         return () => ctx.revert();
     }, []);
+
+    // Animate the border progress
+    useEffect(() => {
+        if (!borderPathRef.current) return;
+        
+        const path = borderPathRef.current;
+        const length = path.getTotalLength();
+        
+        // Ensure path starts hidden
+        gsap.set(path, { strokeDasharray: length });
+        
+        gsap.to(path, {
+            strokeDashoffset: length * (1 - progress),
+            duration: 0.6,
+            ease: 'power2.out',
+            stroke: progress === 1 ? '#fe4100' : '#fe4100', // Keep it orange
+            opacity: progress > 0 ? 1 : 0
+        });
+    }, [progress]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -123,6 +157,25 @@ export default function Waitlist() {
                 </Link>
 
                 <div className="waitlist-card glass-card p-8 md:p-12 rounded-[2.5rem] border border-white/10 shadow-2xl relative overflow-hidden">
+                    {/* Progressive Border Overlay */}
+                    {status !== 'success' && (
+                        <svg className="absolute inset-0 w-full h-full pointer-events-none z-50 overflow-visible" preserveAspectRatio="none">
+                            <rect
+                                ref={borderPathRef}
+                                x="1"
+                                y="1"
+                                width="calc(100% - 2px)"
+                                height="calc(100% - 2px)"
+                                rx="2.5rem"
+                                fill="none"
+                                stroke="#fe4100"
+                                strokeWidth="3"
+                                className="transition-opacity duration-300"
+                                style={{ strokeLinecap: 'round' }}
+                            />
+                        </svg>
+                    )}
+
                     {status === 'success' ? (
                         <div className="success-message text-center py-12">
                             <div className="flex justify-center mb-6">
