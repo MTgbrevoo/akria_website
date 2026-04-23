@@ -73,20 +73,6 @@ export default function Waitlist() {
         return () => ctx.revert();
     }, []);
 
-    // Initial path setup
-    useEffect(() => {
-        const paths = [rightPathRef.current, leftPathRef.current];
-        paths.forEach(path => {
-            if (!path) return;
-            const length = path.getTotalLength();
-            gsap.set(path, { 
-                strokeDasharray: length, 
-                strokeDashoffset: length,
-                opacity: 0 
-            });
-        });
-    }, []);
-
     // Animate the split border progress
     useEffect(() => {
         const paths = [rightPathRef.current, leftPathRef.current];
@@ -95,12 +81,15 @@ export default function Waitlist() {
             if (!path) return;
             const length = path.getTotalLength();
             
+            // Set initial state
+            gsap.set(path, { strokeDasharray: length });
+            
+            // Animate offset
             gsap.to(path, {
                 strokeDashoffset: length * (1 - progress),
-                duration: 1,
+                duration: 0.8,
                 ease: 'power2.out',
-                opacity: progress > 0 ? 1 : 0,
-                stroke: '#fe4100'
+                opacity: progress > 0 ? 1 : 0
             });
         });
     }, [progress]);
@@ -178,24 +167,14 @@ export default function Waitlist() {
                             viewBox="0 0 100 100" 
                             preserveAspectRatio="none"
                         >
-                            <defs>
-                                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                                    <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
-                                    <feMerge>
-                                        <feMergeNode in="coloredBlur" />
-                                        <feMergeNode in="SourceGraphic" />
-                                    </feMerge>
-                                </filter>
-                            </defs>
                             {/* Right Path: Top Center -> Right -> Bottom Center */}
                             <path
                                 ref={rightPathRef}
                                 d="M 50,0 L 92,0 C 96,0 100,4 100,8 L 100,92 C 100,96 96,100 92,100 L 50,100"
                                 fill="none"
                                 stroke="#fe4100"
-                                strokeWidth="1.5"
+                                strokeWidth="0.5"
                                 vectorEffect="non-scaling-stroke"
-                                filter="url(#glow)"
                                 style={{ strokeLinecap: 'round' }}
                                 className="transition-opacity duration-300"
                             />
@@ -205,9 +184,8 @@ export default function Waitlist() {
                                 d="M 50,0 L 8,0 C 4,0 0,4 0,8 L 0,92 C 0,96 4,100 8,100 L 50,100"
                                 fill="none"
                                 stroke="#fe4100"
-                                strokeWidth="1.5"
+                                strokeWidth="0.5"
                                 vectorEffect="non-scaling-stroke"
-                                filter="url(#glow)"
                                 style={{ strokeLinecap: 'round' }}
                                 className="transition-opacity duration-300"
                             />
