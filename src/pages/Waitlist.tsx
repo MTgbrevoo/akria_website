@@ -22,12 +22,9 @@ function NoiseOverlay() {
 }
 
 export default function Waitlist() {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const cardRef = useRef<HTMLDivElement>(null);
+    const formRef = useRef<HTMLDivElement>(null);
     const rightPathRef = useRef<SVGPathElement>(null);
     const leftPathRef = useRef<SVGPathElement>(null);
-    
-    const [dimensions, setDimensions] = useState({ w: 0, h: 0 });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
     const [marketingConsent, setMarketingConsent] = useState(false);
@@ -53,9 +50,9 @@ export default function Waitlist() {
         return filledCount / requiredFields.length;
     }, [formData, marketingConsent]);
 
-    // Intro Animations
     useEffect(() => {
         const ctx = gsap.context(() => {
+            // Intro animations
             gsap.from('.waitlist-card', {
                 y: 40,
                 opacity: 0,
@@ -72,46 +69,41 @@ export default function Waitlist() {
                 ease: 'power3.out',
                 delay: 0.5
             });
-        }, containerRef);
+        }, formRef);
         return () => ctx.revert();
     }, []);
 
-    // Track precise pixel dimensions of the card for pixel-perfect SVG path mapping
-    useEffect(() => {
-        if (!cardRef.current) return;
-        const observer = new ResizeObserver(() => {
-            if (cardRef.current) {
-                setDimensions({ 
-                    w: cardRef.current.offsetWidth, 
-                    h: cardRef.current.offsetHeight 
-                });
-            }
-        });
-        observer.observe(cardRef.current);
-        return () => observer.disconnect();
-    }, []);
-
-    // Animate the split border progress precisely based on pixel length
+    // Initial path setup
     useEffect(() => {
         const paths = [rightPathRef.current, leftPathRef.current];
-        if (dimensions.w === 0 || dimensions.h === 0) return;
+        paths.forEach(path => {
+            if (!path) return;
+            const length = path.getTotalLength();
+            gsap.set(path, { 
+                strokeDasharray: length, 
+                strokeDashoffset: length,
+                opacity: 0 
+            });
+        });
+    }, []);
 
+    // Animate the split border progress
+    useEffect(() => {
+        const paths = [rightPathRef.current, leftPathRef.current];
+        
         paths.forEach(path => {
             if (!path) return;
             const length = path.getTotalLength();
             
-            // Set exact length
-            gsap.set(path, { strokeDasharray: length });
-            
-            // Animate exact pixel offset
             gsap.to(path, {
                 strokeDashoffset: length * (1 - progress),
                 duration: 1.2,
-                ease: 'power2.out',
-                opacity: progress > 0 ? 1 : 0
+                ease: 'power2.inOut',
+                opacity: progress > 0 ? 1 : 0,
+                stroke: '#fe4100'
             });
         });
-    }, [progress, dimensions]); // Re-run when size or progress changes
+    }, [progress]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -165,28 +157,8 @@ export default function Waitlist() {
         }
     };
 
-    // Calculate exact SVG paths to match Tailwind rounded-[2.5rem] exactly (40px)
-    const r = 40; 
-    const strokeWidth = 4;
-    const inset = strokeWidth / 2; // Offset to perfectly center the stroke on the edge
-    
-    const w = dimensions.w;
-    const h = dimensions.h;
-    const ew = w - inset;
-    const eh = h - inset;
-
-    let rightPathD = "";
-    let leftPathD = "";
-
-    if (w > 0 && h > 0) {
-        // Top Center -> Right Edge -> Bottom Right Corner -> Bottom Center
-        rightPathD = `M ${w/2},${inset} L ${ew - r},${inset} A ${r},${r} 0 0 1 ${ew},${r + inset} L ${ew},${eh - r} A ${r},${r} 0 0 1 ${ew - r},${eh} L ${w/2},${eh}`;
-        // Top Center -> Left Edge -> Bottom Left Corner -> Bottom Center
-        leftPathD = `M ${w/2},${inset} L ${r + inset},${inset} A ${r},${r} 0 0 0 ${inset},${r + inset} L ${inset},${eh - r} A ${r},${r} 0 0 0 ${r + inset},${eh} L ${w/2},${eh}`;
-    }
-
     return (
-        <div ref={containerRef} className="min-h-[100svh] w-full bg-primary relative flex items-center justify-center p-6 overflow-hidden">
+        <div ref={formRef} className="min-h-[100svh] w-full bg-primary relative flex items-center justify-center p-6 overflow-hidden">
             <NoiseOverlay />
             
             <div className="absolute top-[-10%] right-[-10%] w-[40%] aspect-square bg-accent/10 rounded-full blur-[120px] pointer-events-none" />
@@ -198,18 +170,17 @@ export default function Waitlist() {
                     Zurück zur Startseite
                 </Link>
 
-                <div ref={cardRef} className="waitlist-card glass-card p-8 md:p-12 rounded-[2.5rem] border border-white/10 shadow-2xl relative">
-                    {/* Progressive Split Border Overlay (Pixel Perfect) */}
-                    {status !== 'success' && w > 0 && (
+                <div className="waitlist-card glass-card p-8 md:p-12 rounded-[2.5rem] border border-white/10 shadow-2xl relative overflow-hidden">
+                    {/* Progressive Split Border Overlay */}
+                    {status !== 'success' && (
                         <svg 
-                            className="absolute inset-0 pointer-events-none z-50 overflow-visible" 
-                            width={w} 
-                            height={h} 
-                            viewBox={`0 0 ${w} ${h}`}
+                            className="absolute inset-0 w-full h-full pointer-events-none z-50 overflow-visible" 
+                            viewBox="0 0 100 100" 
+                            preserveAspectRatio="none"
                         >
                             <defs>
                                 <filter id="glow-bold" x="-50%" y="-50%" width="200%" height="200%">
-                                    <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+                                    <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
                                     <feMerge>
                                         <feMergeNode in="coloredBlur" />
                                         <feMergeNode in="coloredBlur" />
@@ -217,27 +188,29 @@ export default function Waitlist() {
                                     </feMerge>
                                 </filter>
                             </defs>
-                            
-                            {/* Right Progress Line */}
+                            {/* Right Path: Top Center -> Right -> Bottom Center */}
                             <path
                                 ref={rightPathRef}
-                                d={rightPathD}
+                                d="M 50,0 L 92,0 Q 100,0 100,8 L 100,92 Q 100,100 92,100 L 50,100"
                                 fill="none"
                                 stroke="#fe4100"
-                                strokeWidth={strokeWidth}
+                                strokeWidth="4"
+                                vectorEffect="non-scaling-stroke"
                                 filter="url(#glow-bold)"
                                 style={{ strokeLinecap: 'round' }}
+                                className="transition-opacity duration-300"
                             />
-                            
-                            {/* Left Progress Line */}
+                            {/* Left Path: Top Center -> Left -> Bottom Center */}
                             <path
                                 ref={leftPathRef}
-                                d={leftPathD}
+                                d="M 50,0 L 8,0 Q 0,0 0,8 L 0,92 Q 0,100 8,100 L 50,100"
                                 fill="none"
                                 stroke="#fe4100"
-                                strokeWidth={strokeWidth}
+                                strokeWidth="4"
+                                vectorEffect="non-scaling-stroke"
                                 filter="url(#glow-bold)"
                                 style={{ strokeLinecap: 'round' }}
+                                className="transition-opacity duration-300"
                             />
                         </svg>
                     )}
@@ -284,7 +257,7 @@ export default function Waitlist() {
                                             name="firstname"
                                             value={formData.firstname}
                                             onChange={handleChange}
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all relative z-10"
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
                                             placeholder=""
                                         />
                                     </div>
@@ -299,7 +272,7 @@ export default function Waitlist() {
                                             name="lastname"
                                             value={formData.lastname}
                                             onChange={handleChange}
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all relative z-10"
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
                                             placeholder=""
                                         />
                                     </div>
@@ -316,7 +289,7 @@ export default function Waitlist() {
                                         name="email"
                                         value={formData.email}
                                         onChange={handleChange}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all relative z-10"
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
                                         placeholder=""
                                     />
                                 </div>
@@ -332,7 +305,7 @@ export default function Waitlist() {
                                         name="location"
                                         value={formData.location}
                                         onChange={handleChange}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all relative z-10"
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
                                         placeholder=""
                                     />
                                 </div>
@@ -347,7 +320,7 @@ export default function Waitlist() {
                                         rows={3}
                                         value={formData.notes}
                                         onChange={handleChange}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all resize-none relative z-10"
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all resize-none"
                                         placeholder="Was würdest Du gerne von uns sehen? Oder lass einfach Grüße da! :)"
                                     />
                                 </div>
@@ -358,7 +331,7 @@ export default function Waitlist() {
                                     </div>
                                 )}
 
-                                <label htmlFor="marketingConsent" className="waitlist-element flex items-start gap-4 mt-6 mb-8 cursor-pointer group relative z-10">
+                                <label htmlFor="marketingConsent" className="waitlist-element flex items-start gap-4 mt-6 mb-8 cursor-pointer group">
                                     <div className="relative flex items-center justify-center mt-1 shrink-0">
                                         <input
                                             id="marketingConsent"
@@ -383,7 +356,7 @@ export default function Waitlist() {
                                     </div>
                                 </label>
 
-                                <div className="waitlist-element pt-2 relative z-10">
+                                <div className="waitlist-element pt-2">
                                     <button
                                         disabled={status === 'loading'}
                                         type="submit"
