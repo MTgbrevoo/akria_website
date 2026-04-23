@@ -97,8 +97,8 @@ export default function Waitlist() {
             
             gsap.to(path, {
                 strokeDashoffset: length * (1 - progress),
-                duration: 1,
-                ease: 'power2.out',
+                duration: 1.2,
+                ease: 'power2.inOut',
                 opacity: progress > 0 ? 1 : 0,
                 stroke: '#fe4100'
             });
@@ -179,9 +179,10 @@ export default function Waitlist() {
                             preserveAspectRatio="none"
                         >
                             <defs>
-                                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                                    <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
+                                <filter id="glow-bold" x="-50%" y="-50%" width="200%" height="200%">
+                                    <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
                                     <feMerge>
+                                        <feMergeNode in="coloredBlur" />
                                         <feMergeNode in="coloredBlur" />
                                         <feMergeNode in="SourceGraphic" />
                                     </feMerge>
@@ -190,24 +191,24 @@ export default function Waitlist() {
                             {/* Right Path: Top Center -> Right -> Bottom Center */}
                             <path
                                 ref={rightPathRef}
-                                d="M 50,0 L 92,0 C 96,0 100,4 100,8 L 100,92 C 100,96 96,100 92,100 L 50,100"
+                                d="M 50,0 L 92,0 Q 100,0 100,8 L 100,92 Q 100,100 92,100 L 50,100"
                                 fill="none"
                                 stroke="#fe4100"
-                                strokeWidth="1.5"
+                                strokeWidth="4"
                                 vectorEffect="non-scaling-stroke"
-                                filter="url(#glow)"
+                                filter="url(#glow-bold)"
                                 style={{ strokeLinecap: 'round' }}
                                 className="transition-opacity duration-300"
                             />
                             {/* Left Path: Top Center -> Left -> Bottom Center */}
                             <path
                                 ref={leftPathRef}
-                                d="M 50,0 L 8,0 C 4,0 0,4 0,8 L 0,92 C 0,96 4,100 8,100 L 50,100"
+                                d="M 50,0 L 8,0 Q 0,0 0,8 L 0,92 Q 0,100 8,100 L 50,100"
                                 fill="none"
                                 stroke="#fe4100"
-                                strokeWidth="1.5"
+                                strokeWidth="4"
                                 vectorEffect="non-scaling-stroke"
-                                filter="url(#glow)"
+                                filter="url(#glow-bold)"
                                 style={{ strokeLinecap: 'round' }}
                                 className="transition-opacity duration-300"
                             />
