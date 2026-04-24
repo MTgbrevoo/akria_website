@@ -109,6 +109,13 @@ export default function Waitlist() {
         }
     };
 
+    const getInputClass = (fieldName: keyof typeof formData, additionalClasses = '') => {
+        const hasValue = formData[fieldName].trim().length > 0;
+        return `w-full border rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all duration-300 ${
+            hasValue ? 'bg-white/10 border-accent/50' : 'bg-white/5 border-white/10'
+        } ${additionalClasses}`;
+    };
+
     return (
         <div ref={formRef} className="min-h-[100svh] w-full bg-primary relative flex items-center justify-center p-6 overflow-hidden">
             <NoiseOverlay />
@@ -165,7 +172,7 @@ export default function Waitlist() {
                                             name="firstname"
                                             value={formData.firstname}
                                             onChange={handleChange}
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
+                                            className={getInputClass('firstname')}
                                             placeholder=""
                                         />
                                     </div>
@@ -180,7 +187,7 @@ export default function Waitlist() {
                                             name="lastname"
                                             value={formData.lastname}
                                             onChange={handleChange}
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
+                                            className={getInputClass('lastname')}
                                             placeholder=""
                                         />
                                     </div>
@@ -197,7 +204,7 @@ export default function Waitlist() {
                                         name="email"
                                         value={formData.email}
                                         onChange={handleChange}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
+                                        className={getInputClass('email')}
                                         placeholder=""
                                     />
                                 </div>
@@ -213,7 +220,7 @@ export default function Waitlist() {
                                         name="location"
                                         value={formData.location}
                                         onChange={handleChange}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
+                                        className={getInputClass('location')}
                                         placeholder=""
                                     />
                                 </div>
@@ -228,7 +235,7 @@ export default function Waitlist() {
                                         rows={3}
                                         value={formData.notes}
                                         onChange={handleChange}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all resize-none"
+                                        className={getInputClass('notes', 'resize-none')}
                                         placeholder="Was würdest Du gerne von uns sehen? Oder lass einfach Grüße da! :)"
                                     />
                                 </div>
