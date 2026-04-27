@@ -112,7 +112,7 @@ export default function Waitlist() {
     const getInputClass = (fieldName: keyof typeof formData, additionalClasses = '') => {
         const hasValue = formData[fieldName].trim().length > 0;
         return `w-full border rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all duration-300 ${
-            hasValue ? 'bg-white/10 border-accent/50' : 'bg-white/5 border-white/10'
+            hasValue ? 'bg-white/10 border-accent/70' : 'bg-white/5 border-white/10'
         } ${additionalClasses}`;
     };
 
