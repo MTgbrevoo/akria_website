@@ -5,6 +5,7 @@ import { gsap } from 'gsap';
 import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../integrations/supabase/client';
+import { getStoredTrackingData } from '../hooks/useSourceTracking';
 
 /* ═══════════════════════════════════════════════════════════
    NOISE OVERLAY — SVG turbulence for texture
@@ -72,6 +73,8 @@ export default function Waitlist() {
         setStatus('loading');
         setErrorMessage('');
 
+        const trackingData = getStoredTrackingData();
+
         try {
             const { error } = await supabase.auth.signInWithOtp({
                 email: formData.email,
@@ -82,7 +85,10 @@ export default function Waitlist() {
                         lastname: formData.lastname,
                         location: formData.location,
                         notes: formData.notes,
-                        marketing_consent: marketingConsent
+                        marketing_consent: marketingConsent,
+                        acquisition_source_code: trackingData?.src || null,
+                        acquisition_source_type: trackingData?.trigger || null,
+                        source_captured_at: trackingData?.capturedAt || null
                     }
                 }
             });
@@ -101,6 +107,13 @@ export default function Waitlist() {
             setStatus('error');
             setErrorMessage(err.message || 'Etwas ist schief gelaufen. Bitte versuche es später erneut.');
         }
+    };
+
+    const getInputClass = (fieldName: keyof typeof formData, additionalClasses = '') => {
+        const hasValue = formData[fieldName].trim().length > 0;
+        return `w-full border rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all duration-300 ${
+            hasValue ? 'bg-white/10 border-accent/70' : 'bg-white/5 border-white/10'
+        } ${additionalClasses}`;
     };
 
     return (
@@ -159,7 +172,7 @@ export default function Waitlist() {
                                             name="firstname"
                                             value={formData.firstname}
                                             onChange={handleChange}
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all"
+                                            className={getInputClass('firstname')}
                                             placeholder=""
                                         />
                                     </div>
@@ -174,7 +187,7 @@ export default function Waitlist() {
                                             name="lastname"
                                             value={formData.lastname}
                                             onChange={handleChange}
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all"
+                                            className={getInputClass('lastname')}
                                             placeholder=""
                                         />
                                     </div>
@@ -191,7 +204,7 @@ export default function Waitlist() {
                                         name="email"
                                         value={formData.email}
                                         onChange={handleChange}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all"
+                                        className={getInputClass('email')}
                                         placeholder=""
                                     />
                                 </div>
@@ -207,7 +220,7 @@ export default function Waitlist() {
                                         name="location"
                                         value={formData.location}
                                         onChange={handleChange}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all"
+                                        className={getInputClass('location')}
                                         placeholder=""
                                     />
                                 </div>
@@ -222,7 +235,7 @@ export default function Waitlist() {
                                         rows={3}
                                         value={formData.notes}
                                         onChange={handleChange}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all resize-none"
+                                        className={getInputClass('notes', 'resize-none')}
                                         placeholder="Was würdest Du gerne von uns sehen? Oder lass einfach Grüße da! :)"
                                     />
                                 </div>
