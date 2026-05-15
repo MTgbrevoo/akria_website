@@ -49,9 +49,9 @@ export default function Success() {
 
                 if (!email) throw new Error('E-Mail-Adresse konnte nicht ermittelt werden.');
 
-                // Check if user already exists in ernte2026 table
+                // Check if user already exists in sign_ups table
                 const { data: existingEntry, error: checkError } = await supabase
-                    .from('ernte2026')
+                    .from('sign_ups')
                     .select('email')
                     .eq('email', email)
                     .maybeSingle();
@@ -61,7 +61,7 @@ export default function Success() {
                 // If not existing, insert them
                 if (!existingEntry) {
                     const { error: insertError } = await supabase
-                        .from('ernte2026')
+                        .from('sign_ups')
                         .insert([{
                             email: email,
                             firstname: metadata.firstname || '',
