@@ -38,7 +38,7 @@ function Hero() {
 
         const frameCount = 90
         const currentFrame = (index: number) => (
-            `/assets/hero-frames/frame_${(index + 1).toString().padStart(4, '0')}.jpg`
+            `/assets/hero-frames/frame_${(index).toString().padStart(5, '0')}.webp`
         )
 
         const images: HTMLImageElement[] = []
