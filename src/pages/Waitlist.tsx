@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { supabase } from '../integrations/supabase/client';
+import { supabase } from '../lib/supabaseClient';
 
 /* ═══════════════════════════════════════════════════════════
    NOISE OVERLAY — SVG turbulence for texture

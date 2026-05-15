@@ -29,9 +29,66 @@ function Hero() {
     const heroRef = useRef<HTMLElement>(null)
     const textRef = useRef<HTMLDivElement>(null)
     const sunRef = useRef<HTMLDivElement>(null)
+    const canvasRef = useRef<HTMLCanvasElement>(null)
 
     useEffect(() => {
-        const video = heroRef.current?.querySelector('video')
+        const canvas = canvasRef.current
+        const context = canvas?.getContext('2d')
+        if (!canvas || !context) return
+
+        const frameCount = 90
+        const currentFrame = (index: number) => (
+            `/assets/hero-frames/frame_${(index + 1).toString().padStart(4, '0')}.jpg`
+        )
+
+        const images: HTMLImageElement[] = []
+        const heroState = {
+            frame: 0
+        }
+
+        // Preload images
+        for (let i = 0; i < frameCount; i++) {
+            const img = new Image()
+            img.src = currentFrame(i)
+            img.onload = () => {
+                if (heroState.frame === i) {
+                    render()
+                }
+            }
+            images.push(img)
+        }
+
+        const render = () => {
+            if (images[heroState.frame]) {
+                const img = images[heroState.frame]
+                
+                // Draw object-cover
+                if (img.complete && img.naturalHeight !== 0) {
+                    const hRatio = canvas.width / img.width
+                    const vRatio = canvas.height / img.height
+                    const ratio = Math.max(hRatio, vRatio)
+                    const centerShift_x = (canvas.width - img.width * ratio) / 2
+                    const centerShift_y = (canvas.height - img.height * ratio) / 2
+                    
+                    context.clearRect(0, 0, canvas.width, canvas.height)
+                    context.drawImage(
+                        img,
+                        0, 0, img.width, img.height,
+                        centerShift_x, centerShift_y, img.width * ratio, img.height * ratio
+                    )
+                }
+            }
+        }
+
+        // Setup canvas size
+        const setCanvasSize = () => {
+            canvas.width = window.innerWidth
+            canvas.height = window.innerHeight
+            render() // re-render on resize
+        }
+        
+        window.addEventListener('resize', setCanvasSize)
+        setCanvasSize()
 
         const ctx = gsap.context(() => {
             // Initial animation for Logo, Sun, and CTA
@@ -74,13 +131,12 @@ function Hero() {
                     start: 'top top',
                     end: '+=200%', // Scroll distance
                     pin: true,
-                    scrub: true, 
+                    scrub: true,
                     anticipatePin: 1,
                     onUpdate: (self) => {
-                        if (video && video.duration) {
-                            // Video Scrubbing
-                            video.currentTime = video.duration * self.progress
-                        }
+                        const maxFrame = frameCount - 1
+                        heroState.frame = Math.round(self.progress * maxFrame)
+                        render()
                     }
                 }
             })
@@ -94,43 +150,20 @@ function Hero() {
 
         }, heroRef)
 
-        // Ensure video metadata is loaded for scrubbing
-        if (video) {
-            video.addEventListener('loadedmetadata', () => {
-                video.play().then(() => {
-                    video.pause();
-                    video.currentTime = 0;
-                }).catch(err => console.log("Video priming failed", err));
-            }, { once: true });
-
-            if (video.readyState >= 2) {
-                video.play().then(() => {
-                    video.pause();
-                    video.currentTime = 0;
-                }).catch(err => console.log("Video priming failed", err));
-            }
-
-            return () => {
-                ctx.revert();
-            };
+        return () => {
+            window.removeEventListener('resize', setCanvasSize)
+            ctx.revert()
         }
-
-        return () => ctx.revert();
     }, [])
 
     return (
         <section ref={heroRef} className="relative h-[100svh] w-full overflow-hidden bg-primary" id="hero">
-            {/* Background Video */}
+            {/* Background Canvas */}
             <div className="hero-video-wrap absolute inset-0 w-full h-full">
-                <video
-                    autoPlay
-                    muted
-                    playsInline
-                    preload="auto"
-                    className="absolute inset-0 w-full h-full object-cover"
-                >
-                    <source src="/assets/hero-drone.mp4" type="video/mp4" />
-                </video>
+                <canvas
+                    ref={canvasRef}
+                    className="absolute inset-0 w-full h-full"
+                />
             </div>
 
             {/* Sun Illustration — top right */}
