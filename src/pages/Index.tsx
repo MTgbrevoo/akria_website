@@ -9,6 +9,22 @@ import { Link } from 'react-router-dom'
 gsap.registerPlugin(ScrollTrigger)
 
 /* ═══════════════════════════════════════════════════════════
+   SUPABASE ASSET HELPERS
+   ═══════════════════════════════════════════════════════════ */
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://vjydztjljmrmvszfjkpe.supabase.co'; // Fallback to a dummy or actual project URL if available
+
+function getStorageUrl(path: string) {
+    return `${SUPABASE_URL}/storage/v1/object/public/assets/${path}`;
+}
+
+function getOptimizedImageUrl(path: string, width?: number) {
+    if (width) {
+        return `${SUPABASE_URL}/storage/v1/render/image/public/assets/${path}?width=${width}&format=webp`;
+    }
+    return getStorageUrl(path);
+}
+
+/* ═══════════════════════════════════════════════════════════
    NOISE OVERLAY — SVG turbulence for texture
    ═══════════════════════════════════════════════════════════ */
 function NoiseOverlay() {
@@ -23,16 +39,18 @@ function NoiseOverlay() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   HERO — The Opening Shot
+   HERO — The Opening Shot with Canvas Frame Sequence
    ═══════════════════════════════════════════════════════════ */
+const FRAME_COUNT = 150;
+const currentFrame = (index: number) => `/assets/frames/frame_${String(index + 1).padStart(4, '0')}.jpg`;
+
 function Hero() {
     const heroRef = useRef<HTMLElement>(null)
     const textRef = useRef<HTMLDivElement>(null)
     const sunRef = useRef<HTMLDivElement>(null)
+    const canvasRef = useRef<HTMLCanvasElement>(null)
 
     useEffect(() => {
-        const video = heroRef.current?.querySelector('video')
-
         const ctx = gsap.context(() => {
             // Initial animation for Logo, Sun, and CTA
             const introTl = gsap.timeline({ defaults: { ease: 'power3.out' } })
@@ -76,14 +94,77 @@ function Hero() {
                     pin: true,
                     scrub: true, 
                     anticipatePin: 1,
-                    onUpdate: (self) => {
-                        if (video && video.duration) {
-                            // Video Scrubbing
-                            video.currentTime = video.duration * self.progress
-                        }
-                    }
                 }
             })
+
+            // Setup Canvas Frame Sequence
+            const canvas = canvasRef.current;
+            const context = canvas?.getContext('2d');
+            
+            if (canvas && context) {
+                // Initialize canvas size
+                const setCanvasSize = () => {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                };
+                setCanvasSize();
+                window.addEventListener('resize', setCanvasSize);
+
+                const images: HTMLImageElement[] = [];
+                const loadImages = () => {
+                    for (let i = 0; i < FRAME_COUNT; i++) {
+                        const img = new Image();
+                        img.src = currentFrame(i);
+                        images.push(img);
+                    }
+                };
+                loadImages();
+
+                const drawImage = (img: HTMLImageElement) => {
+                    if (!img || !canvas || !context) return;
+                    
+                    const canvasRatio = canvas.width / canvas.height;
+                    const imgRatio = img.width / img.height;
+                    let renderWidth, renderHeight, offsetX = 0, offsetY = 0;
+
+                    // Implement object-cover logic for canvas
+                    if (canvasRatio > imgRatio) {
+                        renderWidth = canvas.width;
+                        renderHeight = canvas.width / imgRatio;
+                        offsetY = (canvas.height - renderHeight) / 2;
+                    } else {
+                        renderWidth = canvas.height * imgRatio;
+                        renderHeight = canvas.height;
+                        offsetX = (canvas.width - renderWidth) / 2;
+                    }
+
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                    context.drawImage(img, offsetX, offsetY, renderWidth, renderHeight);
+                };
+
+                // Draw the first frame once loaded
+                images[0].onload = () => {
+                    drawImage(images[0]);
+                };
+
+                const frame = { current: 0 };
+                
+                scrollTl.to(frame, {
+                    current: FRAME_COUNT - 1,
+                    snap: "current",
+                    onUpdate: () => {
+                        const img = images[frame.current];
+                        if (img?.complete) {
+                            drawImage(img);
+                        } else if (img) {
+                            img.onload = () => drawImage(img);
+                        }
+                    }
+                }, 0);
+                
+                // Cleanup resize listener
+                return () => window.removeEventListener('resize', setCanvasSize);
+            }
 
             // Staggered reveal linked to scroll
             scrollTl
@@ -94,48 +175,22 @@ function Hero() {
 
         }, heroRef)
 
-        // Ensure video metadata is loaded for scrubbing
-        if (video) {
-            video.addEventListener('loadedmetadata', () => {
-                video.play().then(() => {
-                    video.pause();
-                    video.currentTime = 0;
-                }).catch(err => console.log("Video priming failed", err));
-            }, { once: true });
-
-            if (video.readyState >= 2) {
-                video.play().then(() => {
-                    video.pause();
-                    video.currentTime = 0;
-                }).catch(err => console.log("Video priming failed", err));
-            }
-
-            return () => {
-                ctx.revert();
-            };
-        }
-
         return () => ctx.revert();
     }, [])
 
     return (
         <section ref={heroRef} className="relative h-[100svh] w-full overflow-hidden bg-primary" id="hero">
-            {/* Background Video */}
+            {/* Background Canvas Sequence */}
             <div className="hero-video-wrap absolute inset-0 w-full h-full">
-                <video
-                    autoPlay
-                    muted
-                    playsInline
-                    preload="auto"
-                    className="absolute inset-0 w-full h-full object-cover"
-                >
-                    <source src="/assets/hero-drone.mp4" type="video/mp4" />
-                </video>
+                <canvas 
+                    ref={canvasRef} 
+                    className="absolute inset-0 w-full h-full object-cover" 
+                />
             </div>
 
             {/* Sun Illustration — top right */}
             <div ref={sunRef} className="absolute top-12 md:top-16 lg:top-20 right-6 md:right-12 lg:right-16 w-16 md:w-24 lg:w-32 z-30 pointer-events-none">
-                <img src="/assets/sun.png" alt="" className="w-full h-auto" />
+                <img src={getOptimizedImageUrl('sun.png', 400)} alt="" className="w-full h-auto" />
             </div>
 
             {/* Hero Content — Centered Layout */}
@@ -143,7 +198,7 @@ function Hero() {
                 <div className="max-w-4xl flex flex-col items-center">
                     {/* Centered Logo */}
                     <div className="hero-logo mb-6 md:mb-8 lg:mb-10 transform hover:scale-[1.02] transition-transform duration-500 cursor-pointer">
-                        <img src="/assets/logo.png" alt="AKRIA" className="h-24 md:h-32 lg:h-44 w-auto" />
+                        <img src={getOptimizedImageUrl('logo.png', 400)} alt="AKRIA" className="h-24 md:h-32 lg:h-44 w-auto" />
                     </div>
 
                     <p className="hero-line-1 font-display text-sm md:text-base lg:text-lg font-bold tracking-[0.25em] uppercase text-white mb-3 md:mb-4 drop-shadow-lg">
@@ -315,8 +370,8 @@ function ClaimSet1() {
                                 preload="auto"
                                 className="absolute inset-0 w-full h-full object-cover"
                             >
-                                <source src="/assets/oil-flow.mov" type="video/quicktime" />
-                                <source src="/assets/oil-flow.mov" type="video/mp4" />
+                                <source src={getStorageUrl('oil-flow.mov')} type="video/quicktime" />
+                                <source src={getStorageUrl('oil-flow.mp4')} type="video/mp4" />
                             </video>
                         </div>
                     </div>
@@ -339,19 +394,19 @@ function ClaimSet2() {
             headline: "100% Koroneiki-Oliven",
             desc: "Koroneiki-Oliven sind klein, wachsen gut im trockenen Klima der Mani und gehören zu den Sorten mit besonders vielen natürlich vorkommenden Polyphenolen.",
             bg: "bg-[#0c5eaf]",
-            illustration: "/assets/illustrations/Olive.png"
+            illustration: getOptimizedImageUrl("illustrations/Olive.png", 400)
         },
         {
             headline: "Intensives Aroma",
             desc: "Vergiss fades Supermarktöl, das nichts zum Kochen beiträgt. Unser Öl hat Charakter und macht ein trockenes Brot mit Salz zu einem Geschmackshighlight.",
             bg: "bg-[#0c5eaf]",
-            illustration: "/assets/illustrations/Aroma.png"
+            illustration: getOptimizedImageUrl("illustrations/Aroma.png", 400)
         },
         {
             headline: "Reich an Gesundmachern",
             desc: "Vollgepackt mit Polyphenolen, Vitamin E und Antioxidantien. Unser Olivenöl ist nicht nur lecker. Es tut dir auch richtig gut.",
             bg: "bg-[#0c5eaf]",
-            illustration: "/assets/illustrations/Herz.png"
+            illustration: getOptimizedImageUrl("illustrations/Herz.png", 400)
         }
     ];
 
@@ -448,15 +503,15 @@ function ImageGallery() {
     const galleryRef = useRef<HTMLElement>(null)
 
     const images = [
-        "/assets/gallery/DSCF4045.JPG",
-        "/assets/gallery/DSCF4042.JPG",
-        "/assets/gallery/DSCF4075.JPG",
-        "/assets/gallery/DSCF4085.JPG",
-        "/assets/gallery/DSCF4011.JPG",
-        "/assets/gallery/DSCF3997.JPG",
-        "/assets/gallery/DSCF3954.JPG",
-        "/assets/gallery/DJI_0340.JPG",
-        "/assets/gallery/DJI_0356.JPG"
+        getOptimizedImageUrl("gallery/DSCF4045.JPG", 800),
+        getOptimizedImageUrl("gallery/DSCF4042.JPG", 800),
+        getOptimizedImageUrl("gallery/DSCF4075.JPG", 800),
+        getOptimizedImageUrl("gallery/DSCF4085.JPG", 800),
+        getOptimizedImageUrl("gallery/DSCF4011.JPG", 800),
+        getOptimizedImageUrl("gallery/DSCF3997.JPG", 800),
+        getOptimizedImageUrl("gallery/DSCF3954.JPG", 800),
+        getOptimizedImageUrl("gallery/DJI_0340.JPG", 800),
+        getOptimizedImageUrl("gallery/DJI_0356.JPG", 800)
     ]
 
     useEffect(() => {
@@ -551,7 +606,7 @@ function WaitlistSection() {
                     preload="auto"
                     className="absolute inset-0 w-full h-full object-cover"
                 >
-                    <source src="/assets/beach-video.mp4" type="video/mp4" />
+                    <source src={getStorageUrl('beach-video.mp4')} type="video/mp4" />
                 </video>
             </div>
 
@@ -802,7 +857,7 @@ function Footer({ onShowImpressum, onShowDatenschutz }: { onShowImpressum: () =>
             <div className="max-w-7xl mx-auto px-6 md:px-16">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
                     <div className="md:col-span-2">
-                        <img src="/assets/logo.png" alt="AKRIA" className="h-8 md:h-10 w-auto mb-4" />
+                        <img src={getOptimizedImageUrl('logo.png', 400)} alt="AKRIA" className="h-8 md:h-10 w-auto mb-4" />
                         <p className="text-white/40 text-sm max-w-sm leading-relaxed">
                             Extra natives Olivenöl der höchsten Stufe, direkt aus der Mani-Region Griechenlands. Premium Qualität, fair und direkt.
                         </p>
