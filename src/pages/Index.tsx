@@ -36,7 +36,7 @@ function Hero() {
         const context = canvas?.getContext('2d')
         if (!canvas || !context) return
 
-        const frameCount = 90
+        const frameCount = 91
         const currentFrame = (index: number) => (
             `/assets/hero-frames/frame_${(index).toString().padStart(5, '0')}.webp`
         )
