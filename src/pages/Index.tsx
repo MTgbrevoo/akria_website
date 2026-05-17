@@ -560,7 +560,7 @@ function WaitlistSection() {
                     preload="auto"
                     className="absolute inset-0 w-full h-full object-cover"
                 >
-                    <source src="/assets/beach-video.mp4" type="video/mp4" />
+                    <source src={getSupabaseAssetUrl('Vids_Images', 'Strand Bus Phoneas.mp4')} type="video/mp4" />
                 </video>
             </div>
 
