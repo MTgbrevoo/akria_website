@@ -9,6 +9,15 @@ import { Link } from 'react-router-dom'
 gsap.registerPlugin(ScrollTrigger)
 
 /* ═══════════════════════════════════════════════════════════
+   SUPABASE ASSET HELPER
+   ═══════════════════════════════════════════════════════════ */
+const getSupabaseAssetUrl = (folder: string, filename: string) => {
+    // "Website Assets" hat ein Leerzeichen, das in der URL als %20 kodiert werden muss
+    const baseUrl = "https://khizcgryvscakouefofc.supabase.co/storage/v1/object/public/Website%20Assets";
+    return `${baseUrl}/${folder}/${encodeURIComponent(filename)}`;
+};
+
+/* ═══════════════════════════════════════════════════════════
    NOISE OVERLAY — SVG turbulence for texture
    ═══════════════════════════════════════════════════════════ */
 function NoiseOverlay() {
@@ -129,13 +138,14 @@ function Hero() {
                     preload="auto"
                     className="absolute inset-0 w-full h-full object-cover"
                 >
+                    {/* Drone video stays local for scrubbing performance */}
                     <source src="/assets/hero-drone.mp4" type="video/mp4" />
                 </video>
             </div>
 
             {/* Sun Illustration — top right */}
             <div ref={sunRef} className="absolute top-12 md:top-16 lg:top-20 right-6 md:right-12 lg:right-16 w-16 md:w-24 lg:w-32 z-30 pointer-events-none">
-                <img src="/assets/sun.png" alt="" className="w-full h-auto" />
+                <img src={getSupabaseAssetUrl('Illustrations', 'sun.png')} alt="" className="w-full h-auto" />
             </div>
 
             {/* Hero Content — Centered Layout */}
@@ -143,7 +153,7 @@ function Hero() {
                 <div className="max-w-4xl flex flex-col items-center">
                     {/* Centered Logo */}
                     <div className="hero-logo mb-6 md:mb-8 lg:mb-10 transform hover:scale-[1.02] transition-transform duration-500 cursor-pointer">
-                        <img src="/assets/logo.png" alt="AKRIA" className="h-24 md:h-32 lg:h-44 w-auto" />
+                        <img src={getSupabaseAssetUrl('Illustrations', 'logo.png')} alt="AKRIA" className="h-24 md:h-32 lg:h-44 w-auto" />
                     </div>
 
                     <p className="hero-line-1 font-display text-sm md:text-base lg:text-lg font-bold tracking-[0.25em] uppercase text-white mb-3 md:mb-4 drop-shadow-lg">
@@ -315,8 +325,7 @@ function ClaimSet1() {
                                 preload="auto"
                                 className="absolute inset-0 w-full h-full object-cover"
                             >
-                                <source src="/assets/oil-flow.mov" type="video/quicktime" />
-                                <source src="/assets/oil-flow.mov" type="video/mp4" />
+                                <source src={getSupabaseAssetUrl('Vids_Images', 'Oil Flowing From Press.mp4')} type="video/mp4" />
                             </video>
                         </div>
                     </div>
@@ -339,19 +348,19 @@ function ClaimSet2() {
             headline: "100% Koroneiki-Oliven",
             desc: "Koroneiki-Oliven sind klein, wachsen gut im trockenen Klima der Mani und gehören zu den Sorten mit besonders vielen natürlich vorkommenden Polyphenolen.",
             bg: "bg-[#0c5eaf]",
-            illustration: "/assets/illustrations/Olive.png"
+            illustration: getSupabaseAssetUrl('Illustrations', 'Olive.png')
         },
         {
             headline: "Intensives Aroma",
             desc: "Vergiss fades Supermarktöl, das nichts zum Kochen beiträgt. Unser Öl hat Charakter und macht ein trockenes Brot mit Salz zu einem Geschmackshighlight.",
             bg: "bg-[#0c5eaf]",
-            illustration: "/assets/illustrations/Aroma.png"
+            illustration: getSupabaseAssetUrl('Illustrations', 'Aroma.png')
         },
         {
             headline: "Reich an Gesundmachern",
             desc: "Vollgepackt mit Polyphenolen, Vitamin E und Antioxidantien. Unser Olivenöl ist nicht nur lecker. Es tut dir auch richtig gut.",
             bg: "bg-[#0c5eaf]",
-            illustration: "/assets/illustrations/Herz.png"
+            illustration: getSupabaseAssetUrl('Illustrations', 'Herz.png')
         }
     ];
 
@@ -448,15 +457,15 @@ function ImageGallery() {
     const galleryRef = useRef<HTMLElement>(null)
 
     const images = [
-        "/assets/gallery/DSCF4045.JPG",
-        "/assets/gallery/DSCF4042.JPG",
-        "/assets/gallery/DSCF4075.JPG",
-        "/assets/gallery/DSCF4085.JPG",
-        "/assets/gallery/DSCF4011.JPG",
-        "/assets/gallery/DSCF3997.JPG",
-        "/assets/gallery/DSCF3954.JPG",
-        "/assets/gallery/DJI_0340.JPG",
-        "/assets/gallery/DJI_0356.JPG"
+        getSupabaseAssetUrl('Vids_Images', 'DSCF4045.webp'),
+        getSupabaseAssetUrl('Vids_Images', 'DSCF4042.webp'),
+        getSupabaseAssetUrl('Vids_Images', 'DSCF4075.webp'),
+        getSupabaseAssetUrl('Vids_Images', 'DSCF4085.webp'),
+        getSupabaseAssetUrl('Vids_Images', 'DSCF4011.webp'),
+        getSupabaseAssetUrl('Vids_Images', 'DSCF3997 (1).webp'), // Angepasst an dein Screenshot-Beispiel
+        getSupabaseAssetUrl('Vids_Images', 'DSCF3954 (1).webp'), // Angepasst an dein Screenshot-Beispiel
+        getSupabaseAssetUrl('Vids_Images', 'DJI_0340.webp'),
+        getSupabaseAssetUrl('Vids_Images', 'DJI_0356.webp')
     ]
 
     useEffect(() => {
@@ -802,7 +811,7 @@ function Footer({ onShowImpressum, onShowDatenschutz }: { onShowImpressum: () =>
             <div className="max-w-7xl mx-auto px-6 md:px-16">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
                     <div className="md:col-span-2">
-                        <img src="/assets/logo.png" alt="AKRIA" className="h-8 md:h-10 w-auto mb-4" />
+                        <img src={getSupabaseAssetUrl('Illustrations', 'logo.png')} alt="AKRIA" className="h-8 md:h-10 w-auto mb-4" />
                         <p className="text-white/40 text-sm max-w-sm leading-relaxed">
                             Extra natives Olivenöl der höchsten Stufe, direkt aus der Mani-Region Griechenlands. Premium Qualität, fair und direkt.
                         </p>
