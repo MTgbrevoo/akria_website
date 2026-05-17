@@ -78,9 +78,9 @@ function Hero() {
             const context = canvas.getContext('2d');
             if (!context) return;
 
-            // Update to 91 frames (0 to 90)
-            const frameCount = 91; 
+            const frameCount = 90; 
             const currentFrame = (index: number) => (
+                // Adjusted to start at index 0 -> frame_00000.webp
                 `/assets/frames/frame_${String(index).padStart(5, '0')}.webp`
             );
 
