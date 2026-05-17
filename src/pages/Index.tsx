@@ -81,10 +81,9 @@ function Hero() {
             const context = canvas.getContext('2d');
             if (!context) return;
 
-            // TODO: Update frameCount as soon as all frames are uploaded
-            const frameCount = 90; 
+            const frameCount = 90;
             const currentFrame = (index: number) => (
-                `/assets/frames/frame_${String(index + 1).padStart(5, '0')}.webp`
+                `/assets/drone/${String(index + 1).padStart(4, '0')}.jpg`
             );
 
             const images: HTMLImageElement[] = [];
@@ -172,7 +171,7 @@ function Hero() {
     return (
         <section ref={heroRef} className="relative h-[100svh] w-full overflow-hidden bg-primary" id="hero">
             {/* Canvas Sequence instead of Video */}
-            <div className="absolute inset-0 w-full h-full z-0 bg-primary-dark">
+            <div className="absolute inset-0 w-full h-full z-0">
                 <canvas 
                     ref={canvasRef} 
                     className="w-full h-full object-cover block"
