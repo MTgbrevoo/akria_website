@@ -153,7 +153,7 @@ function Hero() {
                 <div className="max-w-4xl flex flex-col items-center">
                     {/* Centered Logo */}
                     <div className="hero-logo mb-6 md:mb-8 lg:mb-10 transform hover:scale-[1.02] transition-transform duration-500 cursor-pointer">
-                        <img src={getSupabaseAssetUrl('Illustrations', 'logo.png')} alt="AKRIA" className="h-24 md:h-32 lg:h-44 w-auto" />
+                        <img src="/assets/logo.png" alt="AKRIA" className="h-24 md:h-32 lg:h-44 w-auto" />
                     </div>
 
                     <p className="hero-line-1 font-display text-sm md:text-base lg:text-lg font-bold tracking-[0.25em] uppercase text-white mb-3 md:mb-4 drop-shadow-lg">
@@ -811,7 +811,7 @@ function Footer({ onShowImpressum, onShowDatenschutz }: { onShowImpressum: () =>
             <div className="max-w-7xl mx-auto px-6 md:px-16">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
                     <div className="md:col-span-2">
-                        <img src={getSupabaseAssetUrl('Illustrations', 'logo.png')} alt="AKRIA" className="h-8 md:h-10 w-auto mb-4" />
+                        <img src="/assets/logo.png" alt="AKRIA" className="h-8 md:h-10 w-auto mb-4" />
                         <p className="text-white/40 text-sm max-w-sm leading-relaxed">
                             Extra natives Olivenöl der höchsten Stufe, direkt aus der Mani-Region Griechenlands. Premium Qualität, fair und direkt.
                         </p>
