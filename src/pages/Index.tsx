@@ -32,15 +32,16 @@ function NoiseOverlay() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   HERO — The Opening Shot (Canvas Sequence)
+   HERO — The Opening Shot
    ═══════════════════════════════════════════════════════════ */
 function Hero() {
     const heroRef = useRef<HTMLElement>(null)
     const textRef = useRef<HTMLDivElement>(null)
     const sunRef = useRef<HTMLDivElement>(null)
-    const canvasRef = useRef<HTMLCanvasElement>(null)
 
     useEffect(() => {
+        const video = heroRef.current?.querySelector('video')
+
         const ctx = gsap.context(() => {
             // Initial animation for Logo, Sun, and CTA
             const introTl = gsap.timeline({ defaults: { ease: 'power3.out' } })
@@ -63,7 +64,7 @@ function Hero() {
                 })
             }
 
-            // Scroll hint is visible initially, then fades
+            // Scroll hint is visible initially, then fades as soon as user scrolls
             gsap.to('.hero-scroll-hint', {
                 opacity: 0,
                 y: -20,
@@ -75,109 +76,71 @@ function Hero() {
                 }
             })
 
-            /* --- CANVAS IMAGE SEQUENCE LOGIC --- */
-            const canvas = canvasRef.current;
-            if (!canvas) return;
-            const context = canvas.getContext('2d');
-            if (!context) return;
-
-            const frameCount = 90;
-            const currentFrame = (index: number) => (
-                `/assets/drone/${String(index + 1).padStart(4, '0')}.jpg`
-            );
-
-            const images: HTMLImageElement[] = [];
-            const scrollState = { frame: 0 };
-
-            // Preload images
-            for (let i = 0; i < frameCount; i++) {
-                const img = new Image();
-                img.src = currentFrame(i);
-                images.push(img);
-            }
-
-            // Draw image like object-fit: cover
-            const render = () => {
-                if (!images[scrollState.frame]) return;
-                const img = images[scrollState.frame];
-                
-                // Only render if image is fully loaded
-                if (!img.complete || img.naturalHeight === 0) return;
-
-                const hRatio = canvas.width / img.width;
-                const vRatio = canvas.height / img.height;
-                const ratio = Math.max(hRatio, vRatio);
-                
-                const centerShift_x = (canvas.width - img.width * ratio) / 2;
-                const centerShift_y = (canvas.height - img.height * ratio) / 2;
-
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                context.drawImage(
-                    img, 
-                    0, 0, img.width, img.height, 
-                    centerShift_x, centerShift_y, img.width * ratio, img.height * ratio
-                );
-            };
-
-            // Initial render on first image load
-            images[0].onload = render;
-
-            // Handle Resize
-            const resizeCanvas = () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                render();
-            };
-            window.addEventListener('resize', resizeCanvas);
-            resizeCanvas();
-
-            // Scroll-Synced Timeline (Text + Canvas)
+            // Scroll-Synced Timeline
             const scrollTl = gsap.timeline({
                 scrollTrigger: {
                     trigger: heroRef.current,
                     start: 'top top',
                     end: '+=200%', // Scroll distance
                     pin: true,
-                    scrub: 1, // Smooth scrubbing
-                    anticipatePin: 1
+                    scrub: true, 
+                    anticipatePin: 1,
+                    onUpdate: (self) => {
+                        if (video && video.duration) {
+                            // Video Scrubbing
+                            video.currentTime = video.duration * self.progress
+                        }
+                    }
                 }
-            });
+            })
 
-            // 1. Animate canvas frames over the entire scroll duration
-            scrollTl.to(scrollState, {
-                frame: frameCount - 1,
-                snap: "frame",
-                ease: "none",
-                onUpdate: render,
-                duration: 2 // Arbitrary duration, relative to text animations
-            }, 0);
-
-            // 2. Animate text over the scroll duration
+            // Staggered reveal linked to scroll
             scrollTl
-                .to('.hero-line-2', { opacity: 1, y: 0, duration: 0.5 }, 0.2) // "Upgrade"
-                .to('.hero-line-3.small-line', { opacity: 0.7, y: 0, duration: 0.5 }, 0.4) // "für"
-                .to('.hero-line-4', { opacity: 1, y: 0, duration: 0.5 }, 0.6) // "alles."
-                .to('.hero-line-1', { opacity: 1, y: 0, duration: 0.5 }, 1.0) // Subclaim 1
-
-            return () => {
-                window.removeEventListener('resize', resizeCanvas);
-            };
+                .to('.hero-line-2', { opacity: 1, y: 0, duration: 1 }, 0.1) // "Upgrade"
+                .to('.hero-line-3.small-line', { opacity: 0.7, y: 0, duration: 1 }, 0.2) // "für"
+                .to('.hero-line-4', { opacity: 1, y: 0, duration: 1 }, 0.3) // "alles."
+                .to('.hero-line-1', { opacity: 1, y: 0, duration: 1 }, 0.5) // Subclaim 1
 
         }, heroRef)
+
+        // Ensure video metadata is loaded for scrubbing
+        if (video) {
+            video.addEventListener('loadedmetadata', () => {
+                video.play().then(() => {
+                    video.pause();
+                    video.currentTime = 0;
+                }).catch(err => console.log("Video priming failed", err));
+            }, { once: true });
+
+            if (video.readyState >= 2) {
+                video.play().then(() => {
+                    video.pause();
+                    video.currentTime = 0;
+                }).catch(err => console.log("Video priming failed", err));
+            }
+
+            return () => {
+                ctx.revert();
+            };
+        }
 
         return () => ctx.revert();
     }, [])
 
     return (
         <section ref={heroRef} className="relative h-[100svh] w-full overflow-hidden bg-primary" id="hero">
-            {/* Canvas Sequence instead of Video */}
-            <div className="absolute inset-0 w-full h-full z-0">
-                <canvas 
-                    ref={canvasRef} 
-                    className="w-full h-full object-cover block"
-                />
-                {/* Optional dark overlay to ensure text is readable over drone shots */}
-                <div className="absolute inset-0 bg-black/10 z-10" />
+            {/* Background Video */}
+            <div className="hero-video-wrap absolute inset-0 w-full h-full">
+                <video
+                    autoPlay
+                    muted
+                    playsInline
+                    preload="auto"
+                    className="absolute inset-0 w-full h-full object-cover"
+                >
+                    {/* Drone video stays local for scrubbing performance */}
+                    <source src="/assets/hero-drone.mp4" type="video/mp4" />
+                </video>
             </div>
 
             {/* Sun Illustration — top right */}
@@ -197,13 +160,13 @@ function Hero() {
                         Extra Natives Olivenöl aus der Mani
                     </p>
                     <h1 className="mb-6 md:mb-8 text-center flex flex-col items-center">
-                        <span className="hero-line-2 block font-display font-800 text-5xl md:text-6xl lg:text-7xl tracking-tight text-white leading-[1.1] drop-shadow-2xl">
+                        <span className="hero-line-2 block font-display font-800 text-5xl md:text-6xl lg:text-7xl tracking-tight text-white leading-[1.1]">
                             Upgrade
                         </span>
-                        <span className="hero-line-3 small-line block font-display font-800 text-3xl md:text-4xl lg:text-5xl tracking-tight text-white leading-none py-2 drop-shadow-xl">
+                        <span className="hero-line-3 small-line block font-display font-800 text-3xl md:text-4xl lg:text-5xl tracking-tight text-white leading-none py-2">
                             für
                         </span>
-                        <span className="hero-line-4 block font-serif italic font-900 text-6xl md:text-8xl lg:text-[9.5rem] tracking-tight text-accent leading-[0.8] drop-shadow-2xl">
+                        <span className="hero-line-4 block font-serif italic font-900 text-6xl md:text-8xl lg:text-[9.5rem] tracking-tight text-accent leading-[0.8]">
                             alles.
                         </span>
                     </h1>
@@ -213,7 +176,7 @@ function Hero() {
                         <ArrowRight className="ml-2 w-5 h-5" />
                     </Link>
 
-                    {/* Scroll hint */}
+                    {/* Scroll hint — now under CTA/Logo area */}
                     <div className="hero-scroll-hint mt-8 flex flex-col items-center text-white/60 animate-bounce z-30">
                         <span className="text-[10px] md:text-xs tracking-widest uppercase mb-1">Scroll</span>
                         <ChevronDown className="w-3 h-3 md:w-4 md:h-4" />
