@@ -323,8 +323,7 @@ function ClaimSet1() {
                                 loop
                                 playsInline
                                 preload="auto"
-                                /* scale-[1.6] hinzugefügt, um die schwarzen Ränder des Videos aus dem sichtbaren Bereich zu schieben */
-                                className="absolute inset-0 w-full h-full object-cover scale-[1.6] origin-center"
+                                className="absolute inset-0 w-full h-full object-cover"
                             >
                                 <source src={getSupabaseAssetUrl('Vids_Images', 'Oil Flowing From Press.mp4')} type="video/mp4" />
                             </video>
