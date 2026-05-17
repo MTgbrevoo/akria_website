@@ -82,9 +82,10 @@ function Hero() {
             if (!context) return;
 
             const frameCount = 90;
-            const currentFrame = (index: number) => (
-                `/assets/drone/${String(index + 1).padStart(4, '0')}.jpg`
-            );
+            const currentFrame = (index: number) => {
+                // Generiert Namen wie: /assets/drone/frame_00000.webp
+                return `/assets/drone/frame_${String(index).padStart(5, '0')}.webp`;
+            };
 
             const images: HTMLImageElement[] = [];
             const scrollState = { frame: 0 };
