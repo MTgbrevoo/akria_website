@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ArrowRight, ChevronDown, X } from 'lucide-react'
+import { ArrowRight, ChevronDown, X, Loader2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -24,11 +24,14 @@ function Hero() {
     const textRef = useRef<HTMLDivElement>(null)
     const sunRef = useRef<HTMLDivElement>(null)
     const canvasRef = useRef<HTMLCanvasElement>(null)
+    const [imagesLoaded, setImagesLoaded] = useState(false)
+    const [loadProgress, setLoadProgress] = useState(0)
 
     useEffect(() => {
         const frameCount = 91;
         const images: HTMLImageElement[] = [];
         const scrollState = { frame: 0 };
+        let loadedCount = 0;
 
         const currentFrame = (index: number) => (
             `/assets/frames/frame_${String(index).padStart(5, '0')}.webp`
@@ -36,15 +39,11 @@ function Hero() {
 
         const canvas = canvasRef.current;
         if (!canvas) return;
-        const context = canvas.getContext('2d', { alpha: false }); // Performance-Boost
+        const context = canvas.getContext('2d', { alpha: false }); // Performance-Boost: Kein Alpha-Channel nötig
         if (!context) return;
 
         const render = () => {
-            const frameIndex = Math.round(scrollState.frame);
-            const img = images[frameIndex];
-            
-            // Wenn das exakte Bild noch nicht geladen ist, brechen wir ab. 
-            // Das Canvas behält dann einfach den zuletzt gezeichneten Frame (kein Flackern).
+            const img = images[scrollState.frame];
             if (!img || !img.complete) return;
 
             const hRatio = canvas.width / img.width;
@@ -61,20 +60,28 @@ function Hero() {
             );
         };
 
-        // Bilder asynchron laden (ohne UI zu blockieren)
-        for (let i = 0; i < frameCount; i++) {
-            const img = new Image();
-            img.onload = () => {
-                // Wenn es das erste Bild ist oder das Bild, auf dem der Scrollbalken gerade steht, sofort rendern
-                if (i === 0 || i === Math.round(scrollState.frame)) {
-                    render();
-                }
-            };
-            img.src = currentFrame(i);
-            images.push(img);
-        }
+        // Bilder vorab laden
+        const preloadImages = () => {
+            for (let i = 0; i < frameCount; i++) {
+                const img = new Image();
+                img.onload = () => {
+                    loadedCount++;
+                    setLoadProgress(Math.floor((loadedCount / frameCount) * 100));
+                    if (loadedCount === frameCount) {
+                        setImagesLoaded(true);
+                        render();
+                    }
+                };
+                img.src = currentFrame(i);
+                images.push(img);
+            }
+        };
+
+        preloadImages();
 
         const ctx = gsap.context(() => {
+            if (!imagesLoaded) return;
+
             const introTl = gsap.timeline({ defaults: { ease: 'power3.out' } })
             
             gsap.set(['.hero-line-1', '.hero-line-2', '.hero-line-3', '.hero-line-4', '.hero-cta'], {
@@ -82,7 +89,6 @@ function Hero() {
                 y: 30
             })
 
-            // Animation startet sofort, unabhängig vom Bild-Ladezustand
             introTl.to('.hero-logo', { scale: 1, opacity: 1, duration: 1.2, delay: 0.3 })
                    .to('.hero-cta', { y: 0, opacity: 1, duration: 1 }, "-=0.8")
 
@@ -136,10 +142,20 @@ function Hero() {
         }, heroRef)
 
         return () => ctx.revert();
-    }, [])
+    }, [imagesLoaded])
 
     return (
         <section ref={heroRef} className="relative h-[100svh] w-full overflow-hidden bg-primary" id="hero">
+            {/* Loading Overlay */}
+            {!imagesLoaded && (
+                <div className="absolute inset-0 z-[100] bg-primary flex flex-col items-center justify-center">
+                    <Loader2 className="w-12 h-12 text-accent animate-spin mb-4" />
+                    <p className="font-display font-bold text-white tracking-widest uppercase text-xs">
+                        Lade Erlebnis... {loadProgress}%
+                    </p>
+                </div>
+            )}
+
             <div className="absolute inset-0 w-full h-full z-0 bg-primary-dark">
                 <canvas 
                     ref={canvasRef} 
