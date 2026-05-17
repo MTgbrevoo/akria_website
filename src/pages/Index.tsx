@@ -12,7 +12,6 @@ gsap.registerPlugin(ScrollTrigger)
    SUPABASE ASSET HELPER
    ═══════════════════════════════════════════════════════════ */
 const getSupabaseAssetUrl = (folder: string, filename: string) => {
-    // "Website Assets" hat ein Leerzeichen, das in der URL als %20 kodiert werden muss
     const baseUrl = "https://khizcgryvscakouefofc.supabase.co/storage/v1/object/public/Website%20Assets";
     return `${baseUrl}/${folder}/${encodeURIComponent(filename)}`;
 };
@@ -42,7 +41,6 @@ function Hero() {
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            // Initial animation for Logo, Sun, and CTA
             const introTl = gsap.timeline({ defaults: { ease: 'power3.out' } })
             
             gsap.set(['.hero-line-1', '.hero-line-2', '.hero-line-3', '.hero-line-4', '.hero-cta'], {
@@ -63,7 +61,6 @@ function Hero() {
                 })
             }
 
-            // Scroll hint is visible initially, then fades
             gsap.to('.hero-scroll-hint', {
                 opacity: 0,
                 y: -20,
@@ -81,28 +78,25 @@ function Hero() {
             const context = canvas.getContext('2d');
             if (!context) return;
 
-            // TODO: Update frameCount as soon as all frames are uploaded
             const frameCount = 90; 
             const currentFrame = (index: number) => (
-                `/assets/frames/frame_${String(index + 1).padStart(5, '0')}.webp`
+                // Adjusted to start at index 0 -> frame_00000.webp
+                `/assets/frames/frame_${String(index).padStart(5, '0')}.webp`
             );
 
             const images: HTMLImageElement[] = [];
             const scrollState = { frame: 0 };
 
-            // Preload images
             for (let i = 0; i < frameCount; i++) {
                 const img = new Image();
                 img.src = currentFrame(i);
                 images.push(img);
             }
 
-            // Draw image like object-fit: cover
             const render = () => {
                 if (!images[scrollState.frame]) return;
                 const img = images[scrollState.frame];
                 
-                // Only render if image is fully loaded
                 if (!img.complete || img.naturalHeight === 0) return;
 
                 const hRatio = canvas.width / img.width;
@@ -120,10 +114,8 @@ function Hero() {
                 );
             };
 
-            // Initial render on first image load
             images[0].onload = render;
 
-            // Handle Resize
             const resizeCanvas = () => {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
@@ -132,33 +124,30 @@ function Hero() {
             window.addEventListener('resize', resizeCanvas);
             resizeCanvas();
 
-            // Scroll-Synced Timeline (Text + Canvas)
             const scrollTl = gsap.timeline({
                 scrollTrigger: {
                     trigger: heroRef.current,
                     start: 'top top',
-                    end: '+=200%', // Scroll distance
+                    end: '+=200%',
                     pin: true,
-                    scrub: 1, // Smooth scrubbing
+                    scrub: 1,
                     anticipatePin: 1
                 }
             });
 
-            // 1. Animate canvas frames over the entire scroll duration
             scrollTl.to(scrollState, {
                 frame: frameCount - 1,
                 snap: "frame",
                 ease: "none",
                 onUpdate: render,
-                duration: 2 // Arbitrary duration, relative to text animations
+                duration: 2 
             }, 0);
 
-            // 2. Animate text over the scroll duration
             scrollTl
-                .to('.hero-line-2', { opacity: 1, y: 0, duration: 0.5 }, 0.2) // "Upgrade"
-                .to('.hero-line-3.small-line', { opacity: 0.7, y: 0, duration: 0.5 }, 0.4) // "für"
-                .to('.hero-line-4', { opacity: 1, y: 0, duration: 0.5 }, 0.6) // "alles."
-                .to('.hero-line-1', { opacity: 1, y: 0, duration: 0.5 }, 1.0) // Subclaim 1
+                .to('.hero-line-2', { opacity: 1, y: 0, duration: 0.5 }, 0.2)
+                .to('.hero-line-3.small-line', { opacity: 0.7, y: 0, duration: 0.5 }, 0.4)
+                .to('.hero-line-4', { opacity: 1, y: 0, duration: 0.5 }, 0.6)
+                .to('.hero-line-1', { opacity: 1, y: 0, duration: 0.5 }, 1.0)
 
             return () => {
                 window.removeEventListener('resize', resizeCanvas);
@@ -171,25 +160,20 @@ function Hero() {
 
     return (
         <section ref={heroRef} className="relative h-[100svh] w-full overflow-hidden bg-primary" id="hero">
-            {/* Canvas Sequence instead of Video */}
             <div className="absolute inset-0 w-full h-full z-0 bg-primary-dark">
                 <canvas 
                     ref={canvasRef} 
                     className="w-full h-full object-cover block"
                 />
-                {/* Optional dark overlay to ensure text is readable over drone shots */}
                 <div className="absolute inset-0 bg-black/10 z-10" />
             </div>
 
-            {/* Sun Illustration — top right */}
             <div ref={sunRef} className="absolute top-12 md:top-16 lg:top-20 right-6 md:right-12 lg:right-16 w-16 md:w-24 lg:w-32 z-30 pointer-events-none">
                 <img src={getSupabaseAssetUrl('Illustrations', 'sun.png')} alt="" className="w-full h-auto" />
             </div>
 
-            {/* Hero Content — Centered Layout */}
             <div ref={textRef} className="absolute inset-0 flex flex-col items-center justify-center z-20 px-6 text-center">
                 <div className="max-w-4xl flex flex-col items-center">
-                    {/* Centered Logo */}
                     <div className="hero-logo mb-6 md:mb-8 lg:mb-10 transform hover:scale-[1.02] transition-transform duration-500 cursor-pointer">
                         <img src="/assets/logo.png" alt="AKRIA" className="h-24 md:h-32 lg:h-44 w-auto" />
                     </div>
@@ -214,7 +198,6 @@ function Hero() {
                         <ArrowRight className="ml-2 w-5 h-5" />
                     </Link>
 
-                    {/* Scroll hint */}
                     <div className="hero-scroll-hint mt-8 flex flex-col items-center text-white/60 animate-bounce z-30">
                         <span className="text-[10px] md:text-xs tracking-widest uppercase mb-1">Scroll</span>
                         <ChevronDown className="w-3 h-3 md:w-4 md:h-4" />
@@ -225,9 +208,6 @@ function Hero() {
     )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   CLAIM SET 1 — Sequential scroll reveals + Oil Video
-   ═══════════════════════════════════════════════════════════ */
 function ClaimSet1() {
     const sectionRef = useRef<HTMLElement>(null)
     const claims = [
@@ -249,7 +229,6 @@ function ClaimSet1() {
         const ctx = gsap.context(() => {
             const isMobile = window.innerWidth < 1024;
 
-            // Initial setup
             claims.forEach((_, i) => {
                 gsap.set(`.claim-card-${i}`, {
                     opacity: 0,
@@ -261,7 +240,6 @@ function ClaimSet1() {
                 }
             })
 
-            // Timeline with Pinning
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current,
@@ -373,10 +351,6 @@ function ClaimSet1() {
     )
 }
 
-
-/* ═══════════════════════════════════════════════════════════
-   CLAIM SET 2 — Falling Cards Stacking Effect
-   ═══════════════════════════════════════════════════════════ */
 function ClaimSet2() {
     const sectionRef = useRef<HTMLElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -423,8 +397,8 @@ function ClaimSet2() {
 
                 tl.fromTo(`.stack-card-${i}`,
                     {
-                        y: "100vh", // Updated from -100vh to 100vh to slide in from bottom
-                        rotateX: -15, // Adjusted rotation for a more natural entry from bottom
+                        y: "100vh",
+                        rotateX: -15,
                         scale: 1.1,
                         zIndex: 10 + i
                     },
@@ -486,11 +460,6 @@ function ClaimSet2() {
     );
 }
 
-
-
-/* ═══════════════════════════════════════════════════════════
-   IMAGE GALLERY — Horizontal Scroll Carousel
-   ═══════════════════════════════════════════════════════════ */
 function ImageGallery() {
     const galleryRef = useRef<HTMLElement>(null)
 
@@ -500,8 +469,8 @@ function ImageGallery() {
         getSupabaseAssetUrl('Vids_Images', 'DSCF4075.webp'),
         getSupabaseAssetUrl('Vids_Images', 'DSCF4085.webp'),
         getSupabaseAssetUrl('Vids_Images', 'DSCF4011.webp'),
-        getSupabaseAssetUrl('Vids_Images', 'DSCF3997 (1).webp'), // Angepasst an dein Screenshot-Beispiel
-        getSupabaseAssetUrl('Vids_Images', 'DSCF3954 (1).webp'), // Angepasst an dein Screenshot-Beispiel
+        getSupabaseAssetUrl('Vids_Images', 'DSCF3997 (1).webp'),
+        getSupabaseAssetUrl('Vids_Images', 'DSCF3954 (1).webp'),
         getSupabaseAssetUrl('Vids_Images', 'DJI_0340.webp'),
         getSupabaseAssetUrl('Vids_Images', 'DJI_0356.webp')
     ]
@@ -552,9 +521,6 @@ function ImageGallery() {
     )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   WAITLIST CTA — Unified Full-Bleed Design
-   ═══════════════════════════════════════════════════════════ */
 function WaitlistSection() {
     const sectionRef = useRef<HTMLElement>(null)
 
@@ -587,9 +553,8 @@ function WaitlistSection() {
             id="waitlist"
             className="relative min-h-[100svh] flex items-center justify-center bg-primary overflow-hidden"
         >
-            {/* Background Video — Full Bleed without bars */}
             <div className="absolute inset-0 w-full h-full z-0">
-                <div className="absolute inset-0 bg-black/30 z-10" /> {/* Dark overlay for better text contrast */}
+                <div className="absolute inset-0 bg-black/30 z-10" />
                 <video
                     autoPlay
                     muted
@@ -602,7 +567,6 @@ function WaitlistSection() {
                 </video>
             </div>
 
-            {/* Content Overlay */}
             <div className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex items-center h-full min-h-[100svh]">
                 <div className="waitlist-content w-full lg:w-1/2 text-center lg:text-left py-12 backdrop-blur-sm lg:backdrop-blur-none bg-black/20 lg:bg-transparent p-8 lg:p-0 rounded-[2.5rem] lg:rounded-none border border-white/5 lg:border-none shadow-2xl lg:shadow-none">
                     <p className="font-display text-xs lg:text-sm font-semibold tracking-[0.2em] uppercase text-accent mb-4">
@@ -630,9 +594,6 @@ function WaitlistSection() {
     )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   IMPRESSUM OVERLAY
-   ═══════════════════════════════════════════════════════════ */
 function Impressum({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
     const overlayRef = useRef<HTMLDivElement>(null)
 
@@ -725,9 +686,6 @@ function Impressum({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }
     )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   DATENSCHUTZ OVERLAY
-   ═══════════════════════════════════════════════════════════ */
 function Datenschutz({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
     const overlayRef = useRef<HTMLDivElement>(null)
 
@@ -840,9 +798,6 @@ function Datenschutz({ isOpen, onClose }: { isOpen: boolean, onClose: () => void
     )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   FOOTER
-   ═══════════════════════════════════════════════════════════ */
 function Footer({ onShowImpressum, onShowDatenschutz }: { onShowImpressum: () => void, onShowDatenschutz: () => void }) {
     return (
         <footer className="bg-[#041e3a] border-t border-white/5 py-12 md:py-16">
@@ -888,9 +843,6 @@ function Footer({ onShowImpressum, onShowDatenschutz }: { onShowImpressum: () =>
     )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   COOKIE BANNER — GDPR-compliant consent notification
-   ═══════════════════════════════════════════════════════════ */
 function CookieBanner({ onShowDatenschutz }: { onShowDatenschutz: () => void }) {
     const [visible, setVisible] = useState(false)
     const bannerRef = useRef<HTMLDivElement>(null)
@@ -968,9 +920,6 @@ function CookieBanner({ onShowDatenschutz }: { onShowDatenschutz: () => void }) 
     )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   INDEX PAGE — Main Composition
-   ═══════════════════════════════════════════════════════════ */
 export default function Index() {
     const [showImpressum, setShowImpressum] = useState(false)
     const [showDatenschutz, setShowDatenschutz] = useState(false)
