@@ -43,21 +43,21 @@ function Hero() {
             const frameIndex = Math.round(scrollState.frame);
             const img = images[frameIndex];
             
-            // WICHTIG: img.naturalWidth > 0 stellt sicher, dass das Bild auch WIRKLICH fehlerfrei geladen wurde
-            // ansonsten schlägt context.drawImage fehl ('broken' state error)
-            if (!img || !img.complete || img.naturalWidth === 0) return;
+            // Wenn das exakte Bild noch nicht geladen ist, brechen wir ab. 
+            // Das Canvas behält dann einfach den zuletzt gezeichneten Frame (kein Flackern).
+            if (!img || !img.complete) return;
 
-            const hRatio = canvas.width / img.naturalWidth;
-            const vRatio = canvas.height / img.naturalHeight;
+            const hRatio = canvas.width / img.width;
+            const vRatio = canvas.height / img.height;
             const ratio = Math.max(hRatio, vRatio);
             
-            const centerShift_x = (canvas.width - img.naturalWidth * ratio) / 2;
-            const centerShift_y = (canvas.height - img.naturalHeight * ratio) / 2;
+            const centerShift_x = (canvas.width - img.width * ratio) / 2;
+            const centerShift_y = (canvas.height - img.height * ratio) / 2;
 
             context.drawImage(
                 img, 
-                0, 0, img.naturalWidth, img.naturalHeight, 
-                centerShift_x, centerShift_y, img.naturalWidth * ratio, img.naturalHeight * ratio
+                0, 0, img.width, img.height, 
+                centerShift_x, centerShift_y, img.width * ratio, img.height * ratio
             );
         };
 
@@ -69,10 +69,6 @@ function Hero() {
                 if (i === 0 || i === Math.round(scrollState.frame)) {
                     render();
                 }
-            };
-            // Event-Listener für Ladefehler hinzufügen, um stille Fehler zu behandeln
-            img.onerror = () => {
-                console.warn(`Fehler beim Laden von Frame ${i}`);
             };
             img.src = currentFrame(i);
             images.push(img);
