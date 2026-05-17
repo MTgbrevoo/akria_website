@@ -6,20 +6,6 @@ import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, Check } from 'lucide-reac
 import { Link } from 'react-router-dom';
 import { supabase } from '../integrations/supabase/client';
 
-/* ═══════════════════════════════════════════════════════════
-   NOISE OVERLAY — SVG turbulence for texture
-   ═══════════════════════════════════════════════════════════ */
-function NoiseOverlay() {
-    return (
-        <svg className="noise-overlay absolute inset-0 w-full h-full pointer-events-none opacity-[0.03] md:opacity-[0.05]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-            <filter id="noiseFilter">
-                <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
-            </filter>
-            <rect width="100%" height="100%" filter="url(#noiseFilter)" />
-        </svg>
-    )
-}
-
 export default function Waitlist() {
     const formRef = useRef<HTMLDivElement>(null);
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -105,7 +91,6 @@ export default function Waitlist() {
 
     return (
         <div ref={formRef} className="min-h-[100svh] w-full bg-primary relative flex items-center justify-center p-6 overflow-hidden">
-            <NoiseOverlay />
             
             <div className="absolute top-[-10%] right-[-10%] w-[40%] aspect-square bg-accent/10 rounded-full blur-[120px] pointer-events-none" />
             <div className="absolute bottom-[-10%] left-[-10%] w-[40%] aspect-square bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />

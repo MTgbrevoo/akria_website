@@ -17,20 +17,6 @@ const getSupabaseAssetUrl = (folder: string, filename: string) => {
 };
 
 /* ═══════════════════════════════════════════════════════════
-   NOISE OVERLAY — SVG turbulence for texture
-   ═══════════════════════════════════════════════════════════ */
-function NoiseOverlay() {
-    return (
-        <svg className="noise-overlay hidden md:block" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-            <filter id="noiseFilter">
-                <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
-            </filter>
-            <rect width="100%" height="100%" filter="url(#noiseFilter)" />
-        </svg>
-    )
-}
-
-/* ═══════════════════════════════════════════════════════════
    HERO — The Opening Shot (Canvas Sequence)
    ═══════════════════════════════════════════════════════════ */
 function Hero() {
@@ -78,7 +64,6 @@ function Hero() {
             const context = canvas.getContext('2d');
             if (!context) return;
 
-            // Update to 91 frames (0 to 90)
             const frameCount = 91; 
             const currentFrame = (index: number) => (
                 `/assets/frames/frame_${String(index).padStart(5, '0')}.webp`
@@ -165,7 +150,6 @@ function Hero() {
                     ref={canvasRef} 
                     className="w-full h-full object-cover block"
                 />
-                <div className="absolute inset-0 bg-black/10 z-10" />
             </div>
 
             <div ref={sunRef} className="absolute top-12 md:top-16 lg:top-20 right-6 md:right-12 lg:right-16 w-16 md:w-24 lg:w-32 z-30 pointer-events-none">
@@ -624,8 +608,6 @@ function Impressum({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }
             ref={overlayRef}
             className="fixed inset-0 z-[100] bg-primary flex items-center justify-center p-6 md:p-12 opacity-0 invisible"
         >
-            <NoiseOverlay />
-
             <button
                 onClick={onClose}
                 className="absolute top-8 right-8 text-white/60 hover:text-white transition-colors p-2"
@@ -707,7 +689,6 @@ function Datenschutz({ isOpen, onClose }: { isOpen: boolean, onClose: () => void
             ref={overlayRef}
             className="fixed inset-0 z-[100] bg-primary flex items-start justify-center p-6 md:p-12 opacity-0 invisible overflow-y-auto"
         >
-            <NoiseOverlay />
             <button
                 onClick={onClose}
                 className="fixed top-8 right-8 text-white/60 hover:text-white transition-colors p-2 z-10"
@@ -933,7 +914,6 @@ export default function Index() {
 
     return (
         <div className="bg-primary min-h-screen">
-            <NoiseOverlay />
             <Impressum isOpen={showImpressum} onClose={() => setShowImpressum(false)} />
             <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(true)} />
             <CookieBanner onShowDatenschutz={() => setShowDatenschutz(true)} />

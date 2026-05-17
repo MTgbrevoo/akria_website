@@ -4,17 +4,6 @@ import { CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../integrations/supabase/client';
 
-function NoiseOverlay() {
-    return (
-        <svg className="noise-overlay absolute inset-0 w-full h-full pointer-events-none opacity-[0.03] md:opacity-[0.05]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-            <filter id="noiseFilter">
-                <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
-            </filter>
-            <rect width="100%" height="100%" filter="url(#noiseFilter)" />
-        </svg>
-    )
-}
-
 export default function Success() {
     const containerRef = useRef<HTMLDivElement>(null);
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -121,7 +110,6 @@ export default function Success() {
 
     return (
         <div ref={containerRef} className="min-h-[100svh] w-full bg-primary relative flex items-center justify-center p-6 overflow-hidden">
-            <NoiseOverlay />
             
             <div className="absolute top-[-10%] right-[-10%] w-[40%] aspect-square bg-accent/10 rounded-full blur-[120px] pointer-events-none" />
             <div className="absolute bottom-[-10%] left-[-10%] w-[40%] aspect-square bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
