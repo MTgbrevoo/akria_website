@@ -39,10 +39,10 @@ function FloatingCTA() {
 
     useEffect(() => {
         const handleScroll = () => {
-            // Shrink the button when scrolling
+            // Shrink the button when scrolling to 75%
             if (scaleRef.current) {
                 gsap.to(scaleRef.current, {
-                    scale: 0.92,
+                    scale: 0.75,
                     duration: 0.3,
                     ease: "power2.out",
                     overwrite: "auto"
@@ -208,7 +208,7 @@ function Hero() {
                         <span className="hero-line-2 block font-display font-800 text-5xl md:text-6xl lg:text-7xl tracking-tight text-white leading-[1.1]">
                             Upgrade
                         </span>
-                        <span className="hero-line-3 small-line block font-display font-800 text-3xl md:text-4xl lg:text-5xl tracking-tight text-white leading-none py-2">
+                        <span className="hero-line-3 small-line block font-display font-800 text-3xl md:text-4xl lg:text-5xl tracking-tight text-white Kaltenbach-Bold py-2">
                             für
                         </span>
                         <span className="hero-line-4 block font-serif italic font-900 text-6xl md:text-8xl lg:text-[9.5rem] tracking-tight text-accent leading-[0.8]">
@@ -216,8 +216,6 @@ function Hero() {
                         </span>
                     </h1>
                     
-                    {/* The static button is removed from here as it is now floating fixed in the Index component */}
-
                     <div className="hero-scroll-hint mt-8 flex flex-col items-center text-white/60 animate-bounce z-30">
                         <span className="text-[10px] md:text-xs tracking-widest uppercase mb-1">Scroll</span>
                         <ChevronDown className="w-3 h-3 md:w-4 md:h-4" />
@@ -384,7 +382,7 @@ function ClaimSet2() {
     const cards = [
         {
             headline: "100% Koroneiki-Oliven",
-            desc: "Koroneiki-Oliven sind klein, wachsen gut im trockenen Klima der Mani und gehören zu den Sorten mit besonders vielen naturally vorkommenden Polyphenolen.",
+            desc: "Koroneiki-Oliven sind klein, wachsen gut im trockenen Klima der Mani und gehören zu den Sorten mit besonders vielen natürlich vorkommenden Polyphenolen.",
             bg: "bg-[#0c5eaf]",
             illustration: getSupabaseAssetUrl('Illustrations', 'Olive.png')
         },
@@ -613,7 +611,6 @@ function WaitlistSection() {
                         Trag dich für die nächste Ernte ein! Wir informieren dich, sobald der erste Tropfen fließt.
                     </p>
 
-                    {/* The static button is removed here as well to maintain visual hierarchy with the floating CTA */}
                     <div className="h-20 lg:h-24"></div>
                 </div>
             </div>
