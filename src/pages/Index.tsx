@@ -76,12 +76,12 @@ function Hero() {
                 }
             })
 
-            // Scroll-Synced Timeline
+            // 1. Parent Scroll-Synced Timeline (Pins the Hero)
             const scrollTl = gsap.timeline({
                 scrollTrigger: {
                     trigger: heroRef.current,
                     start: 'top top',
-                    end: '+=200%', // Scroll distance
+                    end: '+=200%', // Scroll distance for the video scrubbing
                     pin: true,
                     scrub: true, 
                     anticipatePin: 1,
@@ -101,23 +101,20 @@ function Hero() {
                 .to('.hero-line-4', { opacity: 1, y: 0, duration: 1 }, 0.3) // "alles."
                 .to('.hero-line-1', { opacity: 1, y: 0, duration: 1 }, 0.5) // Subclaim 1
 
-            // Pin the CTA once the Hero unpins and scrolls up
+            // 2. Child CTA Pin (Pins the CTA when it reaches the top of the screen AFTER the hero unpins)
+            // CRITICAL FIX: pinnedContainer tells GSAP to adjust the trigger point calculations
             ScrollTrigger.create({
                 trigger: ".hero-cta-wrapper",
+                pinnedContainer: heroRef.current, // Tell GSAP this element is inside a pinned parent!
                 start: "top 24px",
-                end: "max",
+                endTrigger: "#waitlist",
+                end: "top 80%", // unpin when reaching the waitlist section
                 pin: true,
                 pinSpacing: false,
                 onEnter: () => gsap.to('.hero-cta', { scale: 0.85, duration: 0.3, ease: "power2.out" }),
-                onLeaveBack: () => gsap.to('.hero-cta', { scale: 1, duration: 0.3, ease: "power2.out" })
-            });
-
-            // Hide the pinned CTA when reaching the Waitlist section
-            ScrollTrigger.create({
-                trigger: "#waitlist",
-                start: "top center",
-                onEnter: () => gsap.to('.hero-cta', { autoAlpha: 0, y: -20, duration: 0.3 }),
-                onLeaveBack: () => gsap.to('.hero-cta', { autoAlpha: 1, y: 0, duration: 0.3 })
+                onLeaveBack: () => gsap.to('.hero-cta', { scale: 1, duration: 0.3, ease: "power2.out" }),
+                onLeave: () => gsap.to('.hero-cta', { autoAlpha: 0, duration: 0.3 }),
+                onEnterBack: () => gsap.to('.hero-cta', { autoAlpha: 1, duration: 0.3 })
             });
 
         }, heroRef)
@@ -137,10 +134,6 @@ function Hero() {
                     video.currentTime = 0;
                 }).catch(err => console.log("Video priming failed", err));
             }
-
-            return () => {
-                ctx.revert();
-            };
         }
 
         return () => ctx.revert();
@@ -157,7 +150,6 @@ function Hero() {
                     preload="auto"
                     className="absolute inset-0 w-full h-full object-cover"
                 >
-                    {/* Drone video stays local for scrubbing performance */}
                     <source src="/assets/hero-drone.mp4" type="video/mp4" />
                 </video>
             </div>
@@ -190,8 +182,8 @@ function Hero() {
                         </span>
                     </h1>
                     
-                    <div className="hero-cta-wrapper relative z-[100]">
-                        <Link to="/waitlist" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 relative z-30 block">
+                    <div className="hero-cta-wrapper relative z-[100] mt-4">
+                        <Link to="/waitlist" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 relative z-30 block origin-top">
                             Jetzt sichern
                             <ArrowRight className="ml-2 w-5 h-5 inline-block" />
                         </Link>
