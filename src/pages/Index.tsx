@@ -12,6 +12,7 @@ gsap.registerPlugin(ScrollTrigger)
    SUPABASE ASSET HELPER
    ═══════════════════════════════════════════════════════════ */
 const getSupabaseAssetUrl = (folder: string, filename: string) => {
+    // "Website Assets" hat ein Leerzeichen, das in der URL als %20 kodiert werden muss
     const baseUrl = "https://khizcgryvscakouefofc.supabase.co/storage/v1/object/public/Website%20Assets";
     return `${baseUrl}/${folder}/${encodeURIComponent(filename)}`;
 };
@@ -37,7 +38,6 @@ function Hero() {
     const heroRef = useRef<HTMLElement>(null)
     const textRef = useRef<HTMLDivElement>(null)
     const sunRef = useRef<HTMLDivElement>(null)
-    const ctaRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         const video = heroRef.current?.querySelector('video')
@@ -46,13 +46,13 @@ function Hero() {
             // Initial animation for Logo, Sun, and CTA
             const introTl = gsap.timeline({ defaults: { ease: 'power3.out' } })
             
-            gsap.set(['.hero-line-1', '.hero-line-2', '.hero-line-3', '.hero-line-4', ctaRef.current], {
+            gsap.set(['.hero-line-1', '.hero-line-2', '.hero-line-3', '.hero-line-4', '.hero-cta'], {
                 opacity: 0,
                 y: 30
             })
 
             introTl.to('.hero-logo', { scale: 1, opacity: 1, duration: 1.2, delay: 0.3 })
-                   .to(ctaRef.current, { y: 0, opacity: 1, duration: 1 }, "-=0.8")
+                   .to('.hero-cta', { y: 0, opacity: 1, duration: 1 }, "-=0.8")
 
             if (sunRef.current) {
                 gsap.to(sunRef.current, {
@@ -64,7 +64,7 @@ function Hero() {
                 })
             }
 
-            // Scroll hint is visible initially, then fades
+            // Scroll hint is visible initially, then fades as soon as user scrolls
             gsap.to('.hero-scroll-hint', {
                 opacity: 0,
                 y: -20,
@@ -76,95 +76,101 @@ function Hero() {
                 }
             })
 
-            // Main Hero Scroll Timeline (Video & Text)
+            // Scroll-Synced Timeline
             const scrollTl = gsap.timeline({
                 scrollTrigger: {
                     trigger: heroRef.current,
                     start: 'top top',
-                    end: '+=200%', 
+                    end: '+=200%', // Scroll distance
                     pin: true,
                     scrub: true, 
                     anticipatePin: 1,
                     onUpdate: (self) => {
                         if (video && video.duration) {
+                            // Video Scrubbing
                             video.currentTime = video.duration * self.progress
                         }
                     }
                 }
             })
 
+            // Staggered reveal linked to scroll
             scrollTl
-                .to('.hero-line-2', { opacity: 1, y: 0, duration: 1 }, 0.1)
-                .to('.hero-line-3.small-line', { opacity: 0.7, y: 0, duration: 1 }, 0.2)
-                .to('.hero-line-4', { opacity: 1, y: 0, duration: 1 }, 0.3)
-                .to('.hero-line-1', { opacity: 1, y: 0, duration: 1 }, 0.5)
+                .to('.hero-line-2', { opacity: 1, y: 0, duration: 1 }, 0.1) // "Upgrade"
+                .to('.hero-line-3.small-line', { opacity: 0.7, y: 0, duration: 1 }, 0.2) // "für"
+                .to('.hero-line-4', { opacity: 1, y: 0, duration: 1 }, 0.3) // "alles."
+                .to('.hero-line-1', { opacity: 1, y: 0, duration: 1 }, 0.5) // Subclaim 1
 
-            // TRANSFORMATION: CTA moves from Center to Top-Right Corner
-            // Using a separate ScrollTrigger to handle the "Sticky" escape
-            const ctaMoveTl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: heroRef.current,
-                    start: 'top top',
-                    end: '+=100%', // Moves while video is scrubbing
-                    scrub: 1.2,
-                }
-            })
+            // Pin the CTA once the Hero unpins and scrolls up
+            ScrollTrigger.create({
+                trigger: ".hero-cta-wrapper",
+                start: "top 24px",
+                end: "max",
+                pin: true,
+                pinSpacing: false,
+                onEnter: () => gsap.to('.hero-cta', { scale: 0.85, duration: 0.3, ease: "power2.out" }),
+                onLeaveBack: () => gsap.to('.hero-cta', { scale: 1, duration: 0.3, ease: "power2.out" })
+            });
 
-            const isMobile = window.innerWidth < 768;
-
-            ctaMoveTl.to(ctaRef.current, {
-                position: 'fixed',
-                top: isMobile ? '1rem' : '2rem',
-                right: isMobile ? '1rem' : '3rem',
-                left: 'auto',
-                x: 0,
-                y: 0,
-                scale: isMobile ? 0.75 : 0.85,
-                width: 'auto',
-                zIndex: 100,
-                boxShadow: '0 4px 20px rgba(254, 65, 0, 0.4)',
-                padding: isMobile ? '0.6rem 1.2rem' : '0.8rem 1.5rem',
-                ease: 'power2.inOut'
-            })
-
-            // Hide the CTA when reaching the final waitlist section
+            // Hide the pinned CTA when reaching the Waitlist section
             ScrollTrigger.create({
                 trigger: "#waitlist",
                 start: "top center",
-                onEnter: () => gsap.to(ctaRef.current, { autoAlpha: 0, y: -20, duration: 0.4, ease: 'power2.in' }),
-                onLeaveBack: () => gsap.to(ctaRef.current, { autoAlpha: 1, y: 0, duration: 0.4, ease: 'power2.out' })
+                onEnter: () => gsap.to('.hero-cta', { autoAlpha: 0, y: -20, duration: 0.3 }),
+                onLeaveBack: () => gsap.to('.hero-cta', { autoAlpha: 1, y: 0, duration: 0.3 })
             });
 
         }, heroRef)
 
+        // Ensure video metadata is loaded for scrubbing
         if (video) {
             video.addEventListener('loadedmetadata', () => {
                 video.play().then(() => {
                     video.pause();
                     video.currentTime = 0;
-                }).catch(() => {});
+                }).catch(err => console.log("Video priming failed", err));
             }, { once: true });
-            return () => ctx.revert();
+
+            if (video.readyState >= 2) {
+                video.play().then(() => {
+                    video.pause();
+                    video.currentTime = 0;
+                }).catch(err => console.log("Video priming failed", err));
+            }
+
+            return () => {
+                ctx.revert();
+            };
         }
+
         return () => ctx.revert();
     }, [])
 
     return (
         <section ref={heroRef} className="relative h-[100svh] w-full bg-primary" id="hero">
+            {/* Background Video - moved overflow-hidden here so pinned elements can escape the section */}
             <div className="hero-video-wrap absolute inset-0 w-full h-full overflow-hidden">
-                <video autoPlay muted playsInline preload="auto" className="absolute inset-0 w-full h-full object-cover">
+                <video
+                    autoPlay
+                    muted
+                    playsInline
+                    preload="auto"
+                    className="absolute inset-0 w-full h-full object-cover"
+                >
+                    {/* Drone video stays local for scrubbing performance */}
                     <source src="/assets/hero-drone.mp4" type="video/mp4" />
                 </video>
             </div>
 
-            {/* Sun Illustration */}
+            {/* Sun Illustration — top right */}
             <div ref={sunRef} className="absolute top-12 md:top-16 lg:top-20 right-6 md:right-12 lg:right-16 w-16 md:w-24 lg:w-32 z-30 pointer-events-none">
                 <img src={getSupabaseAssetUrl('Illustrations', 'sun.png')} alt="" className="w-full h-auto" />
             </div>
 
-            {/* Hero Content */}
+            {/* Hero Content — Centered Layout */}
             <div ref={textRef} className="absolute inset-0 flex flex-col items-center justify-center z-20 px-6 text-center">
-                <div className="max-w-4xl flex flex-col items-center relative h-full justify-center">
+                <div className="max-w-4xl flex flex-col items-center">
+                    {/* Centered Logo */}
                     <div className="hero-logo mb-6 md:mb-8 lg:mb-10 transform hover:scale-[1.02] transition-transform duration-500 cursor-pointer">
                         <img src="/assets/logo.png" alt="AKRIA" className="h-24 md:h-32 lg:h-44 w-auto" />
                     </div>
@@ -172,7 +178,7 @@ function Hero() {
                     <p className="hero-line-1 font-display text-sm md:text-base lg:text-lg font-bold tracking-[0.25em] uppercase text-white mb-3 md:mb-4 drop-shadow-lg">
                         Extra Natives Olivenöl aus der Mani
                     </p>
-                    <h1 className="mb-6 md:mb-10 text-center flex flex-col items-center">
+                    <h1 className="mb-6 md:mb-8 text-center flex flex-col items-center">
                         <span className="hero-line-2 block font-display font-800 text-5xl md:text-6xl lg:text-7xl tracking-tight text-white leading-[1.1]">
                             Upgrade
                         </span>
@@ -184,15 +190,15 @@ function Hero() {
                         </span>
                     </h1>
                     
-                    {/* The CTA that transforms into sticky */}
-                    <div ref={ctaRef} className="hero-cta-fixed-container">
-                        <Link to="/waitlist" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 block whitespace-nowrap">
+                    <div className="hero-cta-wrapper relative z-[100]">
+                        <Link to="/waitlist" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 relative z-30 block">
                             Jetzt sichern
                             <ArrowRight className="ml-2 w-5 h-5 inline-block" />
                         </Link>
                     </div>
 
-                    <div className="hero-scroll-hint mt-8 flex flex-col items-center text-white/60 animate-bounce z-10">
+                    {/* Scroll hint — now under CTA/Logo area */}
+                    <div className="hero-scroll-hint mt-8 flex flex-col items-center text-white/60 animate-bounce z-30">
                         <span className="text-[10px] md:text-xs tracking-widest uppercase mb-1">Scroll</span>
                         <ChevronDown className="w-3 h-3 md:w-4 md:h-4" />
                     </div>
@@ -225,6 +231,8 @@ function ClaimSet1() {
     useEffect(() => {
         const ctx = gsap.context(() => {
             const isMobile = window.innerWidth < 1024;
+
+            // Initial setup
             claims.forEach((_, i) => {
                 gsap.set(`.claim-card-${i}`, {
                     opacity: 0,
@@ -236,6 +244,7 @@ function ClaimSet1() {
                 }
             })
 
+            // Timeline with Pinning
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current,
@@ -268,41 +277,75 @@ function ClaimSet1() {
             })
 
             const video = sectionRef.current?.querySelector('video')
-            if (video) video.play().catch(() => { })
+            if (video) {
+                video.play().catch(() => { })
+            }
         }, sectionRef)
+
         return () => ctx.revert()
     }, [])
 
     return (
-        <section ref={sectionRef} id="herkunft" className="relative min-h-[100svh] w-full bg-primary overflow-hidden pt-10 md:pt-32 pb-16">
+        <section
+            ref={sectionRef}
+            id="herkunft"
+            className="relative min-h-[100svh] w-full bg-primary overflow-hidden pt-10 md:pt-32 pb-16"
+        >
             <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex flex-col h-full">
                 <h2 className="font-display text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-8 md:mb-16 text-white/95 text-center lg:text-left leading-[1.1] max-w-5xl tracking-tight">
                     <span className="font-serif italic text-accent">Weltklasse</span> Olivenöl direkt von der Ernte zu dir nach Hause.
                 </h2>
+
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-16 items-start lg:items-center flex-1">
                     <div className="relative flex flex-col gap-2 md:gap-3 order-1">
                         {claims.map((claim, i) => (
                             <div key={i} className="relative">
-                                <div className={`claim-card-${i} glass-card p-5 md:p-8 flex flex-col gap-2 group hover:bg-white/10`}>
+                                <div
+                                    className={`claim-card-${i} glass-card p-5 md:p-8 flex flex-col gap-2 group hover:bg-white/10`}
+                                >
                                     <div className="flex items-center gap-4">
                                         <span className="text-accent font-serif italic text-2xl md:text-3xl font-bold opacity-50">0{i + 1}</span>
-                                        <h3 className="font-display font-bold text-lg md:text-2xl text-white">{claim.title}</h3>
+                                        <h3 className="font-display font-bold text-lg md:text-2xl text-white">
+                                            {claim.title}
+                                        </h3>
                                     </div>
-                                    <p className="text-white/70 text-sm md:text-base leading-relaxed pl-10 md:pl-12">{claim.desc}</p>
+                                    <p className="text-white/70 text-sm md:text-base leading-relaxed pl-10 md:pl-12">
+                                        {claim.desc}
+                                    </p>
                                 </div>
+
                                 {i < claims.length - 1 && (
                                     <div className="py-2 md:py-0">
-                                        <svg className={`claim-arrow-${i} w-10 h-10 md:w-20 md:h-20 mx-auto my-[-1.5rem] md:my-[-2rem] text-accent z-20 ${i % 2 === 0 ? 'lg:translate-x-[0.5rem] lg:rotate-[15deg]' : 'lg:translate-x-[-0.5rem] lg:rotate-[-15deg]'}`} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/center">
-                                            <path d="M50 10 C 40 35, 60 45, 50 80 M 35 65 C 40 75, 50 85, 50 80 M 65 65 C 60 75, 50 85, 50 80" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+                                        <svg
+                                            className={`claim-arrow-${i} w-10 h-10 md:w-20 md:h-20 mx-auto my-[-1.5rem] md:my-[-2rem] text-accent z-20 ${i % 2 === 0 ? 'lg:translate-x-[0.5rem] lg:rotate-[15deg]' : 'lg:translate-x-[-0.5rem] lg:rotate-[-15deg]'}`}
+                                            viewBox="0 0 100 100"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/center"
+                                        >
+                                            <path
+                                                d="M50 10 C 40 35, 60 45, 50 80 M 35 65 C 40 75, 50 85, 50 80 M 65 65 C 60 75, 50 85, 50 80"
+                                                stroke="currentColor"
+                                                strokeWidth="4"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                            />
                                         </svg>
                                     </div>
                                 )}
                             </div>
                         ))}
                     </div>
+
                     <div className="oil-video-container relative flex items-center justify-center lg:justify-end order-2">
                         <div className="video-mask w-full max-w-sm lg:max-w-md aspect-[3/4] relative overflow-hidden shadow-2xl rounded-3xl">
-                            <video autoPlay muted loop playsInline preload="auto" className="absolute inset-0 w-full h-full object-cover">
+                            <video
+                                autoPlay
+                                muted
+                                loop
+                                playsInline
+                                preload="auto"
+                                className="absolute inset-0 w-full h-full object-cover"
+                            >
                                 <source src={getSupabaseAssetUrl('Vids_Images', 'Oil Flowing From Press.mp4')} type="video/mp4" />
                             </video>
                         </div>
@@ -313,15 +356,33 @@ function ClaimSet1() {
     )
 }
 
+
 /* ═══════════════════════════════════════════════════════════
    CLAIM SET 2 — Falling Cards Stacking Effect
    ═══════════════════════════════════════════════════════════ */
 function ClaimSet2() {
     const sectionRef = useRef<HTMLElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
     const cards = [
-        { headline: "100% Koroneiki-Oliven", desc: "Koroneiki-Oliven sind klein, wachsen gut im trockenen Klima der Mani und gehören zu den Sorten mit besonders vielen Polyphenolen.", bg: "bg-[#0c5eaf]", illustration: getSupabaseAssetUrl('Illustrations', 'Olive.png') },
-        { headline: "Intensives Aroma", desc: "Vergiss fades Supermarktöl. Unser Öl hat Charakter und macht ein trockenes Brot zu einem Geschmackshighlight.", bg: "bg-[#0c5eaf]", illustration: getSupabaseAssetUrl('Illustrations', 'Aroma.png') },
-        { headline: "Reich an Gesundmachern", desc: "Vollgepackt mit Polyphenolen, Vitamin E und Antioxidantien. Unser Olivenöl tut dir einfach richtig gut.", bg: "bg-[#0c5eaf]", illustration: getSupabaseAssetUrl('Illustrations', 'Herz.png') }
+        {
+            headline: "100% Koroneiki-Oliven",
+            desc: "Koroneiki-Oliven sind klein, wachsen gut im trockenen Klima der Mani und gehören zu den Sorten mit besonders vielen natürlich vorkommenden Polyphenolen.",
+            bg: "bg-[#0c5eaf]",
+            illustration: getSupabaseAssetUrl('Illustrations', 'Olive.png')
+        },
+        {
+            headline: "Intensives Aroma",
+            desc: "Vergiss fades Supermarktöl, das nichts zum Kochen beiträgt. Unser Öl hat Charakter und macht ein trockenes Brot mit Salz zu einem Geschmackshighlight.",
+            bg: "bg-[#0c5eaf]",
+            illustration: getSupabaseAssetUrl('Illustrations', 'Aroma.png')
+        },
+        {
+            headline: "Reich an Gesundmachern",
+            desc: "Vollgepackt mit Polyphenolen, Vitamin E und Antioxidantien. Unser Olivenöl ist nicht nur lecker. Es tut dir auch richtig gut.",
+            bg: "bg-[#0c5eaf]",
+            illustration: getSupabaseAssetUrl('Illustrations', 'Herz.png')
+        }
     ];
 
     useEffect(() => {
@@ -333,32 +394,72 @@ function ClaimSet2() {
                     end: `+=${cards.length * 100}%`,
                     pin: true,
                     scrub: 1,
+                    anticipatePin: 1
                 }
             });
+
             cards.forEach((_, i) => {
-                if (i === 0) { gsap.set(`.stack-card-0`, { zIndex: 10 }); return; }
-                tl.fromTo(`.stack-card-${i}`, { y: "100vh", rotateX: -15, scale: 1.1, zIndex: 10 + i }, { y: "0vh", rotateX: 0, scale: 1, duration: 1.5, ease: "power2.inOut" }, `card-${i}`);
+                if (i === 0) {
+                    gsap.set(`.stack-card-0`, { zIndex: 10 });
+                    return;
+                }
+
+                tl.fromTo(`.stack-card-${i}`,
+                    {
+                        y: "100vh", // Updated from -100vh to 100vh to slide in from bottom
+                        rotateX: -15, // Adjusted rotation for a more natural entry from bottom
+                        scale: 1.1,
+                        zIndex: 10 + i
+                    },
+                    {
+                        y: "0vh",
+                        rotateX: 0,
+                        scale: 1,
+                        duration: 1.5,
+                        ease: "power2.inOut"
+                    },
+                    `card-${i}`
+                );
+
                 for (let j = 0; j < i; j++) {
-                    tl.to(`.stack-card-${j}`, { scale: 0.9 - (i - j) * 0.05, filter: `blur(${(i - j) * 5}px)`, opacity: 0.6 / (i - j), y: -20 * (i - j), duration: 1.5, ease: "power2.inOut" }, `card-${i}`);
+                    tl.to(`.stack-card-${j}`, {
+                        scale: 0.9 - (i - j) * 0.05,
+                        filter: `blur(${(i - j) * 5}px)`,
+                        opacity: 0.6 / (i - j),
+                        y: -20 * (i - j),
+                        duration: 1.5,
+                        ease: "power2.inOut"
+                    }, `card-${i}`);
                 }
             });
         }, sectionRef);
+
         return () => ctx.revert();
     }, []);
 
     return (
         <section ref={sectionRef} className="relative w-full h-[100svh] overflow-hidden bg-primary" id="qualitaet">
-            <div className="relative w-full h-full flex items-center justify-center">
+            <div ref={containerRef} className="relative w-full h-full flex items-center justify-center">
                 {cards.map((card, i) => (
-                    <div key={i} className={`stack-card-${i} absolute w-full max-w-4xl px-4 md:px-0 flex items-center justify-center`} style={{ zIndex: 10 + i }}>
+                    <div
+                        key={i}
+                        className={`stack-card-${i} absolute w-full max-w-4xl px-4 md:px-0 flex items-center justify-center`}
+                        style={{ zIndex: 10 + i }}
+                    >
                         <div className={`w-full ${card.bg} rounded-[2.5rem] p-8 md:p-12 lg:p-16 shadow-[-20px_40px_80px_rgba(0,0,0,0.4)] border border-white/10 flex flex-col md:flex-row gap-6 md:gap-12 lg:gap-16 items-center`}>
                             <div className="flex-1 text-center md:text-left">
-                                <h2 className="font-serif italic font-900 text-3xl md:text-5xl lg:text-6xl text-white mb-4 md:mb-6 leading-tight">{card.headline}</h2>
-                                <p className="text-white/70 text-sm md:text-base lg:text-lg font-light leading-relaxed mb-4">{card.desc}</p>
+                                <h2 className="font-serif italic font-900 text-3xl md:text-5xl lg:text-6xl text-white mb-4 md:mb-6 leading-tight">
+                                    {card.headline}
+                                </h2>
+                                <p className="text-white/70 text-sm md:text-base lg:text-lg font-light leading-relaxed mb-4">
+                                    {card.desc}
+                                </p>
                             </div>
-                            <div className="w-32 h-32 md:w-56 md:h-56 lg:w-64 lg:h-64 relative shrink-0">
+                            <div className="w-32 h-32 md:w-56 md:h-56 lg:w-64 lg:h-64 relative">
                                 <div className="absolute inset-0 bg-accent/10 rounded-full blur-3xl animate-pulse" />
-                                <img src={card.illustration} className="relative z-10 w-full h-full object-contain" alt="" />
+                                <div className="relative z-10 w-full h-full flex items-center justify-center">
+                                    <img src={card.illustration} className="w-full h-auto object-contain max-h-full" alt="" />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -368,26 +469,42 @@ function ClaimSet2() {
     );
 }
 
+
+
 /* ═══════════════════════════════════════════════════════════
    IMAGE GALLERY — Horizontal Scroll Carousel
    ═══════════════════════════════════════════════════════════ */
 function ImageGallery() {
     const galleryRef = useRef<HTMLElement>(null)
+
     const images = [
         getSupabaseAssetUrl('Vids_Images', 'DSCF4045.webp'),
         getSupabaseAssetUrl('Vids_Images', 'DSCF4042.webp'),
         getSupabaseAssetUrl('Vids_Images', 'DSCF4075.webp'),
         getSupabaseAssetUrl('Vids_Images', 'DSCF4085.webp'),
         getSupabaseAssetUrl('Vids_Images', 'DSCF4011.webp'),
-        getSupabaseAssetUrl('Vids_Images', 'DSCF3997 (1).webp'),
-        getSupabaseAssetUrl('Vids_Images', 'DSCF3954 (1).webp'),
+        getSupabaseAssetUrl('Vids_Images', 'DSCF3997 (1).webp'), // Angepasst an dein Screenshot-Beispiel
+        getSupabaseAssetUrl('Vids_Images', 'DSCF3954 (1).webp'), // Angepasst an dein Screenshot-Beispiel
         getSupabaseAssetUrl('Vids_Images', 'DJI_0340.webp'),
         getSupabaseAssetUrl('Vids_Images', 'DJI_0356.webp')
     ]
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            gsap.fromTo(galleryRef.current, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power3.out", scrollTrigger: { trigger: galleryRef.current, start: "top 80%", toggleActions: "play none none reverse" } })
+            gsap.fromTo(galleryRef.current,
+                { y: 50, opacity: 0 },
+                {
+                    y: 0,
+                    opacity: 1,
+                    duration: 1,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: galleryRef.current,
+                        start: "top 80%",
+                        toggleActions: "play none none reverse"
+                    }
+                }
+            )
         }, galleryRef)
         return () => ctx.revert()
     }, [])
@@ -395,10 +512,21 @@ function ImageGallery() {
     return (
         <section ref={galleryRef} className="py-12 md:py-24 bg-primary overflow-hidden">
             <div className="w-full">
-                <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-6 px-6 md:px-12 lg:px-16 pb-8 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                <div
+                    className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-6 px-6 md:px-12 lg:px-16 pb-8 scrollbar-hide"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
                     {images.map((src, idx) => (
-                        <div key={idx} className="flex-none w-[85vw] sm:w-[60vw] md:w-[45vw] lg:w-[30vw] aspect-[4/3] snap-center">
-                            <img src={src} alt="" className="w-full h-full object-cover rounded-2xl md:rounded-3xl shadow-xl" loading="lazy" />
+                        <div
+                            key={idx}
+                            className="flex-none w-[85vw] sm:w-[60vw] md:w-[45vw] lg:w-[30vw] aspect-[4/3] snap-center"
+                        >
+                            <img
+                                src={src}
+                                alt={`Gallery image ${idx + 1}`}
+                                className="w-full h-full object-cover rounded-2xl md:rounded-3xl shadow-xl"
+                                loading="lazy"
+                            />
                         </div>
                     ))}
                 </div>
@@ -412,30 +540,72 @@ function ImageGallery() {
    ═══════════════════════════════════════════════════════════ */
 function WaitlistSection() {
     const sectionRef = useRef<HTMLElement>(null)
+
     useEffect(() => {
         const ctx = gsap.context(() => {
-            gsap.from('.waitlist-content > *', { y: 60, opacity: 0, stagger: 0.12, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 70%', toggleActions: 'play none none reverse' } })
+            gsap.from('.waitlist-content > *', {
+                y: 60,
+                opacity: 0,
+                stagger: 0.12,
+                duration: 1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: sectionRef.current,
+                    start: 'top 70%',
+                    toggleActions: 'play none none reverse',
+                },
+            })
+
             const video = sectionRef.current?.querySelector('video')
-            if (video) video.play().catch(() => { })
+            if (video) {
+                video.play().catch(() => { })
+            }
         }, sectionRef)
         return () => ctx.revert()
     }, [])
 
     return (
-        <section ref={sectionRef} id="waitlist" className="relative min-h-[100svh] flex items-center justify-center bg-primary overflow-hidden">
+        <section
+            ref={sectionRef}
+            id="waitlist"
+            className="relative min-h-[100svh] flex items-center justify-center bg-primary overflow-hidden"
+        >
+            {/* Background Video — Full Bleed without bars */}
             <div className="absolute inset-0 w-full h-full z-0">
-                <div className="absolute inset-0 bg-black/30 z-10" />
-                <video autoPlay muted loop playsInline preload="auto" className="absolute inset-0 w-full h-full object-cover">
+                <div className="absolute inset-0 bg-black/30 z-10" /> {/* Dark overlay for better text contrast */}
+                <video
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    className="absolute inset-0 w-full h-full object-cover"
+                >
                     <source src={getSupabaseAssetUrl('Vids_Images', 'Strand Bus Phoneas.mp4')} type="video/mp4" />
                 </video>
             </div>
+
+            {/* Content Overlay */}
             <div className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex items-center h-full min-h-[100svh]">
                 <div className="waitlist-content w-full lg:w-1/2 text-center lg:text-left py-12 backdrop-blur-sm lg:backdrop-blur-none bg-black/20 lg:bg-transparent p-8 lg:p-0 rounded-[2.5rem] lg:rounded-none border border-white/5 lg:border-none shadow-2xl lg:shadow-none">
-                    <p className="font-display text-xs lg:text-sm font-semibold tracking-[0.2em] uppercase text-accent mb-4">Ernte 2026 / 2027</p>
-                    <h2 className="font-serif italic font-bold text-4xl lg:text-5xl xl:text-7xl text-white mb-6 leading-tight drop-shadow-2xl">Sicher dir deinen Platz.</h2>
-                    <p className="text-white/80 text-base lg:text-lg xl:text-xl max-w-md mx-auto lg:mx-0 leading-relaxed mb-8 lg:mb-10 font-light drop-shadow-lg">Trag dich für die nächste Ernte ein! Wir informieren dich, sobald der erste Tropfen fließt.</p>
+                    <p className="font-display text-xs lg:text-sm font-semibold tracking-[0.2em] uppercase text-accent mb-4">
+                        Ernte 2026 / 2027
+                    </p>
+                    <h2 className="font-serif italic font-bold text-4xl lg:text-5xl xl:text-7xl text-white mb-6 leading-tight drop-shadow-2xl">
+                        Sicher dir deinen Platz.
+                    </h2>
+                    <p className="text-white/80 text-base lg:text-lg xl:text-xl max-w-md mx-auto lg:mx-0 leading-relaxed mb-8 lg:mb-10 font-light drop-shadow-lg">
+                        Trag dich für die nächste Ernte ein! Wir informieren dich, sobald der erste Tropfen fließt.
+                    </p>
+
                     <div className="flex justify-center lg:justify-start">
-                        <Link to="/waitlist" className="btn-magnetic btn-accent py-4 px-12 text-lg lg:text-xl shadow-[0_0_30px_rgba(254,65,0,0.4)]">Jetzt sichern<ArrowRight className="ml-3 w-5 h-5 flex-shrink-0" /></Link>
+                        <Link
+                            to="/waitlist"
+                            className="btn-magnetic btn-accent py-4 px-12 text-lg lg:text-xl shadow-[0_0_30px_rgba(254,65,0,0.4)]"
+                        >
+                            Jetzt sichern
+                            <ArrowRight className="ml-3 w-5 h-5 flex-shrink-0" />
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -444,64 +614,210 @@ function WaitlistSection() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   IMPRESSUM & DATENSCHUTZ OVERLAYS
+   IMPRESSUM OVERLAY
    ═══════════════════════════════════════════════════════════ */
 function Impressum({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
     const overlayRef = useRef<HTMLDivElement>(null)
+
     useEffect(() => {
         if (isOpen) {
-            gsap.to(overlayRef.current, { opacity: 1, visibility: 'visible', duration: 0.5, ease: 'power3.out' })
+            gsap.to(overlayRef.current, {
+                opacity: 1,
+                visibility: 'visible',
+                duration: 0.5,
+                ease: 'power3.out'
+            })
             document.body.style.overflow = 'hidden'
         } else {
-            gsap.to(overlayRef.current, { opacity: 0, duration: 0.4, ease: 'power3.inOut', onComplete: () => { gsap.set(overlayRef.current, { visibility: 'hidden' }) } })
+            gsap.to(overlayRef.current, {
+                opacity: 0,
+                duration: 0.4,
+                ease: 'power3.inOut',
+                onComplete: () => {
+                    gsap.set(overlayRef.current, { visibility: 'hidden' })
+                }
+            })
             document.body.style.overflow = 'auto'
         }
     }, [isOpen])
+
     return (
-        <div ref={overlayRef} className="fixed inset-0 z-[200] bg-primary flex items-center justify-center p-6 md:p-12 opacity-0 invisible">
+        <div
+            ref={overlayRef}
+            className="fixed inset-0 z-[100] bg-primary flex items-center justify-center p-6 md:p-12 opacity-0 invisible"
+        >
             <NoiseOverlay />
-            <button onClick={onClose} className="absolute top-8 right-8 text-white/60 hover:text-white transition-colors p-2"><X size={32} /></button>
-            <div className="max-w-3xl w-full text-white overflow-y-auto max-h-full py-12">
+
+            <button
+                onClick={onClose}
+                className="absolute top-8 right-8 text-white/60 hover:text-white transition-colors p-2"
+                aria-label="Schließen"
+            >
+                <X size={32} />
+            </button>
+
+            <div className="max-w-3xl w-full text-white text-center md:text-left overflow-y-auto max-h-full py-12">
                 <h2 className="font-serif italic font-bold text-4xl md:text-6xl mb-12 text-accent">Impressum</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-white/80 font-light">
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-white/80 font-light leading-relaxed">
                     <div>
                         <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4">Angaben gemäß § 5 TMG</h3>
-                        <p>Meyer & Tiffert GbR<br />Hofwiese 27<br />79809 Weilheim<br />Deutschland</p>
+                        <p>
+                            Meyer & Tiffert GbR<br />
+                            Hofwiese 27<br />
+                            79809 Weilheim<br />
+                            Deutschland
+                        </p>
+
                         <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4 mt-8">Kontakt</h3>
-                        <p>E-Mail: <a href="mailto:meyertiffergbr@gmail.com" className="text-accent hover:underline">meyertiffergbr@gmail.com</a></p>
+                        <p>
+                            E-Mail: <a href="mailto:meyertiffergbr@gmail.com" className="text-accent hover:underline">meyertiffergbr@gmail.com</a>
+                        </p>
                     </div>
+
                     <div>
                         <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4">Vertreten durch</h3>
-                        <p>Denis Tiffert und Zeno Meyer</p>
+                        <p>
+                            Denis Tiffert und Zeno Meyer
+                        </p>
+
                         <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4 mt-8">Umsatzsteuer-ID</h3>
-                        <p>DE457997438</p>
+                        <p>
+                            Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG:<br />
+                            DE457997438
+                        </p>
+
                         <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4 mt-8">Steuernummer</h3>
-                        <p>20005/29606</p>
+                        <p>
+                            20005/29606
+                        </p>
                     </div>
+                </div>
+
+                <div className="mt-12 pt-12 border-t border-white/10">
+                    <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4">Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3>
+                    <p className="text-white/80 font-light">
+                        Denis Tiffert und Zeno Meyer<br />
+                        Hofwiese 27<br />
+                        79809 Weilheim<br />
+                        Deutschland
+                    </p>
                 </div>
             </div>
         </div>
     )
 }
 
+/* ═══════════════════════════════════════════════════════════
+   DATENSCHUTZ OVERLAY
+   ═══════════════════════════════════════════════════════════ */
 function Datenschutz({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
     const overlayRef = useRef<HTMLDivElement>(null)
+
     useEffect(() => {
         if (isOpen) {
             gsap.to(overlayRef.current, { opacity: 1, visibility: 'visible', duration: 0.5, ease: 'power3.out' })
             document.body.style.overflow = 'hidden'
         } else {
-            gsap.to(overlayRef.current, { opacity: 0, duration: 0.4, ease: 'power3.inOut', onComplete: () => { gsap.set(overlayRef.current, { visibility: 'hidden' }) } })
+            gsap.to(overlayRef.current, {
+                opacity: 0, duration: 0.4, ease: 'power3.inOut',
+                onComplete: () => { gsap.set(overlayRef.current, { visibility: 'hidden' }) }
+            })
             document.body.style.overflow = 'auto'
         }
     }, [isOpen])
+
     return (
-        <div ref={overlayRef} className="fixed inset-0 z-[200] bg-primary flex items-start justify-center p-6 md:p-12 opacity-0 invisible overflow-y-auto">
+        <div
+            ref={overlayRef}
+            className="fixed inset-0 z-[100] bg-primary flex items-start justify-center p-6 md:p-12 opacity-0 invisible overflow-y-auto"
+        >
             <NoiseOverlay />
-            <button onClick={onClose} className="fixed top-8 right-8 text-white/60 hover:text-white transition-colors p-2 z-10"><X size={32} /></button>
+            <button
+                onClick={onClose}
+                className="fixed top-8 right-8 text-white/60 hover:text-white transition-colors p-2 z-10"
+                aria-label="Schließen"
+            >
+                <X size={32} />
+            </button>
+
             <div className="max-w-3xl w-full text-white py-16">
-                <h2 className="font-serif italic font-bold text-4xl md:text-6xl mb-4 text-accent">Datenschutz</h2>
-                <p className="text-white/70 font-light">Diese Website verarbeitet keine Cookies außer technisch notwendige. Kontaktangaben werden ausschließlich zur Information über die kommende Ernte verwendet.</p>
+                <h2 className="font-serif italic font-bold text-4xl md:text-6xl mb-4 text-accent">Datenschutz&shy;erklärung</h2>
+                <p className="text-white/50 text-sm mb-12">Stand: März 2026</p>
+
+                {[
+                    {
+                        title: '1. Verantwortlicher',
+                        content: (
+                            <p className="text-white/70 font-light leading-relaxed">
+                                Verantwortlich im Sinne der DSGVO:<br />
+                                <strong className="text-white font-semibold">Meyer & Tiffert GbR</strong><br />
+                                Hofwiese 27<br />
+                                79809 Weilheim<br />
+                                Deutschland<br /><br />
+                                E-Mail: <a href="mailto:meyertiffergbr@gmail.com" className="text-accent hover:underline">meyertiffergbr@gmail.com</a>
+                            </p>
+                        )
+                    },
+                    {
+                        title: '2. Hosting & Server-Logs',
+                        content: (
+                            <>
+                                <p className="text-white/70 font-light leading-relaxed mb-4">
+                                    Diese Website wird bei <strong className="text-white font-semibold">Vercel Inc.</strong>
+                                    , 340 Pine Street, Suite 701, San Francisco, CA 94104, USA, gehostet.
+                                </p>
+                            </>
+                        )
+                    },
+                    {
+                        title: '3. Warteliste',
+                        content: (
+                            <>
+                                <p className="text-white/70 font-light leading-relaxed mb-4">
+                                    Wenn du dich in unsere Warteliste einträgst, erheben wir deinen <strong className="text-white font-semibold">Vor- und Nachnamen, deine E-Mail-Adresse</strong> sowie deinen <strong className="text-white font-semibold">Wohnort</strong>.
+                                </p>
+                            </>
+                        )
+                    },
+                    {
+                        title: '4. Schriftarten (Fonts)',
+                        content: (
+                            <p className="text-white/70 font-light leading-relaxed">
+                                Diese Website verwendet Schriftarten, die lokal von unserem eigenen server ausgeliefert werden.
+                            </p>
+                        )
+                    },
+                    {
+                        title: '5. Cookies & Tracking',
+                        content: (
+                            <p className="text-white/70 font-light leading-relaxed">
+                                Diese Website setzt keine Marketing- oder Tracking-Cookies ein.
+                            </p>
+                        )
+                    },
+                    {
+                        title: '6. Deine Rechte',
+                        content: (
+                            <p className="text-white/70 font-light leading-relaxed">
+                                Du hast das Recht auf Auskunft, Berichtigung, Löschung und Widerspruch.
+                            </p>
+                        )
+                    },
+                    {
+                        title: '7. Aktualität & Änderungen',
+                        content: (
+                            <p className="text-white/70 font-light leading-relaxed">
+                                Wir behalten uns vor, diese Datenschutzerklärung zu aktualisieren.
+                            </p>
+                        )
+                    },
+                ].map((section, i) => (
+                    <div key={i} className="mb-10 pb-10 border-b border-white/10 last:border-0">
+                        <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4">{section.title}</h3>
+                        {section.content}
+                    </div>
+                ))}
             </div>
         </div>
     )
@@ -514,29 +830,124 @@ function Footer({ onShowImpressum, onShowDatenschutz }: { onShowImpressum: () =>
     return (
         <footer className="bg-[#041e3a] border-t border-white/5 py-12 md:py-16">
             <div className="max-w-7xl mx-auto px-6 md:px-16">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
                     <div className="md:col-span-2">
-                        <img src="/assets/logo.png" alt="AKRIA" className="h-8 mb-4" />
-                        <p className="text-white/40 text-sm max-w-sm">Extra natives Olivenöl der höchsten Stufe, direkt aus der Mani. Premium Qualität, fair und direkt.</p>
+                        <img src="/assets/logo.png" alt="AKRIA" className="h-8 md:h-10 w-auto mb-4" />
+                        <p className="text-white/40 text-sm max-w-sm leading-relaxed">
+                            Extra natives Olivenöl der höchsten Stufe, direkt aus der Mani-Region Griechenlands. Premium Qualität, fair und direkt.
+                        </p>
                     </div>
+
                     <div>
-                        <h4 className="font-display font-semibold text-white/80 text-sm uppercase mb-4">Navigation</h4>
+                        <h4 className="font-display font-semibold text-white/80 text-sm uppercase tracking-wider mb-4">Navigation</h4>
                         <div className="flex flex-col gap-2">
-                            <a href="#hero" className="text-white/40 hover:text-white text-sm">Start</a>
-                            <a href="#herkunft" className="text-white/40 hover:text-white text-sm">Herkunft</a>
-                            <Link to="/waitlist" className="text-white/40 hover:text-white text-sm">Warteliste</Link>
+                            <a href="#hero" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Start</a>
+                            <a href="#herkunft" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Herkunft</a>
+                            <a href="#qualitaet" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Qualität</a>
+                            <Link to="/waitlist" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Warteliste</Link>
                         </div>
                     </div>
+
                     <div>
-                        <h4 className="font-display font-semibold text-white/80 text-sm uppercase mb-4">Rechtliches</h4>
+                        <h4 className="font-display font-semibold text-white/80 text-sm uppercase tracking-wider mb-4">Rechtliches</h4>
                         <div className="flex flex-col gap-2">
-                            <button onClick={onShowImpressum} className="text-white/40 hover:text-white text-sm text-left">Impressum</button>
-                            <button onClick={onShowDatenschutz} className="text-white/40 hover:text-white text-sm text-left">Datenschutz</button>
+                            <button onClick={onShowImpressum} className="text-white/40 hover:text-white text-sm hover-lift transition-colors text-left">Impressum</button>
+                            <button onClick={onShowDatenschutz} className="text-white/40 hover:text-white text-sm hover-lift transition-colors text-left">Datenschutz</button>
+                            <a href="#" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">AGB</a>
                         </div>
                     </div>
                 </div>
+
+                <div className="mt-12 pt-6 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <p className="text-white/30 text-xs">
+                        © 2026 AKRIA. Alle Rechte vorbehalten.
+                    </p>
+                    <p className="text-white/20 text-xs">
+                        Handgemacht mit ❤️ in Deutschland & Griechenland
+                    </p>
+                </div>
             </div>
         </footer>
+    )
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COOKIE BANNER — GDPR-compliant consent notification
+   ═══════════════════════════════════════════════════════════ */
+function CookieBanner({ onShowDatenschutz }: { onShowDatenschutz: () => void }) {
+    const [visible, setVisible] = useState(false)
+    const bannerRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        const consent = localStorage.getItem('akria-cookie-consent')
+        if (!consent) {
+            const timer = setTimeout(() => setVisible(true), 800)
+            return () => clearTimeout(timer)
+        }
+    }, [])
+
+    useEffect(() => {
+        if (!bannerRef.current || !visible) return
+        gsap.fromTo(
+            bannerRef.current,
+            { y: 60, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.6, peak: 'power3.out' }
+        )
+    }, [visible])
+
+    const dismiss = (choice: string) => {
+        localStorage.setItem('akria-cookie-consent', choice)
+        gsap.to(bannerRef.current, {
+            y: 60,
+            opacity: 0,
+            duration: 0.4,
+            ease: 'power3.inOut',
+            onComplete: () => setVisible(false),
+        })
+    }
+
+    if (!visible) return null
+
+    return (
+        <div
+            ref={bannerRef}
+            className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-md z-[200]"
+            style={{ opacity: 0 }}
+        >
+            <div className="bg-[#041e3a]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-5 md:p-6 shadow-[0_8px_60px_rgba(0,0,0,0.5)]">
+                <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl" role="img" aria-label="Cookie">🫒</span>
+                    <p className="font-display font-bold text-white text-sm uppercase tracking-widest">
+                        Hinweis zu Cookies
+                    </p>
+                </div>
+
+                <p className="text-white/60 text-sm leading-relaxed mb-5">
+                    Diese Website verwendet ausschließlich technisch notwendige Cookies für den Betrieb der Seite.{' '}
+                    <button
+                        onClick={onShowDatenschutz}
+                        className="text-accent underline hover:text-accent/80 transition-colors"
+                    >
+                        Mehr erfahren
+                    </button>
+                </p>
+
+                <div className="flex gap-3">
+                    <button
+                        onClick={() => dismiss('accepted')}
+                        className="btn-magnetic btn-accent flex-1 py-3 text-sm shadow-[0_0_20px_rgba(254,65,0,0.25)]"
+                    >
+                        Verstanden
+                    </button>
+                    <button
+                        onClick={() => dismiss('declined')}
+                        className="flex-1 py-3 text-sm font-display font-semibold tracking-wide text-white/50 hover:text-white border border-white/10 hover:border-white/20 rounded-full transition-all duration-200"
+                    >
+                        Ablehnen
+                    </button>
+                </div>
+            </div>
+        </div>
     )
 }
 
@@ -546,13 +957,20 @@ function Footer({ onShowImpressum, onShowDatenschutz }: { onShowImpressum: () =>
 export default function Index() {
     const [showImpressum, setShowImpressum] = useState(false)
     const [showDatenschutz, setShowDatenschutz] = useState(false)
-    useEffect(() => { setTimeout(() => { ScrollTrigger.refresh() }, 500) }, [])
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            ScrollTrigger.refresh()
+        }, 500)
+        return () => clearTimeout(timeout)
+    }, [])
 
     return (
         <div className="bg-primary min-h-screen">
             <NoiseOverlay />
             <Impressum isOpen={showImpressum} onClose={() => setShowImpressum(false)} />
-            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(true)} />
+            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(false)} />
+            <CookieBanner onShowDatenschutz={() => setShowDatenschutz(true)} />
             <main>
                 <Hero />
                 <ClaimSet1 />
