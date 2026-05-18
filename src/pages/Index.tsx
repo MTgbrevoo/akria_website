@@ -12,7 +12,6 @@ gsap.registerPlugin(ScrollTrigger)
    SUPABASE ASSET HELPER
    ═══════════════════════════════════════════════════════════ */
 const getSupabaseAssetUrl = (folder: string, filename: string) => {
-    // "Website Assets" hat ein Leerzeichen, das in der URL als %20 kodiert werden muss
     const baseUrl = "https://khizcgryvscakouefofc.supabase.co/storage/v1/object/public/Website%20Assets";
     return `${baseUrl}/${folder}/${encodeURIComponent(filename)}`;
 };
@@ -32,6 +31,23 @@ function NoiseOverlay() {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   FLOATING CTA — The persistent action button
+   ═══════════════════════════════════════════════════════════ */
+function FloatingCTA() {
+    return (
+        <div className="fixed bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 z-[70] hero-cta">
+            <Link 
+                to="/waitlist" 
+                className="btn-magnetic btn-accent text-base py-3 md:py-4 px-10 whitespace-nowrap shadow-[0_15px_45px_rgba(254,65,0,0.5)] border border-white/10"
+            >
+                Jetzt sichern
+                <ArrowRight className="ml-2 w-5 h-5" />
+            </Link>
+        </div>
+    )
+}
+
+/* ═══════════════════════════════════════════════════════════
    HERO — The Opening Shot
    ═══════════════════════════════════════════════════════════ */
 function Hero() {
@@ -43,7 +59,6 @@ function Hero() {
         const video = heroRef.current?.querySelector('video')
 
         const ctx = gsap.context(() => {
-            // Initial animation for Logo, Sun, and CTA
             const introTl = gsap.timeline({ defaults: { ease: 'power3.out' } })
             
             gsap.set(['.hero-line-1', '.hero-line-2', '.hero-line-3', '.hero-line-4', '.hero-cta'], {
@@ -64,7 +79,6 @@ function Hero() {
                 })
             }
 
-            // Scroll hint is visible initially, then fades as soon as user scrolls
             gsap.to('.hero-scroll-hint', {
                 opacity: 0,
                 y: -20,
@@ -76,34 +90,30 @@ function Hero() {
                 }
             })
 
-            // Scroll-Synced Timeline
             const scrollTl = gsap.timeline({
                 scrollTrigger: {
                     trigger: heroRef.current,
                     start: 'top top',
-                    end: '+=200%', // Scroll distance
+                    end: '+=200%',
                     pin: true,
                     scrub: true, 
                     anticipatePin: 1,
                     onUpdate: (self) => {
                         if (video && video.duration) {
-                            // Video Scrubbing
                             video.currentTime = video.duration * self.progress
                         }
                     }
                 }
             })
 
-            // Staggered reveal linked to scroll
             scrollTl
-                .to('.hero-line-2', { opacity: 1, y: 0, duration: 1 }, 0.1) // "Upgrade"
-                .to('.hero-line-3.small-line', { opacity: 0.7, y: 0, duration: 1 }, 0.2) // "für"
-                .to('.hero-line-4', { opacity: 1, y: 0, duration: 1 }, 0.3) // "alles."
-                .to('.hero-line-1', { opacity: 1, y: 0, duration: 1 }, 0.5) // Subclaim 1
+                .to('.hero-line-2', { opacity: 1, y: 0, duration: 1 }, 0.1)
+                .to('.hero-line-3.small-line', { opacity: 0.7, y: 0, duration: 1 }, 0.2)
+                .to('.hero-line-4', { opacity: 1, y: 0, duration: 1 }, 0.3)
+                .to('.hero-line-1', { opacity: 1, y: 0, duration: 1 }, 0.5)
 
         }, heroRef)
 
-        // Ensure video metadata is loaded for scrubbing
         if (video) {
             video.addEventListener('loadedmetadata', () => {
                 video.play().then(() => {
@@ -129,7 +139,6 @@ function Hero() {
 
     return (
         <section ref={heroRef} className="relative h-[100svh] w-full overflow-hidden bg-primary" id="hero">
-            {/* Background Video */}
             <div className="hero-video-wrap absolute inset-0 w-full h-full">
                 <video
                     autoPlay
@@ -138,20 +147,16 @@ function Hero() {
                     preload="auto"
                     className="absolute inset-0 w-full h-full object-cover"
                 >
-                    {/* Drone video stays local for scrubbing performance */}
                     <source src="/assets/hero-drone.mp4" type="video/mp4" />
                 </video>
             </div>
 
-            {/* Sun Illustration — top right */}
             <div ref={sunRef} className="absolute top-12 md:top-16 lg:top-20 right-6 md:right-12 lg:right-16 w-16 md:w-24 lg:w-32 z-30 pointer-events-none">
                 <img src={getSupabaseAssetUrl('Illustrations', 'sun.png')} alt="" className="w-full h-auto" />
             </div>
 
-            {/* Hero Content — Centered Layout */}
             <div ref={textRef} className="absolute inset-0 flex flex-col items-center justify-center z-20 px-6 text-center">
                 <div className="max-w-4xl flex flex-col items-center">
-                    {/* Centered Logo */}
                     <div className="hero-logo mb-6 md:mb-8 lg:mb-10 transform hover:scale-[1.02] transition-transform duration-500 cursor-pointer">
                         <img src="/assets/logo.png" alt="AKRIA" className="h-24 md:h-32 lg:h-44 w-auto" />
                     </div>
@@ -171,12 +176,8 @@ function Hero() {
                         </span>
                     </h1>
                     
-                    <Link to="/waitlist" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 relative z-30">
-                        Jetzt sichern
-                        <ArrowRight className="ml-2 w-5 h-5" />
-                    </Link>
+                    {/* The static button is removed from here as it is now floating fixed in the Index component */}
 
-                    {/* Scroll hint — now under CTA/Logo area */}
                     <div className="hero-scroll-hint mt-8 flex flex-col items-center text-white/60 animate-bounce z-30">
                         <span className="text-[10px] md:text-xs tracking-widest uppercase mb-1">Scroll</span>
                         <ChevronDown className="w-3 h-3 md:w-4 md:h-4" />
@@ -211,7 +212,6 @@ function ClaimSet1() {
         const ctx = gsap.context(() => {
             const isMobile = window.innerWidth < 1024;
 
-            // Initial setup
             claims.forEach((_, i) => {
                 gsap.set(`.claim-card-${i}`, {
                     opacity: 0,
@@ -223,7 +223,6 @@ function ClaimSet1() {
                 }
             })
 
-            // Timeline with Pinning
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current,
@@ -299,7 +298,6 @@ function ClaimSet1() {
                                             className={`claim-arrow-${i} w-10 h-10 md:w-20 md:h-20 mx-auto my-[-1.5rem] md:my-[-2rem] text-accent z-20 ${i % 2 === 0 ? 'lg:translate-x-[0.5rem] lg:rotate-[15deg]' : 'lg:translate-x-[-0.5rem] lg:rotate-[-15deg]'}`}
                                             viewBox="0 0 100 100"
                                             fill="none"
-                                            xmlns="http://www.w3.org/2000/center"
                                         >
                                             <path
                                                 d="M50 10 C 40 35, 60 45, 50 80 M 35 65 C 40 75, 50 85, 50 80 M 65 65 C 60 75, 50 85, 50 80"
@@ -385,8 +383,8 @@ function ClaimSet2() {
 
                 tl.fromTo(`.stack-card-${i}`,
                     {
-                        y: "100vh", // Updated from -100vh to 100vh to slide in from bottom
-                        rotateX: -15, // Adjusted rotation for a more natural entry from bottom
+                        y: "100vh",
+                        rotateX: -15,
                         scale: 1.1,
                         zIndex: 10 + i
                     },
@@ -462,8 +460,8 @@ function ImageGallery() {
         getSupabaseAssetUrl('Vids_Images', 'DSCF4075.webp'),
         getSupabaseAssetUrl('Vids_Images', 'DSCF4085.webp'),
         getSupabaseAssetUrl('Vids_Images', 'DSCF4011.webp'),
-        getSupabaseAssetUrl('Vids_Images', 'DSCF3997 (1).webp'), // Angepasst an dein Screenshot-Beispiel
-        getSupabaseAssetUrl('Vids_Images', 'DSCF3954 (1).webp'), // Angepasst an dein Screenshot-Beispiel
+        getSupabaseAssetUrl('Vids_Images', 'DSCF3997 (1).webp'),
+        getSupabaseAssetUrl('Vids_Images', 'DSCF3954 (1).webp'),
         getSupabaseAssetUrl('Vids_Images', 'DJI_0340.webp'),
         getSupabaseAssetUrl('Vids_Images', 'DJI_0356.webp')
     ]
@@ -549,9 +547,8 @@ function WaitlistSection() {
             id="waitlist"
             className="relative min-h-[100svh] flex items-center justify-center bg-primary overflow-hidden"
         >
-            {/* Background Video — Full Bleed without bars */}
             <div className="absolute inset-0 w-full h-full z-0">
-                <div className="absolute inset-0 bg-black/30 z-10" /> {/* Dark overlay for better text contrast */}
+                <div className="absolute inset-0 bg-black/30 z-10" />
                 <video
                     autoPlay
                     muted
@@ -564,7 +561,6 @@ function WaitlistSection() {
                 </video>
             </div>
 
-            {/* Content Overlay */}
             <div className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex items-center h-full min-h-[100svh]">
                 <div className="waitlist-content w-full lg:w-1/2 text-center lg:text-left py-12 backdrop-blur-sm lg:backdrop-blur-none bg-black/20 lg:bg-transparent p-8 lg:p-0 rounded-[2.5rem] lg:rounded-none border border-white/5 lg:border-none shadow-2xl lg:shadow-none">
                     <p className="font-display text-xs lg:text-sm font-semibold tracking-[0.2em] uppercase text-accent mb-4">
@@ -577,15 +573,8 @@ function WaitlistSection() {
                         Trag dich für die nächste Ernte ein! Wir informieren dich, sobald der erste Tropfen fließt.
                     </p>
 
-                    <div className="flex justify-center lg:justify-start">
-                        <Link
-                            to="/waitlist"
-                            className="btn-magnetic btn-accent py-4 px-12 text-lg lg:text-xl shadow-[0_0_30px_rgba(254,65,0,0.4)]"
-                        >
-                            Jetzt sichern
-                            <ArrowRight className="ml-3 w-5 h-5 flex-shrink-0" />
-                        </Link>
-                    </div>
+                    {/* The static button is removed here as well to maintain visual hierarchy with the floating CTA */}
+                    <div className="h-20 lg:h-24"></div>
                 </div>
             </div>
         </section>
@@ -741,22 +730,18 @@ function Datenschutz({ isOpen, onClose }: { isOpen: boolean, onClose: () => void
                     {
                         title: '2. Hosting & Server-Logs',
                         content: (
-                            <>
-                                <p className="text-white/70 font-light leading-relaxed mb-4">
-                                    Diese Website wird bei <strong className="text-white font-semibold">Vercel Inc.</strong>
-                                    , 340 Pine Street, Suite 701, San Francisco, CA 94104, USA, gehostet.
-                                </p>
-                            </>
+                            <p className="text-white/70 font-light leading-relaxed mb-4">
+                                Diese Website wird bei <strong className="text-white font-semibold">Vercel Inc.</strong>
+                                , 340 Pine Street, Suite 701, San Francisco, CA 94104, USA, gehostet.
+                            </p>
                         )
                     },
                     {
                         title: '3. Warteliste',
                         content: (
-                            <>
-                                <p className="text-white/70 font-light leading-relaxed mb-4">
-                                    Wenn du dich in unsere Warteliste einträgst, erheben wir deinen <strong className="text-white font-semibold">Vor- und Nachnamen, deine E-Mail-Adresse</strong> sowie deinen <strong className="text-white font-semibold">Wohnort</strong>.
-                                </p>
-                            </>
+                            <p className="text-white/70 font-light leading-relaxed mb-4">
+                                Wenn du dich in unsere Warteliste einträgst, erheben wir deinen <strong className="text-white font-semibold">Vor- und Nachnamen, deine E-Mail-Adresse</strong> sowie deinen <strong className="text-white font-semibold">Wohnort</strong>.
+                            </p>
                         )
                     },
                     {
@@ -851,7 +836,7 @@ function Footer({ onShowImpressum, onShowDatenschutz }: { onShowImpressum: () =>
 }
 
 /* ═══════════════════════════════════════════════════════════
-   COOKIE BANNER — GDPR-compliant consent notification
+   COOKIE BANNER
    ═══════════════════════════════════════════════════════════ */
 function CookieBanner({ onShowDatenschutz }: { onShowDatenschutz: () => void }) {
     const [visible, setVisible] = useState(false)
@@ -870,7 +855,7 @@ function CookieBanner({ onShowDatenschutz }: { onShowDatenschutz: () => void }) 
         gsap.fromTo(
             bannerRef.current,
             { y: 60, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.6, peak: 'power3.out' }
+            { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }
         )
     }, [visible])
 
@@ -948,8 +933,11 @@ export default function Index() {
         <div className="bg-primary min-h-screen">
             <NoiseOverlay />
             <Impressum isOpen={showImpressum} onClose={() => setShowImpressum(false)} />
-            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(true)} />
+            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(false)} />
             <CookieBanner onShowDatenschutz={() => setShowDatenschutz(true)} />
+            
+            <FloatingCTA />
+            
             <main>
                 <Hero />
                 <ClaimSet1 />
