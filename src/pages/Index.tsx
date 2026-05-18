@@ -101,25 +101,6 @@ function Hero() {
                 .to('.hero-line-4', { opacity: 1, y: 0, duration: 1 }, 0.3) // "alles."
                 .to('.hero-line-1', { opacity: 1, y: 0, duration: 1 }, 0.5) // Subclaim 1
 
-            // Pin the CTA once the Hero unpins and scrolls up
-            ScrollTrigger.create({
-                trigger: ".hero-cta-wrapper",
-                start: "top 24px",
-                end: "max",
-                pin: true,
-                pinSpacing: false,
-                onEnter: () => gsap.to('.hero-cta', { scale: 0.85, duration: 0.3, ease: "power2.out" }),
-                onLeaveBack: () => gsap.to('.hero-cta', { scale: 1, duration: 0.3, ease: "power2.out" })
-            });
-
-            // Hide the pinned CTA when reaching the Waitlist section
-            ScrollTrigger.create({
-                trigger: "#waitlist",
-                start: "top center",
-                onEnter: () => gsap.to('.hero-cta', { autoAlpha: 0, y: -20, duration: 0.3 }),
-                onLeaveBack: () => gsap.to('.hero-cta', { autoAlpha: 1, y: 0, duration: 0.3 })
-            });
-
         }, heroRef)
 
         // Ensure video metadata is loaded for scrubbing
@@ -147,9 +128,9 @@ function Hero() {
     }, [])
 
     return (
-        <section ref={heroRef} className="relative h-[100svh] w-full bg-primary" id="hero">
-            {/* Background Video - moved overflow-hidden here so pinned elements can escape the section */}
-            <div className="hero-video-wrap absolute inset-0 w-full h-full overflow-hidden">
+        <section ref={heroRef} className="relative h-[100svh] w-full overflow-hidden bg-primary" id="hero">
+            {/* Background Video */}
+            <div className="hero-video-wrap absolute inset-0 w-full h-full">
                 <video
                     autoPlay
                     muted
@@ -190,12 +171,10 @@ function Hero() {
                         </span>
                     </h1>
                     
-                    <div className="hero-cta-wrapper relative z-[100]">
-                        <Link to="/waitlist" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 relative z-30 block">
-                            Jetzt sichern
-                            <ArrowRight className="ml-2 w-5 h-5 inline-block" />
-                        </Link>
-                    </div>
+                    <Link to="/waitlist" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 relative z-30">
+                        Jetzt sichern
+                        <ArrowRight className="ml-2 w-5 h-5" />
+                    </Link>
 
                     {/* Scroll hint — now under CTA/Logo area */}
                     <div className="hero-scroll-hint mt-8 flex flex-col items-center text-white/60 animate-bounce z-30">
@@ -969,7 +948,7 @@ export default function Index() {
         <div className="bg-primary min-h-screen">
             <NoiseOverlay />
             <Impressum isOpen={showImpressum} onClose={() => setShowImpressum(false)} />
-            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(false)} />
+            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(true)} />
             <CookieBanner onShowDatenschutz={() => setShowDatenschutz(true)} />
             <main>
                 <Hero />
