@@ -43,15 +43,17 @@ function Hero() {
         const video = heroRef.current?.querySelector('video')
 
         const ctx = gsap.context(() => {
-            // Initial animation for Logo, Sun, and CTA
+            // 1. Initial Intro
             const introTl = gsap.timeline({ defaults: { ease: 'power3.out' } })
             
             gsap.set(['.hero-line-1', '.hero-line-2', '.hero-line-3', '.hero-line-4', ctaRef.current], {
                 opacity: 0,
-                y: 30
+                y: 40
             })
 
             introTl.to('.hero-logo', { scale: 1, opacity: 1, duration: 1.2, delay: 0.3 })
+                   .to(['.hero-line-2', '.hero-line-3', '.hero-line-4'], { opacity: 1, y: 0, stagger: 0.1, duration: 1 }, "-=0.5")
+                   .to('.hero-line-1', { opacity: 1, y: 0, duration: 0.8 }, "-=0.8")
                    .to(ctaRef.current, { y: 0, opacity: 1, duration: 1 }, "-=0.8")
 
             if (sunRef.current) {
@@ -64,75 +66,54 @@ function Hero() {
                 })
             }
 
-            // Scroll hint is visible initially, then fades
-            gsap.to('.hero-scroll-hint', {
-                opacity: 0,
-                y: -20,
-                scrollTrigger: {
-                    trigger: heroRef.current,
-                    start: 'top top',
-                    end: '20%',
-                    scrub: true
-                }
-            })
-
-            // Main Hero Scroll Timeline (Video & Text)
-            const scrollTl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: heroRef.current,
-                    start: 'top top',
-                    end: '+=200%', 
-                    pin: true,
-                    scrub: true, 
-                    anticipatePin: 1,
-                    onUpdate: (self) => {
-                        if (video && video.duration) {
-                            video.currentTime = video.duration * self.progress
-                        }
+            // 2. Main Hero Scroll (Video scrubbing)
+            ScrollTrigger.create({
+                trigger: heroRef.current,
+                start: 'top top',
+                end: '+=200%', 
+                pin: true,
+                scrub: true, 
+                anticipatePin: 1,
+                onUpdate: (self) => {
+                    if (video && video.duration) {
+                        video.currentTime = video.duration * self.progress
                     }
                 }
             })
 
-            scrollTl
-                .to('.hero-line-2', { opacity: 1, y: 0, duration: 1 }, 0.1)
-                .to('.hero-line-3.small-line', { opacity: 0.7, y: 0, duration: 1 }, 0.2)
-                .to('.hero-line-4', { opacity: 1, y: 0, duration: 1 }, 0.3)
-                .to('.hero-line-1', { opacity: 1, y: 0, duration: 1 }, 0.5)
-
-            // TRANSFORMATION: CTA moves from Center to Top-Right Corner
-            // Using a separate ScrollTrigger to handle the "Sticky" escape
-            const ctaMoveTl = gsap.timeline({
+            // 3. CTA TRANSFORMATION (From bottom-left to top-right sticky)
+            const isMobile = window.innerWidth < 768;
+            
+            const ctaTl = gsap.timeline({
                 scrollTrigger: {
                     trigger: heroRef.current,
                     start: 'top top',
-                    end: '+=100%', // Moves while video is scrubbing
+                    end: '+=80%',
                     scrub: 1.2,
                 }
             })
 
-            const isMobile = window.innerWidth < 768;
-
-            ctaMoveTl.to(ctaRef.current, {
+            ctaTl.to(ctaRef.current, {
                 position: 'fixed',
-                top: isMobile ? '1rem' : '2rem',
-                right: isMobile ? '1rem' : '3rem',
+                top: isMobile ? '1.5rem' : '2.5rem',
+                right: isMobile ? '1.5rem' : '4rem',
                 left: 'auto',
+                bottom: 'auto',
                 x: 0,
                 y: 0,
                 scale: isMobile ? 0.75 : 0.85,
-                width: 'auto',
                 zIndex: 100,
-                boxShadow: '0 4px 20px rgba(254, 65, 0, 0.4)',
-                padding: isMobile ? '0.6rem 1.2rem' : '0.8rem 1.5rem',
+                boxShadow: '0 10px 40px rgba(254, 65, 0, 0.4)',
+                padding: isMobile ? '0.7rem 1.4rem' : '1rem 2rem',
                 ease: 'power2.inOut'
             })
 
-            // Hide the CTA when reaching the final waitlist section
+            // 4. Hide CTA at the very end (Waitlist)
             ScrollTrigger.create({
                 trigger: "#waitlist",
                 start: "top center",
-                onEnter: () => gsap.to(ctaRef.current, { autoAlpha: 0, y: -20, duration: 0.4, ease: 'power2.in' }),
-                onLeaveBack: () => gsap.to(ctaRef.current, { autoAlpha: 1, y: 0, duration: 0.4, ease: 'power2.out' })
+                onEnter: () => gsap.to(ctaRef.current, { autoAlpha: 0, scale: 0.5, duration: 0.4 }),
+                onLeaveBack: () => gsap.to(ctaRef.current, { autoAlpha: 1, scale: isMobile ? 0.75 : 0.85, duration: 0.4 })
             });
 
         }, heroRef)
@@ -144,7 +125,6 @@ function Hero() {
                     video.currentTime = 0;
                 }).catch(() => {});
             }, { once: true });
-            return () => ctx.revert();
         }
         return () => ctx.revert();
     }, [])
@@ -157,44 +137,42 @@ function Hero() {
                 </video>
             </div>
 
-            {/* Sun Illustration */}
-            <div ref={sunRef} className="absolute top-12 md:top-16 lg:top-20 right-6 md:right-12 lg:right-16 w-16 md:w-24 lg:w-32 z-30 pointer-events-none">
+            {/* Logo — Top Left */}
+            <div className="hero-logo absolute top-8 left-8 md:top-12 md:left-12 z-30 opacity-0 scale-90 transition-transform hover:scale-105">
+                <img src="/assets/logo.png" alt="AKRIA" className="h-12 md:h-20 w-auto" />
+            </div>
+
+            {/* Sun Illustration — Top Right */}
+            <div ref={sunRef} className="absolute top-12 right-12 md:top-20 md:right-20 w-20 md:w-32 z-30 pointer-events-none">
                 <img src={getSupabaseAssetUrl('Illustrations', 'sun.png')} alt="" className="w-full h-auto" />
             </div>
 
-            {/* Hero Content */}
-            <div ref={textRef} className="absolute inset-0 flex flex-col items-center justify-center z-20 px-6 text-center">
-                <div className="max-w-4xl flex flex-col items-center relative h-full justify-center">
-                    <div className="hero-logo mb-6 md:mb-8 lg:mb-10 transform hover:scale-[1.02] transition-transform duration-500 cursor-pointer">
-                        <img src="/assets/logo.png" alt="AKRIA" className="h-24 md:h-32 lg:h-44 w-auto" />
-                    </div>
-
-                    <p className="hero-line-1 font-display text-sm md:text-base lg:text-lg font-bold tracking-[0.25em] uppercase text-white mb-3 md:mb-4 drop-shadow-lg">
+            {/* Hero Content — Pushed to Bottom Left */}
+            <div ref={textRef} className="absolute inset-0 flex flex-col justify-end z-20 px-8 pb-16 md:px-24 md:pb-32 text-left">
+                <div className="max-w-4xl">
+                    <p className="hero-line-1 font-display text-sm md:text-lg font-bold tracking-[0.25em] uppercase text-white mb-4 drop-shadow-lg">
                         Extra Natives Olivenöl aus der Mani
                     </p>
-                    <h1 className="mb-6 md:mb-10 text-center flex flex-col items-center">
-                        <span className="hero-line-2 block font-display font-800 text-5xl md:text-6xl lg:text-7xl tracking-tight text-white leading-[1.1]">
-                            Upgrade
+                    <h1 className="mb-8 md:mb-12">
+                        <span className="hero-line-2 block font-display font-800 text-6xl md:text-7xl lg:text-[6rem] tracking-tight text-white leading-none">
+                            Höchste
                         </span>
-                        <span className="hero-line-3 small-line block font-display font-800 text-3xl md:text-4xl lg:text-5xl tracking-tight text-white leading-none py-2">
-                            für
-                        </span>
-                        <span className="hero-line-4 block font-serif italic font-900 text-6xl md:text-8xl lg:text-[9.5rem] tracking-tight text-accent leading-[0.8]">
-                            alles.
+                        <span className="hero-line-3 block font-serif italic font-900 text-7xl md:text-9xl lg:text-[11rem] tracking-tight text-accent leading-[0.8] mt-2">
+                            Stufe.
                         </span>
                     </h1>
                     
-                    {/* The CTA that transforms into sticky */}
-                    <div ref={ctaRef} className="hero-cta-fixed-container">
-                        <Link to="/waitlist" className="hero-cta btn-magnetic btn-accent text-base py-3 md:py-4 px-10 block whitespace-nowrap">
+                    {/* The CTA — Initially here, then fixed */}
+                    <div ref={ctaRef} className="hero-cta-container relative inline-block">
+                        <Link to="/waitlist" className="btn-magnetic btn-accent text-lg py-4 px-12 block whitespace-nowrap shadow-[0_0_30px_rgba(254,65,0,0.3)]">
                             Jetzt sichern
-                            <ArrowRight className="ml-2 w-5 h-5 inline-block" />
+                            <ArrowRight className="ml-3 w-6 h-6 inline-block transition-transform group-hover:translate-x-1" />
                         </Link>
                     </div>
 
-                    <div className="hero-scroll-hint mt-8 flex flex-col items-center text-white/60 animate-bounce z-10">
-                        <span className="text-[10px] md:text-xs tracking-widest uppercase mb-1">Scroll</span>
-                        <ChevronDown className="w-3 h-3 md:w-4 md:h-4" />
+                    <div className="hero-scroll-hint mt-12 flex items-center gap-4 text-white/40 animate-pulse">
+                        <ChevronDown className="w-5 h-5" />
+                        <span className="text-xs tracking-widest uppercase">Scroll zum Entdecken</span>
                     </div>
                 </div>
             </div>
@@ -209,16 +187,20 @@ function ClaimSet1() {
     const sectionRef = useRef<HTMLElement>(null)
     const claims = [
         {
-            title: 'Unverbindlich reservieren',
-            desc: 'Trage dich in unsere Gästeliste ein. Damit sicherst du dir dein Anrecht auf die kommende Ernte (begrenzte Menge!).',
+            title: '300 Sonnentage / Jahr',
+            desc: 'In der Mani scheint fast immer die Sonne. Das gibt unseren Oliven die nötige Energie für den perfekten Geschmack.',
         },
         {
-            title: 'Ernte-Update erhalten',
-            desc: 'Sobald die Ernte kurz bevorsteht (ca. im September), informieren wir dich per Mail und Du kannst verbindlich bestellen.',
+            title: 'Berge & Meer',
+            desc: 'Die steilen Berge der Mani fallen direkt ins Meer. Diese mineralischen Böden schmeckst du in jedem Tropfen.',
         },
         {
-            title: 'Bestellen & Genießen',
-            desc: 'Du bestätigst deine Wunschmenge (Zielpreis 16-18 €/L) und wir schicken das frische Öl direkt nach der Pressung zu dir.',
+            title: 'Weltklasse Qualität',
+            desc: 'Wir ernten früh und pressen sofort. Das Ergebnis ist ein Öl mit extrem niedriger Säure und maximalem Aroma.',
+        },
+        {
+            title: 'Direkt zu dir',
+            desc: 'Keine Zwischenhändler, kein langes Lagern. Vom Baum direkt in deine Küche – frischer geht es nicht.',
         },
     ]
 
@@ -226,11 +208,7 @@ function ClaimSet1() {
         const ctx = gsap.context(() => {
             const isMobile = window.innerWidth < 1024;
             claims.forEach((_, i) => {
-                gsap.set(`.claim-card-${i}`, {
-                    opacity: 0,
-                    x: isMobile ? 0 : (i % 2 === 0 ? -40 : 40),
-                    y: isMobile ? 40 : 0
-                })
+                gsap.set(`.claim-card-${i}`, { opacity: 0, y: 40 })
                 if (i < claims.length - 1) {
                     gsap.set(`.claim-arrow-${i}`, { opacity: 0, strokeDashoffset: 200 })
                 }
@@ -240,7 +218,7 @@ function ClaimSet1() {
                 scrollTrigger: {
                     trigger: sectionRef.current,
                     start: 'top top',
-                    end: `+=${claims.length * 100}%`,
+                    end: `+=${claims.length * 80}%`,
                     pin: true,
                     scrub: 1.5,
                     anticipatePin: 1,
@@ -249,21 +227,10 @@ function ClaimSet1() {
 
             claims.forEach((_, i) => {
                 const startTime = i * 1.5
-                tl.to(`.claim-card-${i}`, {
-                    opacity: 1,
-                    x: 0,
-                    y: 0,
-                    duration: 1,
-                    ease: 'power2.out',
-                }, startTime)
+                tl.to(`.claim-card-${i}`, { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, startTime)
 
                 if (i < claims.length - 1) {
-                    tl.to(`.claim-arrow-${i}`, {
-                        opacity: 1,
-                        strokeDashoffset: 0,
-                        duration: 0.6,
-                        ease: 'power2.inOut',
-                    }, startTime + 0.8)
+                    tl.to(`.claim-arrow-${i}`, { opacity: 1, strokeDashoffset: 0, duration: 0.6, ease: 'power2.inOut' }, startTime + 0.8)
                 }
             })
 
@@ -274,25 +241,22 @@ function ClaimSet1() {
     }, [])
 
     return (
-        <section ref={sectionRef} id="herkunft" className="relative min-h-[100svh] w-full bg-primary overflow-hidden pt-10 md:pt-32 pb-16">
-            <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex flex-col h-full">
-                <h2 className="font-display text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-8 md:mb-16 text-white/95 text-center lg:text-left leading-[1.1] max-w-5xl tracking-tight">
-                    <span className="font-serif italic text-accent">Weltklasse</span> Olivenöl direkt von der Ernte zu dir nach Hause.
+        <section ref={sectionRef} id="herkunft" className="relative min-h-[100svh] w-full bg-primary overflow-hidden py-24 md:py-32">
+            <div className="w-full max-w-7xl mx-auto px-6 md:px-16 flex flex-col h-full">
+                <h2 className="font-display text-3xl md:text-5xl font-bold mb-16 text-white leading-tight max-w-4xl">
+                    Was <span className="font-serif italic text-accent">AKRIA</span> so besonders macht.
                 </h2>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-16 items-start lg:items-center flex-1">
-                    <div className="relative flex flex-col gap-2 md:gap-3 order-1">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center flex-1">
+                    <div className="relative flex flex-col gap-4">
                         {claims.map((claim, i) => (
                             <div key={i} className="relative">
-                                <div className={`claim-card-${i} glass-card p-5 md:p-8 flex flex-col gap-2 group hover:bg-white/10`}>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-accent font-serif italic text-2xl md:text-3xl font-bold opacity-50">0{i + 1}</span>
-                                        <h3 className="font-display font-bold text-lg md:text-2xl text-white">{claim.title}</h3>
-                                    </div>
-                                    <p className="text-white/70 text-sm md:text-base leading-relaxed pl-10 md:pl-12">{claim.desc}</p>
+                                <div className={`claim-card-${i} glass-card p-6 md:p-8 flex flex-col gap-2 hover:bg-white/10 transition-colors`}>
+                                    <h3 className="font-display font-bold text-xl md:text-2xl text-white">{claim.title}</h3>
+                                    <p className="text-white/60 text-sm md:text-base leading-relaxed">{claim.desc}</p>
                                 </div>
                                 {i < claims.length - 1 && (
-                                    <div className="py-2 md:py-0">
-                                        <svg className={`claim-arrow-${i} w-10 h-10 md:w-20 md:h-20 mx-auto my-[-1.5rem] md:my-[-2rem] text-accent z-20 ${i % 2 === 0 ? 'lg:translate-x-[0.5rem] lg:rotate-[15deg]' : 'lg:translate-x-[-0.5rem] lg:rotate-[-15deg]'}`} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/center">
+                                    <div className="flex justify-center -my-4 relative z-10">
+                                        <svg className={`claim-arrow-${i} w-12 h-12 text-accent`} viewBox="0 0 100 100" fill="none">
                                             <path d="M50 10 C 40 35, 60 45, 50 80 M 35 65 C 40 75, 50 85, 50 80 M 65 65 C 60 75, 50 85, 50 80" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
                                         </svg>
                                     </div>
@@ -300,12 +264,10 @@ function ClaimSet1() {
                             </div>
                         ))}
                     </div>
-                    <div className="oil-video-container relative flex items-center justify-center lg:justify-end order-2">
-                        <div className="video-mask w-full max-w-sm lg:max-w-md aspect-[3/4] relative overflow-hidden shadow-2xl rounded-3xl">
-                            <video autoPlay muted loop playsInline preload="auto" className="absolute inset-0 w-full h-full object-cover">
-                                <source src={getSupabaseAssetUrl('Vids_Images', 'Oil Flowing From Press.mp4')} type="video/mp4" />
-                            </video>
-                        </div>
+                    <div className="relative aspect-[3/4] rounded-[3rem] overflow-hidden shadow-2xl">
+                        <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
+                            <source src={getSupabaseAssetUrl('Vids_Images', 'Oil Flowing From Press.mp4')} type="video/mp4" />
+                        </video>
                     </div>
                 </div>
             </div>
@@ -319,9 +281,9 @@ function ClaimSet1() {
 function ClaimSet2() {
     const sectionRef = useRef<HTMLElement>(null);
     const cards = [
-        { headline: "100% Koroneiki-Oliven", desc: "Koroneiki-Oliven sind klein, wachsen gut im trockenen Klima der Mani und gehören zu den Sorten mit besonders vielen Polyphenolen.", bg: "bg-[#0c5eaf]", illustration: getSupabaseAssetUrl('Illustrations', 'Olive.png') },
-        { headline: "Intensives Aroma", desc: "Vergiss fades Supermarktöl. Unser Öl hat Charakter und macht ein trockenes Brot zu einem Geschmackshighlight.", bg: "bg-[#0c5eaf]", illustration: getSupabaseAssetUrl('Illustrations', 'Aroma.png') },
-        { headline: "Reich an Gesundmachern", desc: "Vollgepackt mit Polyphenolen, Vitamin E und Antioxidantien. Unser Olivenöl tut dir einfach richtig gut.", bg: "bg-[#0c5eaf]", illustration: getSupabaseAssetUrl('Illustrations', 'Herz.png') }
+        { headline: "100% Koroneiki-Oliven", desc: "Die Königin unter den Oliven. Klein, robust und unfassbar intensiv im Geschmack.", bg: "bg-primary", illustration: getSupabaseAssetUrl('Illustrations', 'Olive.png') },
+        { headline: "Intensives Aroma", desc: "Gräser, Artischocken und eine leichte Schärfe im Abgang – so schmeckt echte Frische.", bg: "bg-primary", illustration: getSupabaseAssetUrl('Illustrations', 'Aroma.png') },
+        { headline: "Voller Gesundmacher", desc: "Extrem hoher Polyphenol-Gehalt für dein Herz und dein Wohlbefinden.", bg: "bg-primary", illustration: getSupabaseAssetUrl('Illustrations', 'Herz.png') }
     ];
 
     useEffect(() => {
@@ -337,9 +299,9 @@ function ClaimSet2() {
             });
             cards.forEach((_, i) => {
                 if (i === 0) { gsap.set(`.stack-card-0`, { zIndex: 10 }); return; }
-                tl.fromTo(`.stack-card-${i}`, { y: "100vh", rotateX: -15, scale: 1.1, zIndex: 10 + i }, { y: "0vh", rotateX: 0, scale: 1, duration: 1.5, ease: "power2.inOut" }, `card-${i}`);
+                tl.fromTo(`.stack-card-${i}`, { y: "100vh", scale: 1.1 }, { y: "0vh", scale: 1, duration: 1.5, ease: "power2.inOut" }, `card-${i}`);
                 for (let j = 0; j < i; j++) {
-                    tl.to(`.stack-card-${j}`, { scale: 0.9 - (i - j) * 0.05, filter: `blur(${(i - j) * 5}px)`, opacity: 0.6 / (i - j), y: -20 * (i - j), duration: 1.5, ease: "power2.inOut" }, `card-${i}`);
+                    tl.to(`.stack-card-${j}`, { scale: 0.9, filter: "blur(10px)", opacity: 0.5, y: -40, duration: 1.5, ease: "power2.inOut" }, `card-${i}`);
                 }
             });
         }, sectionRef);
@@ -350,16 +312,13 @@ function ClaimSet2() {
         <section ref={sectionRef} className="relative w-full h-[100svh] overflow-hidden bg-primary" id="qualitaet">
             <div className="relative w-full h-full flex items-center justify-center">
                 {cards.map((card, i) => (
-                    <div key={i} className={`stack-card-${i} absolute w-full max-w-4xl px-4 md:px-0 flex items-center justify-center`} style={{ zIndex: 10 + i }}>
-                        <div className={`w-full ${card.bg} rounded-[2.5rem] p-8 md:p-12 lg:p-16 shadow-[-20px_40px_80px_rgba(0,0,0,0.4)] border border-white/10 flex flex-col md:flex-row gap-6 md:gap-12 lg:gap-16 items-center`}>
-                            <div className="flex-1 text-center md:text-left">
-                                <h2 className="font-serif italic font-900 text-3xl md:text-5xl lg:text-6xl text-white mb-4 md:mb-6 leading-tight">{card.headline}</h2>
-                                <p className="text-white/70 text-sm md:text-base lg:text-lg font-light leading-relaxed mb-4">{card.desc}</p>
+                    <div key={i} className={`stack-card-${i} absolute w-full max-w-5xl px-6 flex items-center justify-center`} style={{ zIndex: 10 + i }}>
+                        <div className="w-full glass-card p-12 md:p-20 flex flex-col md:flex-row gap-12 items-center shadow-2xl border-white/5">
+                            <div className="flex-1">
+                                <h2 className="font-serif italic font-bold text-4xl md:text-7xl text-white mb-6">{card.headline}</h2>
+                                <p className="text-white/70 text-lg md:text-xl leading-relaxed">{card.desc}</p>
                             </div>
-                            <div className="w-32 h-32 md:w-56 md:h-56 lg:w-64 lg:h-64 relative shrink-0">
-                                <div className="absolute inset-0 bg-accent/10 rounded-full blur-3xl animate-pulse" />
-                                <img src={card.illustration} className="relative z-10 w-full h-full object-contain" alt="" />
-                            </div>
+                            <img src={card.illustration} className="w-40 md:w-64 h-auto object-contain" alt="" />
                         </div>
                     </div>
                 ))}
@@ -372,7 +331,6 @@ function ClaimSet2() {
    IMAGE GALLERY — Horizontal Scroll Carousel
    ═══════════════════════════════════════════════════════════ */
 function ImageGallery() {
-    const galleryRef = useRef<HTMLElement>(null)
     const images = [
         getSupabaseAssetUrl('Vids_Images', 'DSCF4045.webp'),
         getSupabaseAssetUrl('Vids_Images', 'DSCF4042.webp'),
@@ -380,28 +338,17 @@ function ImageGallery() {
         getSupabaseAssetUrl('Vids_Images', 'DSCF4085.webp'),
         getSupabaseAssetUrl('Vids_Images', 'DSCF4011.webp'),
         getSupabaseAssetUrl('Vids_Images', 'DSCF3997 (1).webp'),
-        getSupabaseAssetUrl('Vids_Images', 'DSCF3954 (1).webp'),
         getSupabaseAssetUrl('Vids_Images', 'DJI_0340.webp'),
-        getSupabaseAssetUrl('Vids_Images', 'DJI_0356.webp')
     ]
 
-    useEffect(() => {
-        const ctx = gsap.context(() => {
-            gsap.fromTo(galleryRef.current, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power3.out", scrollTrigger: { trigger: galleryRef.current, start: "top 80%", toggleActions: "play none none reverse" } })
-        }, galleryRef)
-        return () => ctx.revert()
-    }, [])
-
     return (
-        <section ref={galleryRef} className="py-12 md:py-24 bg-primary overflow-hidden">
-            <div className="w-full">
-                <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-6 px-6 md:px-12 lg:px-16 pb-8 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                    {images.map((src, idx) => (
-                        <div key={idx} className="flex-none w-[85vw] sm:w-[60vw] md:w-[45vw] lg:w-[30vw] aspect-[4/3] snap-center">
-                            <img src={src} alt="" className="w-full h-full object-cover rounded-2xl md:rounded-3xl shadow-xl" loading="lazy" />
-                        </div>
-                    ))}
-                </div>
+        <section className="py-24 bg-primary overflow-hidden">
+            <div className="flex overflow-x-auto gap-6 px-12 scrollbar-hide">
+                {images.map((src, idx) => (
+                    <div key={idx} className="flex-none w-[80vw] md:w-[35vw] aspect-[4/3]">
+                        <img src={src} alt="" className="w-full h-full object-cover rounded-[2rem] shadow-xl" loading="lazy" />
+                    </div>
+                ))}
             </div>
         </section>
     )
@@ -411,99 +358,22 @@ function ImageGallery() {
    WAITLIST CTA — Unified Full-Bleed Design
    ═══════════════════════════════════════════════════════════ */
 function WaitlistSection() {
-    const sectionRef = useRef<HTMLElement>(null)
-    useEffect(() => {
-        const ctx = gsap.context(() => {
-            gsap.from('.waitlist-content > *', { y: 60, opacity: 0, stagger: 0.12, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 70%', toggleActions: 'play none none reverse' } })
-            const video = sectionRef.current?.querySelector('video')
-            if (video) video.play().catch(() => { })
-        }, sectionRef)
-        return () => ctx.revert()
-    }, [])
-
     return (
-        <section ref={sectionRef} id="waitlist" className="relative min-h-[100svh] flex items-center justify-center bg-primary overflow-hidden">
+        <section id="waitlist" className="relative min-h-[100svh] flex items-center justify-center bg-primary overflow-hidden">
             <div className="absolute inset-0 w-full h-full z-0">
-                <div className="absolute inset-0 bg-black/30 z-10" />
-                <video autoPlay muted loop playsInline preload="auto" className="absolute inset-0 w-full h-full object-cover">
+                <div className="absolute inset-0 bg-black/40 z-10" />
+                <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
                     <source src={getSupabaseAssetUrl('Vids_Images', 'Strand Bus Phoneas.mp4')} type="video/mp4" />
                 </video>
             </div>
-            <div className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex items-center h-full min-h-[100svh]">
-                <div className="waitlist-content w-full lg:w-1/2 text-center lg:text-left py-12 backdrop-blur-sm lg:backdrop-blur-none bg-black/20 lg:bg-transparent p-8 lg:p-0 rounded-[2.5rem] lg:rounded-none border border-white/5 lg:border-none shadow-2xl lg:shadow-none">
-                    <p className="font-display text-xs lg:text-sm font-semibold tracking-[0.2em] uppercase text-accent mb-4">Ernte 2026 / 2027</p>
-                    <h2 className="font-serif italic font-bold text-4xl lg:text-5xl xl:text-7xl text-white mb-6 leading-tight drop-shadow-2xl">Sicher dir deinen Platz.</h2>
-                    <p className="text-white/80 text-base lg:text-lg xl:text-xl max-w-md mx-auto lg:mx-0 leading-relaxed mb-8 lg:mb-10 font-light drop-shadow-lg">Trag dich für die nächste Ernte ein! Wir informieren dich, sobald der erste Tropfen fließt.</p>
-                    <div className="flex justify-center lg:justify-start">
-                        <Link to="/waitlist" className="btn-magnetic btn-accent py-4 px-12 text-lg lg:text-xl shadow-[0_0_30px_rgba(254,65,0,0.4)]">Jetzt sichern<ArrowRight className="ml-3 w-5 h-5 flex-shrink-0" /></Link>
-                    </div>
+            <div className="relative z-20 w-full max-w-7xl mx-auto px-8">
+                <div className="max-w-2xl text-center md:text-left">
+                    <p className="font-display text-sm font-semibold tracking-widest uppercase text-accent mb-4">Ernte 2026 / 2027</p>
+                    <h2 className="font-serif italic font-bold text-5xl md:text-8xl text-white mb-8 leading-tight">Gönn dir das Beste.</h2>
+                    <Link to="/waitlist" className="btn-magnetic btn-accent py-5 px-16 text-xl shadow-2xl">Jetzt reservieren</Link>
                 </div>
             </div>
         </section>
-    )
-}
-
-/* ═══════════════════════════════════════════════════════════
-   IMPRESSUM & DATENSCHUTZ OVERLAYS
-   ═══════════════════════════════════════════════════════════ */
-function Impressum({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
-    const overlayRef = useRef<HTMLDivElement>(null)
-    useEffect(() => {
-        if (isOpen) {
-            gsap.to(overlayRef.current, { opacity: 1, visibility: 'visible', duration: 0.5, ease: 'power3.out' })
-            document.body.style.overflow = 'hidden'
-        } else {
-            gsap.to(overlayRef.current, { opacity: 0, duration: 0.4, ease: 'power3.inOut', onComplete: () => { gsap.set(overlayRef.current, { visibility: 'hidden' }) } })
-            document.body.style.overflow = 'auto'
-        }
-    }, [isOpen])
-    return (
-        <div ref={overlayRef} className="fixed inset-0 z-[200] bg-primary flex items-center justify-center p-6 md:p-12 opacity-0 invisible">
-            <NoiseOverlay />
-            <button onClick={onClose} className="absolute top-8 right-8 text-white/60 hover:text-white transition-colors p-2"><X size={32} /></button>
-            <div className="max-w-3xl w-full text-white overflow-y-auto max-h-full py-12">
-                <h2 className="font-serif italic font-bold text-4xl md:text-6xl mb-12 text-accent">Impressum</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-white/80 font-light">
-                    <div>
-                        <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4">Angaben gemäß § 5 TMG</h3>
-                        <p>Meyer & Tiffert GbR<br />Hofwiese 27<br />79809 Weilheim<br />Deutschland</p>
-                        <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4 mt-8">Kontakt</h3>
-                        <p>E-Mail: <a href="mailto:meyertiffergbr@gmail.com" className="text-accent hover:underline">meyertiffergbr@gmail.com</a></p>
-                    </div>
-                    <div>
-                        <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4">Vertreten durch</h3>
-                        <p>Denis Tiffert und Zeno Meyer</p>
-                        <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4 mt-8">Umsatzsteuer-ID</h3>
-                        <p>DE457997438</p>
-                        <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4 mt-8">Steuernummer</h3>
-                        <p>20005/29606</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
-}
-
-function Datenschutz({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
-    const overlayRef = useRef<HTMLDivElement>(null)
-    useEffect(() => {
-        if (isOpen) {
-            gsap.to(overlayRef.current, { opacity: 1, visibility: 'visible', duration: 0.5, ease: 'power3.out' })
-            document.body.style.overflow = 'hidden'
-        } else {
-            gsap.to(overlayRef.current, { opacity: 0, duration: 0.4, ease: 'power3.inOut', onComplete: () => { gsap.set(overlayRef.current, { visibility: 'hidden' }) } })
-            document.body.style.overflow = 'auto'
-        }
-    }, [isOpen])
-    return (
-        <div ref={overlayRef} className="fixed inset-0 z-[200] bg-primary flex items-start justify-center p-6 md:p-12 opacity-0 invisible overflow-y-auto">
-            <NoiseOverlay />
-            <button onClick={onClose} className="fixed top-8 right-8 text-white/60 hover:text-white transition-colors p-2 z-10"><X size={32} /></button>
-            <div className="max-w-3xl w-full text-white py-16">
-                <h2 className="font-serif italic font-bold text-4xl md:text-6xl mb-4 text-accent">Datenschutz</h2>
-                <p className="text-white/70 font-light">Diese Website verarbeitet keine Cookies außer technisch notwendige. Kontaktangaben werden ausschließlich zur Information über die kommende Ernte verwendet.</p>
-            </div>
-        </div>
     )
 }
 
@@ -512,28 +382,22 @@ function Datenschutz({ isOpen, onClose }: { isOpen: boolean, onClose: () => void
    ═══════════════════════════════════════════════════════════ */
 function Footer({ onShowImpressum, onShowDatenschutz }: { onShowImpressum: () => void, onShowDatenschutz: () => void }) {
     return (
-        <footer className="bg-[#041e3a] border-t border-white/5 py-12 md:py-16">
-            <div className="max-w-7xl mx-auto px-6 md:px-16">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    <div className="md:col-span-2">
-                        <img src="/assets/logo.png" alt="AKRIA" className="h-8 mb-4" />
-                        <p className="text-white/40 text-sm max-w-sm">Extra natives Olivenöl der höchsten Stufe, direkt aus der Mani. Premium Qualität, fair und direkt.</p>
-                    </div>
-                    <div>
-                        <h4 className="font-display font-semibold text-white/80 text-sm uppercase mb-4">Navigation</h4>
-                        <div className="flex flex-col gap-2">
-                            <a href="#hero" className="text-white/40 hover:text-white text-sm">Start</a>
-                            <a href="#herkunft" className="text-white/40 hover:text-white text-sm">Herkunft</a>
-                            <Link to="/waitlist" className="text-white/40 hover:text-white text-sm">Warteliste</Link>
-                        </div>
-                    </div>
-                    <div>
-                        <h4 className="font-display font-semibold text-white/80 text-sm uppercase mb-4">Rechtliches</h4>
-                        <div className="flex flex-col gap-2">
-                            <button onClick={onShowImpressum} className="text-white/40 hover:text-white text-sm text-left">Impressum</button>
-                            <button onClick={onShowDatenschutz} className="text-white/40 hover:text-white text-sm text-left">Datenschutz</button>
-                        </div>
-                    </div>
+        <footer className="bg-[#041e3a] py-20 border-t border-white/5">
+            <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-4 gap-16">
+                <div className="md:col-span-2">
+                    <img src="/assets/logo.png" alt="AKRIA" className="h-10 mb-6" />
+                    <p className="text-white/40 text-lg leading-relaxed max-w-md">Flüssiges Gold aus der Mani. Wir bringen die höchste Qualitätsstufe direkt zu dir nach Hause.</p>
+                </div>
+                <div className="flex flex-col gap-4">
+                    <h4 className="text-white font-bold uppercase tracking-widest text-sm mb-2">Links</h4>
+                    <a href="#hero" className="text-white/40 hover:text-white transition-colors">Start</a>
+                    <a href="#herkunft" className="text-white/40 hover:text-white transition-colors">Herkunft</a>
+                    <Link to="/waitlist" className="text-white/40 hover:text-white transition-colors">Warteliste</Link>
+                </div>
+                <div className="flex flex-col gap-4">
+                    <h4 className="text-white font-bold uppercase tracking-widest text-sm mb-2">Rechtliches</h4>
+                    <button onClick={onShowImpressum} className="text-white/40 hover:text-white text-left transition-colors">Impressum</button>
+                    <button onClick={onShowDatenschutz} className="text-white/40 hover:text-white text-left transition-colors">Datenschutz</button>
                 </div>
             </div>
         </footer>
@@ -546,13 +410,10 @@ function Footer({ onShowImpressum, onShowDatenschutz }: { onShowImpressum: () =>
 export default function Index() {
     const [showImpressum, setShowImpressum] = useState(false)
     const [showDatenschutz, setShowDatenschutz] = useState(false)
-    useEffect(() => { setTimeout(() => { ScrollTrigger.refresh() }, 500) }, [])
 
     return (
         <div className="bg-primary min-h-screen">
             <NoiseOverlay />
-            <Impressum isOpen={showImpressum} onClose={() => setShowImpressum(false)} />
-            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(true)} />
             <main>
                 <Hero />
                 <ClaimSet1 />
@@ -561,6 +422,26 @@ export default function Index() {
                 <WaitlistSection />
             </main>
             <Footer onShowImpressum={() => setShowImpressum(true)} onShowDatenschutz={() => setShowDatenschutz(true)} />
+            
+            {/* Simple Modals */}
+            {showImpressum && (
+                <div className="fixed inset-0 z-[300] bg-primary/95 flex items-center justify-center p-8 backdrop-blur-xl">
+                    <button onClick={() => setShowImpressum(false)} className="absolute top-8 right-8 text-white"><X size={40} /></button>
+                    <div className="max-w-2xl text-white">
+                        <h2 className="font-serif italic text-5xl mb-8">Impressum</h2>
+                        <p className="text-white/70 leading-relaxed">Meyer & Tiffert GbR<br />Hofwiese 27<br />79809 Weilheim<br /><br />E-Mail: meyertiffergbr@gmail.com</p>
+                    </div>
+                </div>
+            )}
+            {showDatenschutz && (
+                <div className="fixed inset-0 z-[300] bg-primary/95 flex items-center justify-center p-8 backdrop-blur-xl">
+                    <button onClick={() => setShowDatenschutz(false)} className="absolute top-8 right-8 text-white"><X size={40} /></button>
+                    <div className="max-w-2xl text-white">
+                        <h2 className="font-serif italic text-5xl mb-8">Datenschutz</h2>
+                        <p className="text-white/70 leading-relaxed">Wir verarbeiten deine Daten nur zur Abwicklung deiner Reservierung. Deine Daten werden nicht an Dritte weitergegeben.</p>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
