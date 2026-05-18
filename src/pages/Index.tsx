@@ -34,15 +34,55 @@ function NoiseOverlay() {
    FLOATING CTA — The persistent action button
    ═══════════════════════════════════════════════════════════ */
 function FloatingCTA() {
+    const scaleRef = useRef<HTMLDivElement>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            // Shrink the button when scrolling
+            if (scaleRef.current) {
+                gsap.to(scaleRef.current, {
+                    scale: 0.92,
+                    duration: 0.3,
+                    ease: "power2.out",
+                    overwrite: "auto"
+                });
+            }
+
+            // Clear existing timeout to detect scroll stop
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            
+            // Return to original size after scroll stops (100ms inactivity)
+            timeoutRef.current = setTimeout(() => {
+                if (scaleRef.current) {
+                    gsap.to(scaleRef.current, {
+                        scale: 1,
+                        duration: 0.5,
+                        ease: "back.out(1.7)",
+                        overwrite: "auto"
+                    });
+                }
+            }, 100);
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
+    }, []);
+
     return (
         <div className="fixed bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 z-[70] hero-cta">
-            <Link 
-                to="/waitlist" 
-                className="btn-magnetic btn-accent text-base py-3 md:py-4 px-10 whitespace-nowrap shadow-[0_15px_45px_rgba(254,65,0,0.5)] border border-white/10"
-            >
-                Jetzt sichern
-                <ArrowRight className="ml-2 w-5 h-5" />
-            </Link>
+            <div ref={scaleRef} className="will-change-transform">
+                <Link 
+                    to="/waitlist" 
+                    className="btn-magnetic btn-accent text-base py-3 md:py-4 px-10 whitespace-nowrap shadow-[0_15px_45px_rgba(254,65,0,0.5)] border border-white/10"
+                >
+                    Jetzt sichern
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
+            </div>
         </div>
     )
 }
@@ -344,7 +384,7 @@ function ClaimSet2() {
     const cards = [
         {
             headline: "100% Koroneiki-Oliven",
-            desc: "Koroneiki-Oliven sind klein, wachsen gut im trockenen Klima der Mani und gehören zu den Sorten mit besonders vielen natürlich vorkommenden Polyphenolen.",
+            desc: "Koroneiki-Oliven sind klein, wachsen gut im trockenen Klima der Mani und gehören zu den Sorten mit besonders vielen naturally vorkommenden Polyphenolen.",
             bg: "bg-[#0c5eaf]",
             illustration: getSupabaseAssetUrl('Illustrations', 'Olive.png')
         },
