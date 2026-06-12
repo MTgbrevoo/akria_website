@@ -35,6 +35,7 @@ function NoiseOverlay() {
    ═══════════════════════════════════════════════════════════ */
 function FloatingCTA() {
     const scaleRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
@@ -66,14 +67,35 @@ function FloatingCTA() {
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
+
+        // Hide floating button when scrolling into the waitlist section
+        const ctx = gsap.context(() => {
+            ScrollTrigger.create({
+                trigger: "#waitlist",
+                start: "top 80%",
+                end: "bottom top",
+                onEnter: () => {
+                    if (containerRef.current) {
+                        gsap.to(containerRef.current, { y: 150, opacity: 0, duration: 0.4, ease: "power2.in", overwrite: "auto" });
+                    }
+                },
+                onLeaveBack: () => {
+                    if (containerRef.current) {
+                        gsap.to(containerRef.current, { y: 0, opacity: 1, duration: 0.4, ease: "power2.out", overwrite: "auto" });
+                    }
+                }
+            });
+        });
+
         return () => {
             window.removeEventListener('scroll', handleScroll);
             if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            ctx.revert();
         };
     }, []);
 
     return (
-        <div className="fixed bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 z-[70] hero-cta">
+        <div ref={containerRef} className="fixed bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 z-[70] hero-cta">
             <div ref={scaleRef} className="will-change-transform">
                 <Link 
                     to="/waitlist" 
@@ -252,7 +274,6 @@ function ClaimSet1() {
 
             claims.forEach((_, i) => {
                 if (i === 0) {
-                    // Die erste Kachel wird direkt per default angezeigt
                     gsap.set(`.claim-card-0`, { opacity: 1, x: 0, y: 0 })
                 } else {
                     gsap.set(`.claim-card-${i}`, {
@@ -280,7 +301,6 @@ function ClaimSet1() {
             claims.forEach((_, i) => {
                 const startTime = i * 1.5
 
-                // Nur für Kacheln > 0 die Einblendung animieren, da Kachel 0 schon sichtbar ist
                 if (i > 0) {
                     tl.to(`.claim-card-${i}`, {
                         opacity: 1,
@@ -378,7 +398,6 @@ function ClaimSet1() {
         </section>
     )
 }
-
 
 /* ═══════════════════════════════════════════════════════════
    CLAIM SET 2 — Falling Cards Stacking Effect
@@ -492,8 +511,6 @@ function ClaimSet2() {
     );
 }
 
-
-
 /* ═══════════════════════════════════════════════════════════
    IMAGE GALLERY — Horizontal Scroll Carousel
    ═══════════════════════════════════════════════════════════ */
@@ -566,18 +583,26 @@ function WaitlistSection() {
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            gsap.from('.waitlist-content > *', {
-                y: 60,
-                opacity: 0,
-                stagger: 0.12,
-                duration: 1,
-                ease: 'power3.out',
+            const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current,
-                    start: 'top 70%',
+                    start: 'top 60%',
                     toggleActions: 'play none none reverse',
-                },
+                }
+            });
+
+            tl.from('.waitlist-content-items > *', {
+                y: 40,
+                opacity: 0,
+                stagger: 0.15,
+                duration: 0.8,
+                ease: 'power3.out',
             })
+            .to('.waitlist-glass-bg', {
+                opacity: 1,
+                duration: 1,
+                ease: 'power2.inOut',
+            }, "-=0.2");
 
             const video = sectionRef.current?.querySelector('video')
             if (video) {
@@ -594,7 +619,7 @@ function WaitlistSection() {
             className="relative min-h-[100svh] flex items-center justify-center bg-primary overflow-hidden"
         >
             <div className="absolute inset-0 w-full h-full z-0">
-                <div className="absolute inset-0 bg-black/30 z-10" />
+                <div className="absolute inset-0 bg-black/40 z-10" />
                 <video
                     autoPlay
                     muted
@@ -607,19 +632,28 @@ function WaitlistSection() {
                 </video>
             </div>
 
-            <div className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex items-center h-full min-h-[100svh]">
-                <div className="waitlist-content w-full lg:w-1/2 text-center lg:text-left py-12 backdrop-blur-sm lg:backdrop-blur-none bg-black/20 lg:bg-transparent p-8 lg:p-0 rounded-[2.5rem] lg:rounded-none border border-white/5 lg:border-none shadow-2xl lg:shadow-none">
-                    <p className="font-display text-xs lg:text-sm font-semibold tracking-[0.2em] uppercase text-accent mb-4">
-                        Ernte 2026 / 2027
-                    </p>
-                    <h2 className="font-serif italic font-bold text-4xl lg:text-5xl xl:text-7xl text-white mb-6 leading-tight drop-shadow-2xl">
-                        Sicher dir deinen Platz.
-                    </h2>
-                    <p className="text-white/80 text-base lg:text-lg xl:text-xl max-w-md mx-auto lg:mx-0 leading-relaxed mb-8 lg:mb-10 font-light drop-shadow-lg">
-                        Trag dich für die nächste Ernte ein! Wir informieren dich, sobald der erste Tropfen fließt.
-                    </p>
+            <div className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex items-center justify-center h-full min-h-[100svh]">
+                <div className="relative w-full max-w-2xl mx-auto p-8 md:p-12 lg:p-16 text-center">
+                    <div className="waitlist-glass-bg absolute inset-0 glass-card rounded-[2.5rem] opacity-0" />
+                    
+                    <div className="waitlist-content-items relative z-10 flex flex-col items-center">
+                        <p className="font-display text-xs lg:text-sm font-semibold tracking-[0.2em] uppercase text-accent mb-4">
+                            Ernte 2026 / 2027
+                        </p>
+                        <h2 className="font-serif italic font-bold text-4xl lg:text-5xl xl:text-6xl text-white mb-6 leading-tight drop-shadow-2xl">
+                            Sicher dir deinen Platz.
+                        </h2>
+                        <p className="text-white/80 text-base lg:text-lg max-w-md mx-auto leading-relaxed mb-8 font-light drop-shadow-lg">
+                            Trag dich für die nächste Ernte ein! Wir informieren dich, sobald der erste Tropfen fließt.
+                        </p>
 
-                    <div className="h-20 lg:h-24"></div>
+                        <div className="mt-4 flex justify-center">
+                            <Link to="/waitlist" className="btn-magnetic btn-accent text-base py-3 md:py-4 px-10 whitespace-nowrap shadow-[0_15px_45px_rgba(254,65,0,0.5)] border border-white/10">
+                                Jetzt sichern
+                                <ArrowRight className="ml-2 w-5 h-5" />
+                            </Link>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
