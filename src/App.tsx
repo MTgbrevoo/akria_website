@@ -5,15 +5,21 @@ import Waitlist from './pages/Waitlist';
 import Success from './pages/Success';
 
 function TrackingInitializer() {
-  const { search } = useLocation();
+  const { search, hash } = useLocation();
 
   useEffect(() => {
+    // Wenn in der URL ein Supabase Access Token (Magic Link) vorhanden ist,
+    // brechen wir hier ab, damit der Login-Redirect nicht gestört wird.
+    if (hash && hash.includes('access_token')) {
+      return;
+    }
+
     const urlParams = new URLSearchParams(search);
     const source = urlParams.get('src');
     if (source) {
       sessionStorage.setItem('acquisition_source_code', source);
     }
-  }, [search]);
+  }, [search, hash]);
 
   return null;
 }
