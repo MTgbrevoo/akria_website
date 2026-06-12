@@ -202,7 +202,7 @@ function Hero() {
                     </div>
 
                     <p className="hero-line-1 font-display text-sm md:text-base lg:text-lg font-bold tracking-[0.25em] uppercase text-white mb-3 md:mb-4 drop-shadow-lg">
-                        Extra Natives Olivenöl aus der Mani
+                        Extra Natives Olivenöl aus dem tiefen Süden Griechenlands
                     </p>
                     <h1 className="mb-6 md:mb-8 text-center flex flex-col items-center">
                         <span className="hero-line-2 block font-display font-800 text-5xl md:text-6xl lg:text-7xl tracking-tight text-white leading-[1.1]">
