@@ -73,6 +73,8 @@ export default function Waitlist() {
         setErrorMessage('');
 
         try {
+            const sourceCode = sessionStorage.getItem('acquisition_source_code') || 'website';
+
             const { error } = await supabase.auth.signInWithOtp({
                 email: formData.email,
                 options: {
@@ -82,7 +84,8 @@ export default function Waitlist() {
                         lastname: formData.lastname,
                         location: formData.location,
                         notes: formData.notes,
-                        marketing_consent: marketingConsent
+                        marketing_consent: marketingConsent,
+                        acquisition_source_code: sourceCode
                     }
                 }
             });

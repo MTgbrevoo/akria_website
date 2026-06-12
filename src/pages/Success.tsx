@@ -68,7 +68,8 @@ export default function Success() {
                             lastname: metadata.lastname || '',
                             location: metadata.location || '',
                             notes: metadata.notes || '',
-                            marketing_consent: metadata.marketing_consent === true
+                            marketing_consent: metadata.marketing_consent === true,
+                            acquisition_source_code: metadata.acquisition_source_code || 'website'
                         }]);
 
                     if (insertError) throw insertError;

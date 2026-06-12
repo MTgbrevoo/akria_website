@@ -4,6 +4,20 @@ import Index from './pages/Index';
 import Waitlist from './pages/Waitlist';
 import Success from './pages/Success';
 
+function TrackingInitializer() {
+  const { search } = useLocation();
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(search);
+    const source = urlParams.get('src');
+    if (source) {
+      sessionStorage.setItem('acquisition_source_code', source);
+    }
+  }, [search]);
+
+  return null;
+}
+
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -17,6 +31,7 @@ function ScrollToTop() {
 function App() {
   return (
     <BrowserRouter>
+      <TrackingInitializer />
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Index />} />
