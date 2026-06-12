@@ -251,11 +251,16 @@ function ClaimSet1() {
             const isMobile = window.innerWidth < 1024;
 
             claims.forEach((_, i) => {
-                gsap.set(`.claim-card-${i}`, {
-                    opacity: 0,
-                    x: isMobile ? 0 : (i % 2 === 0 ? -40 : 40),
-                    y: isMobile ? 40 : 0
-                })
+                if (i === 0) {
+                    // Die erste Kachel wird direkt per default angezeigt
+                    gsap.set(`.claim-card-0`, { opacity: 1, x: 0, y: 0 })
+                } else {
+                    gsap.set(`.claim-card-${i}`, {
+                        opacity: 0,
+                        x: isMobile ? 0 : (i % 2 === 0 ? -40 : 40),
+                        y: isMobile ? 40 : 0
+                    })
+                }
                 if (i < claims.length - 1) {
                     gsap.set(`.claim-arrow-${i}`, { opacity: 0, strokeDashoffset: 200 })
                 }
@@ -274,13 +279,17 @@ function ClaimSet1() {
 
             claims.forEach((_, i) => {
                 const startTime = i * 1.5
-                tl.to(`.claim-card-${i}`, {
-                    opacity: 1,
-                    x: 0,
-                    y: 0,
-                    duration: 1,
-                    ease: 'power2.out',
-                }, startTime)
+
+                // Nur für Kacheln > 0 die Einblendung animieren, da Kachel 0 schon sichtbar ist
+                if (i > 0) {
+                    tl.to(`.claim-card-${i}`, {
+                        opacity: 1,
+                        x: 0,
+                        y: 0,
+                        duration: 1,
+                        ease: 'power2.out',
+                    }, startTime)
+                }
 
                 if (i < claims.length - 1) {
                     tl.to(`.claim-arrow-${i}`, {
@@ -969,7 +978,7 @@ export default function Index() {
         <div className="bg-primary min-h-screen">
             <NoiseOverlay />
             <Impressum isOpen={showImpressum} onClose={() => setShowImpressum(false)} />
-            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(false)} />
+            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(true)} />
             <CookieBanner onShowDatenschutz={() => setShowDatenschutz(true)} />
             
             <FloatingCTA />
