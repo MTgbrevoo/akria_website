@@ -320,12 +320,11 @@ function ClaimSet1() {
                                     className={`claim-card-${i} glass-card p-5 md:p-8 flex flex-col gap-2 group hover:bg-white/10`}
                                 >
                                     <div className="flex items-center gap-4">
-                                        <span className="text-accent font-serif italic text-2xl md:text-3xl font-bold opacity-50">0{i + 1}</span>
                                         <h3 className="font-display font-bold text-lg md:text-2xl text-white">
                                             {claim.title}
                                         </h3>
                                     </div>
-                                    <p className="text-white/70 text-sm md:text-base leading-relaxed pl-10 md:pl-12">
+                                    <p className="text-white/70 text-sm md:text-base leading-relaxed">
                                         {claim.desc}
                                     </p>
                                 </div>
