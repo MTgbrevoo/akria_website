@@ -148,11 +148,11 @@ export default function Datenschutz() {
                             <p>
                                 E-Mail:{' '}
                                 <a
-                                    href="mailto:meyertiffergbr@gmail.com"
+                                    href="mailto:meyertiffertgbr@gmail.com"
                                     className="inline-flex items-center gap-1.5 text-accent underline decoration-accent/40 underline-offset-4 transition-colors hover:text-white focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                                 >
                                     <Mail className="h-4 w-4" aria-hidden="true" />
-                                    meyertiffergbr@gmail.com
+                                    meyertiffertgbr@gmail.com
                                 </a>
                             </p>
                         </LegalSection>
@@ -206,7 +206,7 @@ export default function Datenschutz() {
                             </p>
                             <p>
                                 Du kannst deine Einwilligung jederzeit mit Wirkung für die Zukunft per E-Mail an{' '}
-                                <a href="mailto:meyertiffergbr@gmail.com" className="text-accent underline decoration-accent/40 underline-offset-4 hover:text-white focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">meyertiffergbr@gmail.com</a>{' '}
+                                <a href="mailto:meyertiffertgbr@gmail.com" className="text-accent underline decoration-accent/40 underline-offset-4 hover:text-white focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">meyertiffertgbr@gmail.com</a>{' '}
                                 widerrufen. Ab dem Widerruf senden wir keine entsprechenden Informationen mehr und löschen die aktiven Wartelistendaten, sofern keine andere Rechtsgrundlage oder gesetzliche Pflicht entgegensteht. Ein Widerruf berührt die Rechtmäßigkeit der bis dahin erfolgten Verarbeitung nicht.
                             </p>
                             <p>
@@ -315,7 +315,7 @@ export default function Datenschutz() {
             <footer className="border-t border-white/10 bg-[#041e3a]">
                 <div className="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-8 text-sm text-white/40 sm:px-8 md:flex-row md:items-center md:justify-between">
                     <p>© 2026 AKRIA · Meyer &amp; Tiffert GbR</p>
-                    <a href="mailto:meyertiffergbr@gmail.com" className="rounded-sm transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
+                    <a href="mailto:meyertiffertgbr@gmail.com" className="rounded-sm transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
                         Datenschutzanfrage per E-Mail
                     </a>
                 </div>

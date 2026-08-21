@@ -728,7 +728,7 @@ function Impressum({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }
 
                         <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4 mt-8">Kontakt</h3>
                         <p>
-                            E-Mail: <a href="mailto:meyertiffergbr@gmail.com" className="text-accent hover:underline">meyertiffergbr@gmail.com</a>
+                            E-Mail: <a href="mailto:meyertiffertgbr@gmail.com" className="text-accent hover:underline">meyertiffertgbr@gmail.com</a>
                         </p>
                     </div>
 
