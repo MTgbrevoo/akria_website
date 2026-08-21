@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import Index from './pages/Index';
 import Waitlist from './pages/Waitlist';
 import Success from './pages/Success';
+import Datenschutz from './pages/Datenschutz';
 
 function TrackingInitializer() {
   const { search, hash } = useLocation();
@@ -43,6 +44,7 @@ function App() {
         <Route path="/" element={<Index />} />
         <Route path="/waitlist" element={<Waitlist />} />
         <Route path="/success" element={<Success />} />
+        <Route path="/datenschutz" element={<Datenschutz />} />
       </Routes>
     </BrowserRouter>
   );

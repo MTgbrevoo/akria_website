@@ -201,30 +201,40 @@ export default function Waitlist() {
                                     </div>
                                 )}
 
-                                <label htmlFor="marketingConsent" className="waitlist-element flex items-start gap-4 mt-6 mb-8 cursor-pointer group">
-                                    <div className="relative flex items-center justify-center mt-1 shrink-0">
+                                <div className="waitlist-element flex items-start gap-4 mt-6 mb-8 group">
+                                    <label htmlFor="marketingConsent" className="relative flex items-center justify-center mt-1 shrink-0 cursor-pointer">
                                         <input
                                             id="marketingConsent"
                                             name="marketingConsent"
                                             type="checkbox"
                                             checked={marketingConsent}
                                             onChange={(e) => setMarketingConsent(e.target.checked)}
-                                            className="sr-only"
+                                            className="peer sr-only"
                                             required
                                         />
-                                        <div className={`w-6 h-6 rounded-md border flex items-center justify-center transition-all duration-300 ${marketingConsent ? 'bg-accent border-accent shadow-[0_0_10px_rgba(254,65,0,0.4)]' : 'bg-white/5 border-white/20 group-hover:border-white/40'}`}>
+                                        <span className={`w-6 h-6 rounded-md border flex items-center justify-center transition-all duration-300 peer-focus-visible:ring-2 peer-focus-visible:ring-accent peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-primary ${marketingConsent ? 'bg-accent border-accent shadow-[0_0_10px_rgba(254,65,0,0.4)]' : 'bg-white/5 border-white/20 group-hover:border-white/40'}`}>
                                             <Check className={`w-4 h-4 text-white transition-transform duration-300 ${marketingConsent ? 'scale-100' : 'scale-0'}`} strokeWidth={3} />
-                                        </div>
-                                    </div>
-                                    <div className="text-sm flex-1">
-                                        <span className="font-medium text-white/90 text-base group-hover:text-white transition-colors">
-                                            Ich stimme zu, kontaktiert zu werden.
                                         </span>
+                                        <span className="sr-only">Einwilligung erteilen</span>
+                                    </label>
+                                    <div className="text-sm flex-1">
+                                        <label htmlFor="marketingConsent" className="font-medium text-white/90 text-base group-hover:text-white transition-colors cursor-pointer">
+                                            Ich stimme zu, kontaktiert zu werden.
+                                        </label>
                                         <p className="text-white/50 text-xs mt-1.5 leading-relaxed">
-                                            Ich möchte zur Ernte und allen weiteren relevanten Informationen benachrichtigt werden und willige in die Verarbeitung meiner Daten gemäß der Datenschutzerklärung ein.
+                                            Ich möchte zur Ernte und allen weiteren relevanten Informationen benachrichtigt werden und willige in die Verarbeitung meiner Daten gemäß der{' '}
+                                            <Link
+                                                to="/datenschutz"
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="text-accent underline decoration-accent/50 underline-offset-2 hover:text-white focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                                            >
+                                                Datenschutzerklärung
+                                            </Link>{' '}
+                                            ein.
                                         </p>
                                     </div>
-                                </label>
+                                </div>
 
                                 <div className="waitlist-element pt-2">
                                     <button

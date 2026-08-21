@@ -38,7 +38,7 @@ function NoiseOverlay() {
 function FloatingCTA() {
     const scaleRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         const getGap = () => (window.innerWidth < 768 ? 32 : 48);
@@ -766,120 +766,9 @@ function Impressum({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }
 }
 
 /* ═══════════════════════════════════════════════════════════
-   DATENSCHUTZ OVERLAY
-   ═══════════════════════════════════════════════════════════ */
-function Datenschutz({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
-    const overlayRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        if (isOpen) {
-            gsap.to(overlayRef.current, { opacity: 1, visibility: 'visible', duration: 0.5, ease: 'power3.out' })
-            document.body.style.overflow = 'hidden'
-        } else {
-            gsap.to(overlayRef.current, {
-                opacity: 0, duration: 0.4, ease: 'power3.inOut',
-                onComplete: () => { gsap.set(overlayRef.current, { visibility: 'hidden' }) }
-            })
-            document.body.style.overflow = 'auto'
-        }
-    }, [isOpen])
-
-    return (
-        <div
-            ref={overlayRef}
-            className="fixed inset-0 z-[100] bg-primary flex items-start justify-center p-6 md:p-12 opacity-0 invisible overflow-y-auto"
-        >
-            <NoiseOverlay />
-            <button
-                onClick={onClose}
-                className="fixed top-8 right-8 text-white/60 hover:text-white transition-colors p-2 z-10"
-                aria-label="Schließen"
-            >
-                <X size={32} />
-            </button>
-
-            <div className="max-w-3xl w-full text-white py-16">
-                <h2 className="font-serif italic font-bold text-4xl md:text-6xl mb-4 text-accent">Datenschutz&shy;erklärung</h2>
-                <p className="text-white/50 text-sm mb-12">Stand: März 2026</p>
-
-                {[
-                    {
-                        title: '1. Verantwortlicher',
-                        content: (
-                            <p className="text-white/70 font-light leading-relaxed">
-                                Verantwortlich im Sinne der DSGVO:<br />
-                                <strong className="text-white font-semibold">Meyer & Tiffert GbR</strong><br />
-                                Hofwiese 27<br />
-                                79809 Weilheim<br />
-                                Deutschland<br /><br />
-                                E-Mail: <a href="mailto:meyertiffergbr@gmail.com" className="text-accent hover:underline">meyertiffergbr@gmail.com</a>
-                            </p>
-                        )
-                    },
-                    {
-                        title: '2. Hosting & Server-Logs',
-                        content: (
-                            <p className="text-white/70 font-light leading-relaxed mb-4">
-                                Diese Website wird bei <strong className="text-white font-semibold">Vercel Inc.</strong>
-                                , 340 Pine Street, Suite 701, San Francisco, CA 94104, USA, gehostet.
-                            </p>
-                        )
-                    },
-                    {
-                        title: '3. Warteliste',
-                        content: (
-                            <p className="text-white/70 font-light leading-relaxed mb-4">
-                                Wenn du dich in unsere Warteliste einträgst, erheben wir deinen <strong className="text-white font-semibold">Vor- und Nachnamen, deine E-Mail-Adresse</strong> sowie deinen <strong className="text-white font-semibold">Wohnort</strong>.
-                            </p>
-                        )
-                    },
-                    {
-                        title: '4. Schriftarten (Fonts)',
-                        content: (
-                            <p className="text-white/70 font-light leading-relaxed">
-                                Diese Website verwendet Schriftarten, die lokal von unserem eigenen server ausgeliefert werden.
-                            </p>
-                        )
-                    },
-                    {
-                        title: '5. Cookies & Tracking',
-                        content: (
-                            <p className="text-white/70 font-light leading-relaxed">
-                                Diese Website setzt keine Marketing- oder Tracking-Cookies ein.
-                            </p>
-                        )
-                    },
-                    {
-                        title: '6. Deine Rechte',
-                        content: (
-                            <p className="text-white/70 font-light leading-relaxed">
-                                Du hast das Recht auf Auskunft, Berichtigung, Löschung und Widerspruch.
-                            </p>
-                        )
-                    },
-                    {
-                        title: '7. Aktualität & Änderungen',
-                        content: (
-                            <p className="text-white/70 font-light leading-relaxed">
-                                Wir behalten uns vor, diese Datenschutzerklärung zu aktualisieren.
-                            </p>
-                        )
-                    },
-                ].map((section, i) => (
-                    <div key={i} className="mb-10 pb-10 border-b border-white/10 last:border-0">
-                        <h3 className="text-white font-semibold uppercase tracking-widest text-sm mb-4">{section.title}</h3>
-                        {section.content}
-                    </div>
-                ))}
-            </div>
-        </div>
-    )
-}
-
-/* ═══════════════════════════════════════════════════════════
    FOOTER
    ═══════════════════════════════════════════════════════════ */
-function Footer({ onShowImpressum, onShowDatenschutz }: { onShowImpressum: () => void, onShowDatenschutz: () => void }) {
+function Footer({ onShowImpressum }: { onShowImpressum: () => void }) {
     return (
         <footer className="bg-[#041e3a] border-t border-white/5 py-12 md:py-16">
             <div className="max-w-7xl mx-auto px-6 md:px-16">
@@ -904,8 +793,8 @@ function Footer({ onShowImpressum, onShowDatenschutz }: { onShowImpressum: () =>
                     <div>
                         <h4 className="font-display font-semibold text-white/80 text-sm uppercase tracking-wider mb-4">Rechtliches</h4>
                         <div className="flex flex-col gap-2">
-                            <button onClick={onShowImpressum} className="text-white/40 hover:text-white text-sm hover-lift transition-colors text-left">Impressum</button>
-                            <button onClick={onShowDatenschutz} className="text-white/40 hover:text-white text-sm hover-lift transition-colors text-left">Datenschutz</button>
+                            <button onClick={onShowImpressum} className="text-white/40 hover:text-white text-sm hover-lift transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">Impressum</button>
+                            <Link to="/datenschutz" className="text-white/40 hover:text-white text-sm hover-lift transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">Datenschutz</Link>
                             <a href="#" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">AGB</a>
                         </div>
                     </div>
@@ -927,7 +816,7 @@ function Footer({ onShowImpressum, onShowDatenschutz }: { onShowImpressum: () =>
 /* ═══════════════════════════════════════════════════════════
    COOKIE BANNER
    ═══════════════════════════════════════════════════════════ */
-function CookieBanner({ onShowDatenschutz }: { onShowDatenschutz: () => void }) {
+function CookieBanner() {
     const [visible, setVisible] = useState(false)
     const bannerRef = useRef<HTMLDivElement>(null)
 
@@ -948,8 +837,8 @@ function CookieBanner({ onShowDatenschutz }: { onShowDatenschutz: () => void }) 
         )
     }, [visible])
 
-    const dismiss = (choice: string) => {
-        localStorage.setItem('akria-cookie-consent', choice)
+    const dismiss = () => {
+        localStorage.setItem('akria-cookie-consent', 'acknowledged')
         gsap.to(bannerRef.current, {
             y: 60,
             opacity: 0,
@@ -969,36 +858,28 @@ function CookieBanner({ onShowDatenschutz }: { onShowDatenschutz: () => void }) 
         >
             <div className="bg-[#041e3a]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-5 md:p-6 shadow-[0_8px_60px_rgba(0,0,0,0.5)]">
                 <div className="flex items-center gap-3 mb-3">
-                    <span className="text-2xl" role="img" aria-label="Cookie">🫒</span>
+                    <span className="text-2xl" role="img" aria-label="Olive">🫒</span>
                     <p className="font-display font-bold text-white text-sm uppercase tracking-widest">
-                        Hinweis zu Cookies
+                        Hinweis zum Browser-Speicher
                     </p>
                 </div>
 
                 <p className="text-white/60 text-sm leading-relaxed mb-5">
-                    Diese Website verwendet ausschließlich technisch notwendige Cookies für den Betrieb der Seite.{' '}
-                    <button
-                        onClick={onShowDatenschutz}
-                        className="text-accent underline hover:text-accent/80 transition-colors"
+                    Diese Website nutzt technisch erforderlichen Browser-Speicher für grundlegende Funktionen. Es werden keine Analyse- oder Marketing-Cookies eingesetzt.{' '}
+                    <Link
+                        to="/datenschutz"
+                        className="text-accent underline hover:text-white transition-colors focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                     >
                         Mehr erfahren
-                    </button>
+                    </Link>
                 </p>
 
-                <div className="flex gap-3">
-                    <button
-                        onClick={() => dismiss('accepted')}
-                        className="btn-magnetic btn-accent flex-1 py-3 text-sm shadow-[0_0_20px_rgba(254,65,0,0.25)]"
-                    >
-                        Verstanden
-                    </button>
-                    <button
-                        onClick={() => dismiss('declined')}
-                        className="flex-1 py-3 text-sm font-display font-semibold tracking-wide text-white/50 hover:text-white border border-white/10 hover:border-white/20 rounded-full transition-all duration-200"
-                    >
-                        Ablehnen
-                    </button>
-                </div>
+                <button
+                    onClick={dismiss}
+                    className="btn-magnetic btn-accent w-full py-3 text-sm shadow-[0_0_20px_rgba(254,65,0,0.25)]"
+                >
+                    Verstanden
+                </button>
             </div>
         </div>
     )
@@ -1009,7 +890,6 @@ function CookieBanner({ onShowDatenschutz }: { onShowDatenschutz: () => void }) 
    ═══════════════════════════════════════════════════════════ */
 export default function Index() {
     const [showImpressum, setShowImpressum] = useState(false)
-    const [showDatenschutz, setShowDatenschutz] = useState(false)
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -1022,8 +902,7 @@ export default function Index() {
         <div className="bg-primary min-h-screen">
             <NoiseOverlay />
             <Impressum isOpen={showImpressum} onClose={() => setShowImpressum(false)} />
-            <Datenschutz isOpen={showDatenschutz} onClose={() => setShowDatenschutz(false)} />
-            <CookieBanner onShowDatenschutz={() => setShowDatenschutz(true)} />
+            <CookieBanner />
             
             <FloatingCTA />
             
@@ -1034,7 +913,7 @@ export default function Index() {
                 <ImageGallery />
                 <WaitlistSection />
             </main>
-            <Footer onShowImpressum={() => setShowImpressum(true)} onShowDatenschutz={() => setShowDatenschutz(true)} />
+            <Footer onShowImpressum={() => setShowImpressum(true)} />
         </div>
     )
 }
