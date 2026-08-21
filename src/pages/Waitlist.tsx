@@ -29,9 +29,7 @@ export default function Waitlist() {
     const [formData, setFormData] = useState({
         firstname: '',
         lastname: '',
-        email: '',
-        location: '',
-        notes: ''
+        email: ''
     });
 
     useEffect(() => {
@@ -56,7 +54,7 @@ export default function Waitlist() {
         return () => ctx.revert();
     }, []);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
@@ -82,8 +80,6 @@ export default function Waitlist() {
                     data: {
                         firstname: formData.firstname,
                         lastname: formData.lastname,
-                        location: formData.location,
-                        notes: formData.notes,
                         marketing_consent: marketingConsent,
                         acquisition_source_code: sourceCode
                     }
@@ -196,37 +192,6 @@ export default function Waitlist() {
                                         onChange={handleChange}
                                         className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all"
                                         placeholder=""
-                                    />
-                                </div>
-
-                                <div className="waitlist-element">
-                                    <label htmlFor="location" className="block text-xs font-semibold uppercase tracking-widest text-white/50 mb-2 ml-1">
-                                        Wohnort
-                                    </label>
-                                    <input
-                                        required
-                                        type="text"
-                                        id="location"
-                                        name="location"
-                                        value={formData.location}
-                                        onChange={handleChange}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all"
-                                        placeholder=""
-                                    />
-                                </div>
-
-                                <div className="waitlist-element">
-                                    <label htmlFor="notes" className="block text-xs font-semibold uppercase tracking-widest text-white/50 mb-2 ml-1">
-                                        Anmerkungen (Optional)
-                                    </label>
-                                    <textarea
-                                        id="notes"
-                                        name="notes"
-                                        rows={3}
-                                        value={formData.notes}
-                                        onChange={handleChange}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all resize-none"
-                                        placeholder="Was würdest Du gerne von uns sehen? Oder lass einfach Grüße da! :)"
                                     />
                                 </div>
 
