@@ -363,12 +363,12 @@ function ClaimSet1() {
                     <div className="relative flex flex-col gap-2 md:gap-3 order-1">
                         {claims.map((claim, i) => (
                             <div key={i} className="relative pt-3 md:pt-4">
-                                <p className="absolute top-0 left-4 md:left-7 z-10 bg-primary px-3 font-display text-base md:text-lg font-bold tracking-[0.12em] uppercase text-accent">
-                                    {claim.phase}
-                                </p>
                                 <div
-                                    className={`claim-card-${i} glass-card p-5 md:p-8 flex flex-col gap-3 group hover:bg-white/10`}
+                                    className={`claim-card-${i} glass-card relative p-5 md:p-8 flex flex-col gap-3 group hover:bg-white/10`}
                                 >
+                                    <p className="absolute -top-3 md:-top-4 left-4 md:left-7 z-10 bg-[#1866b3] px-3 font-display text-base md:text-lg font-bold tracking-[0.12em] uppercase text-accent">
+                                        {claim.phase}
+                                    </p>
                                     <h3 className="font-display font-bold text-lg md:text-2xl text-white">
                                         {claim.title}
                                     </h3>
