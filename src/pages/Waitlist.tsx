@@ -125,7 +125,7 @@ export default function Waitlist() {
                                 Bitte überprüfe deine E-Mails!
                             </h2>
                             <p className="text-white/70 text-lg mb-8 max-w-md mx-auto">
-                                Wir haben dir einen Bestätigungslink gesendet. Bitte klicke auf den Link in der E-Mail, um deine Anmeldung zur Ernte 2026 abzuschließen.
+                                Wir haben dir einen Bestätigungslink gesendet. Bitte klicke auf den Link in der E-Mail, um deine Anmeldung zur Ernte 2026/27 abzuschließen.
                             </p>
                             <Link to="/" className="btn-magnetic btn-accent py-3 px-10 inline-flex items-center">
                                 Zurück zur Übersicht
@@ -135,13 +135,13 @@ export default function Waitlist() {
                         <>
                             <div className="waitlist-element mb-8">
                                 <p className="font-display text-xs font-semibold tracking-[0.2em] uppercase text-accent mb-2">
-                                    Ernte 2026 / 2027
+                                    Ernte 2026/27
                                 </p>
                                 <h1 className="font-serif italic font-bold text-3xl md:text-4xl lg:text-5xl text-white leading-tight mb-4">
-                                    Sicher dir deinen Platz.
+                                    Zugang zur Ernte 26/27 sichern
                                 </h1>
                                 <p className="text-white/60 text-sm md:text-base leading-relaxed">
-                                    Völlig unverbindlich. Du entscheidest erst zur Erntezeit im Herbst, ob du bestellen möchtest.
+                                    Deine Anmeldung ist unverbindlich, reserviert keine Menge und verpflichtet dich nicht zum Kauf. Verbindlich vorbestellen kannst du erst im Herbst 2026.
                                 </p>
                             </div>
 

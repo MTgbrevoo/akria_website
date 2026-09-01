@@ -148,7 +148,7 @@ export default function Success() {
                                 Du bist dabei!
                             </h1>
                             <p className="success-content text-white/70 text-lg md:text-xl mb-10 max-w-md mx-auto leading-relaxed">
-                                Deine E-Mail-Adresse wurde erfolgreich bestätigt. Wir haben dich auf die Warteliste für die nächste Ernte gesetzt.
+                                Deine E-Mail-Adresse wurde erfolgreich bestätigt. Wir haben dich auf die Warteliste für die Ernte 2026/27 gesetzt.
                             </p>
                             <div className="success-content">
                                 <Link to="/" className="btn-magnetic btn-accent py-4 px-10 inline-flex items-center text-lg shadow-[0_0_30px_rgba(254,65,0,0.3)] group">

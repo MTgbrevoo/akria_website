@@ -269,16 +269,20 @@ function ClaimSet1() {
     const sectionRef = useRef<HTMLElement>(null)
     const claims = [
         {
-            title: 'Unverbindlich reservieren',
-            desc: 'Trage dich in unsere Gästeliste ein. Damit sicherst du dir dein Anrecht auf die kommende Ernte (begrenzte Menge!).',
+            phase: '01 — JETZT',
+            title: 'Zugang zur Ernte 26/27 sichern',
+            desc: 'Wir ernten nur einmal im Jahr. Trag dich jetzt ein und wir informieren dich als Erstes, sobald die Vorbestellung für diese Saison startet.',
+            cta: 'Zugang sichern',
         },
         {
-            title: 'Ernte-Update erhalten',
-            desc: 'Sobald die Ernte kurz bevorsteht (ca. im September), informieren wir dich per Mail und Du kannst verbindlich bestellen.',
+            phase: '02 — HERBST 2026',
+            title: 'Vorbestellung öffnet',
+            desc: 'Du erhältst eine E-Mail von uns und kannst deine gewünschte Menge verbindlich vorbestellen. Voraussichtlich 17–19 € pro Liter, abhängig von der Ernte.',
         },
         {
-            title: 'Bestellen & Genießen',
-            desc: 'Du bestätigst deine Wunschmenge (Zielpreis 17-19 €/L) und wir schicken das frische Öl direkt nach der Pressung zu dir.',
+            phase: '03 — FRÜHJAHR 2027',
+            title: 'Dein frischgepresstes Olivenöl erhalten',
+            desc: 'Per Post zu dir nach Hause oder bei unserem kostenlosen Abholevent mit Verkostung.',
         },
     ]
 
@@ -304,9 +308,9 @@ function ClaimSet1() {
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current,
-                    start: 'top top',
-                    end: `+=${claims.length * 100}%`,
-                    pin: true,
+                    start: isMobile ? 'top 75%' : 'top top',
+                    end: isMobile ? 'bottom 25%' : `+=${claims.length * 100}%`,
+                    pin: !isMobile,
                     scrub: 1.5,
                     anticipatePin: 1,
                 },
@@ -348,11 +352,11 @@ function ClaimSet1() {
         <section
             ref={sectionRef}
             id="herkunft"
-            className="relative min-h-[100svh] w-full bg-primary overflow-hidden pt-10 md:pt-32 pb-16"
+            className="relative min-h-[100svh] w-full bg-primary overflow-visible lg:overflow-hidden pt-10 md:pt-32 pb-16"
         >
             <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex flex-col h-full">
                 <h2 className="font-display text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-8 md:mb-16 text-white/95 text-center lg:text-left leading-[1.1] max-w-5xl tracking-tight">
-                    <span className="font-serif italic text-accent">Weltklasse</span> Olivenöl direkt von der Ernte zu dir nach Hause.
+                    In 3 Schritten von der Ernte zu deinem Olivenöl
                 </h2>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-16 items-start lg:items-center flex-1">
@@ -360,16 +364,26 @@ function ClaimSet1() {
                         {claims.map((claim, i) => (
                             <div key={i} className="relative">
                                 <div
-                                    className={`claim-card-${i} glass-card p-5 md:p-8 flex flex-col gap-2 group hover:bg-white/10`}
+                                    className={`claim-card-${i} glass-card p-5 md:p-8 flex flex-col gap-3 group hover:bg-white/10`}
                                 >
-                                    <div className="flex items-center gap-4">
-                                        <h3 className="font-display font-bold text-lg md:text-2xl text-white">
-                                            {claim.title}
-                                        </h3>
-                                    </div>
+                                    <p className="font-display text-[10px] md:text-xs font-semibold tracking-[0.2em] uppercase text-accent">
+                                        {claim.phase}
+                                    </p>
+                                    <h3 className="font-display font-bold text-lg md:text-2xl text-white">
+                                        {claim.title}
+                                    </h3>
                                     <p className="text-white/70 text-sm md:text-base leading-relaxed">
                                         {claim.desc}
                                     </p>
+                                    {claim.cta && (
+                                        <Link
+                                            to="/waitlist"
+                                            className="btn-magnetic btn-accent mt-2 w-fit px-6 py-3 text-sm shadow-[0_10px_30px_rgba(254,65,0,0.3)]"
+                                        >
+                                            {claim.cta}
+                                            <ArrowRight className="ml-2 h-4 w-4" />
+                                        </Link>
+                                    )}
                                 </div>
 
                                 {i < claims.length - 1 && (
@@ -652,13 +666,13 @@ function WaitlistSection() {
                     
                     <div className="waitlist-content-items relative z-10 flex flex-col items-center">
                         <p className="font-display text-xs lg:text-sm font-semibold tracking-[0.2em] uppercase text-accent mb-4">
-                            Ernte 2026 / 2027
+                            Ernte 2026/27
                         </p>
                         <h2 className="font-serif italic font-bold text-4xl lg:text-5xl xl:text-6xl text-white mb-6 leading-tight drop-shadow-2xl">
-                            Sicher dir deinen Platz.
+                            Zugang zur Ernte 26/27 sichern
                         </h2>
                         <p className="text-white/80 text-base lg:text-lg max-w-md mx-auto leading-relaxed mb-8 font-light drop-shadow-lg">
-                            Trag dich für die nächste Ernte ein! Wir informieren dich, sobald der erste Tropfen fließt.
+                            Deine Anmeldung ist unverbindlich und reserviert keine Menge. Wir informieren dich im Herbst 2026, sobald die Vorbestellung startet.
                         </p>
 
                         {/* Slot where the persistent floating CTA docks into place */}
