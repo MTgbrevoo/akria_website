@@ -428,18 +428,18 @@ function ClaimSet1() {
                                 </div>
 
                                 {i < claims.length - 1 && (
-                                    <div className="relative z-10 flex h-12 items-center justify-center py-1 md:h-14 md:py-2">
+                                    <div className="relative z-10 flex h-16 items-center justify-center py-2 md:h-[4.5rem] md:py-3">
                                         <svg
-                                            className={`claim-arrow-${i} h-11 w-11 text-accent md:h-12 md:w-12 ${i % 2 === 0 ? 'lg:translate-x-1 lg:rotate-[4deg]' : 'lg:-translate-x-1 lg:rotate-[-4deg]'}`}
+                                            className={`claim-arrow-${i} h-16 w-20 text-accent md:h-[4.5rem] md:w-24 ${i % 2 === 0 ? 'lg:translate-x-2 lg:rotate-[2deg]' : 'lg:-translate-x-2 lg:rotate-[-2deg]'}`}
                                             viewBox="0 0 100 100"
                                             fill="none"
                                             style={{ strokeDasharray: 100, strokeDashoffset: 100 }}
                                         >
                                             <path
-                                                d="M50 10 C35 29 65 47 50 74 M41 64 L50 74 L59 64"
+                                                d="M50 7 C20 29 80 53 50 86 M36 71 L50 86 L64 71"
                                                 pathLength="100"
                                                 stroke="currentColor"
-                                                strokeWidth="4.5"
+                                                strokeWidth="5"
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
                                             />
