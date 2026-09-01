@@ -287,56 +287,92 @@ function ClaimSet1() {
     ]
 
     useEffect(() => {
+        const media = gsap.matchMedia()
         const ctx = gsap.context(() => {
-            const isMobile = window.innerWidth < 1024;
-
-            claims.forEach((_, i) => {
-                if (i === 0) {
-                    gsap.set(`.claim-card-0`, { opacity: 1, x: 0, y: 0 })
-                } else {
+            media.add('(min-width: 1024px)', () => {
+                claims.forEach((_, i) => {
                     gsap.set(`.claim-card-${i}`, {
-                        opacity: 0,
-                        x: isMobile ? 0 : (i % 2 === 0 ? -40 : 40),
-                        y: isMobile ? 40 : 0
-                    })
-                }
-                if (i < claims.length - 1) {
-                    gsap.set(`.claim-arrow-${i}`, { opacity: 0, strokeDashoffset: 200 })
-                }
-            })
-
-            const tl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: sectionRef.current,
-                    start: isMobile ? 'top 75%' : 'top top',
-                    end: isMobile ? 'bottom 25%' : `+=${claims.length * 100}%`,
-                    pin: !isMobile,
-                    scrub: 1.5,
-                    anticipatePin: 1,
-                },
-            })
-
-            claims.forEach((_, i) => {
-                const startTime = i * 1.5
-
-                if (i > 0) {
-                    tl.to(`.claim-card-${i}`, {
-                        opacity: 1,
-                        x: 0,
+                        opacity: i === 0 ? 1 : 0,
+                        x: i === 0 ? 0 : (i % 2 === 0 ? -40 : 40),
                         y: 0,
-                        duration: 1,
-                        ease: 'power2.out',
-                    }, startTime)
-                }
+                    })
+                    if (i < claims.length - 1) {
+                        gsap.set(`.claim-arrow-${i}`, { opacity: 0, strokeDashoffset: 200 })
+                    }
+                })
 
-                if (i < claims.length - 1) {
-                    tl.to(`.claim-arrow-${i}`, {
-                        opacity: 1,
-                        strokeDashoffset: 0,
-                        duration: 0.6,
-                        ease: 'power2.inOut',
-                    }, startTime + 0.8)
-                }
+                const tl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: sectionRef.current,
+                        start: 'top top',
+                        end: `+=${claims.length * 100}%`,
+                        pin: true,
+                        scrub: 1.5,
+                        anticipatePin: 1,
+                    },
+                })
+
+                claims.forEach((_, i) => {
+                    const startTime = i * 1.5
+
+                    if (i > 0) {
+                        tl.to(`.claim-card-${i}`, {
+                            opacity: 1,
+                            x: 0,
+                            duration: 1,
+                            ease: 'power2.out',
+                        }, startTime)
+                    }
+
+                    if (i < claims.length - 1) {
+                        tl.to(`.claim-arrow-${i}`, {
+                            opacity: 1,
+                            strokeDashoffset: 0,
+                            duration: 0.6,
+                            ease: 'power2.inOut',
+                        }, startTime + 0.8)
+                    }
+                })
+            })
+
+            media.add('(max-width: 1023px)', () => {
+                gsap.set('.claim-card-0', { opacity: 1, x: 0, y: 0 })
+
+                claims.forEach((_, i) => {
+                    if (i > 0) {
+                        gsap.fromTo(`.claim-card-${i}`,
+                            { opacity: 0, y: 32 },
+                            {
+                                opacity: 1,
+                                y: 0,
+                                duration: 0.65,
+                                ease: 'power2.out',
+                                scrollTrigger: {
+                                    trigger: `.claim-card-${i}`,
+                                    start: 'top 88%',
+                                    once: true,
+                                },
+                            },
+                        )
+                    }
+
+                    if (i < claims.length - 1) {
+                        gsap.fromTo(`.claim-arrow-${i}`,
+                            { opacity: 0, strokeDashoffset: 200 },
+                            {
+                                opacity: 1,
+                                strokeDashoffset: 0,
+                                duration: 0.45,
+                                ease: 'power2.inOut',
+                                scrollTrigger: {
+                                    trigger: `.claim-arrow-${i}`,
+                                    start: 'top 90%',
+                                    once: true,
+                                },
+                            },
+                        )
+                    }
+                })
             })
 
             const video = sectionRef.current?.querySelector('video')
@@ -345,7 +381,10 @@ function ClaimSet1() {
             }
         }, sectionRef)
 
-        return () => ctx.revert()
+        return () => {
+            media.revert()
+            ctx.revert()
+        }
     }, [])
 
     return (
