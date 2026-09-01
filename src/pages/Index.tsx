@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ArrowRight, ChevronDown, X } from 'lucide-react'
+import { ArrowDown, ArrowRight, ChevronDown, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -297,7 +297,7 @@ function ClaimSet1() {
                         y: 0,
                     })
                     if (i < claims.length - 1) {
-                        gsap.set(`.claim-arrow-${i}`, { opacity: 0, strokeDashoffset: 100 })
+                        gsap.set(`.claim-arrow-${i}`, { opacity: 0, y: -6 })
                     }
                 })
 
@@ -327,9 +327,9 @@ function ClaimSet1() {
                     if (i < claims.length - 1) {
                         tl.to(`.claim-arrow-${i}`, {
                             opacity: 1,
-                            strokeDashoffset: 0,
-                            duration: 0.45,
-                            ease: 'sine.inOut',
+                            y: 0,
+                            duration: 0.3,
+                            ease: 'sine.out',
                         }, startTime + 0.9)
                     }
                 })
@@ -358,12 +358,12 @@ function ClaimSet1() {
 
                     if (i < claims.length - 1) {
                         gsap.fromTo(`.claim-arrow-${i}`,
-                            { opacity: 0, strokeDashoffset: 100 },
+                            { opacity: 0, y: -6 },
                             {
                                 opacity: 1,
-                                strokeDashoffset: 0,
-                                duration: 0.4,
-                                ease: 'sine.inOut',
+                                y: 0,
+                                duration: 0.3,
+                                ease: 'sine.out',
                                 scrollTrigger: {
                                     trigger: `.claim-arrow-${i}`,
                                     start: 'top 90%',
@@ -428,22 +428,12 @@ function ClaimSet1() {
                                 </div>
 
                                 {i < claims.length - 1 && (
-                                    <div className="relative z-10 flex h-16 items-center justify-center py-2 md:h-[4.5rem] md:py-3">
-                                        <svg
-                                            className={`claim-arrow-${i} h-16 w-20 text-accent md:h-[4.5rem] md:w-24 ${i % 2 === 0 ? 'lg:translate-x-2 lg:rotate-[2deg]' : 'lg:-translate-x-2 lg:rotate-[-2deg]'}`}
-                                            viewBox="0 0 100 100"
-                                            fill="none"
-                                            style={{ strokeDasharray: 100, strokeDashoffset: 100 }}
-                                        >
-                                            <path
-                                                d="M50 7 C20 29 80 53 50 86 M36 71 L50 86 L64 71"
-                                                pathLength="100"
-                                                stroke="currentColor"
-                                                strokeWidth="5"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                            />
-                                        </svg>
+                                    <div className="relative z-10 flex h-8 items-center justify-center md:h-10">
+                                        <ArrowDown
+                                            className={`claim-arrow-${i} h-6 w-6 text-accent md:h-7 md:w-7`}
+                                            strokeWidth={2.5}
+                                            aria-hidden="true"
+                                        />
                                     </div>
                                 )}
                             </div>
