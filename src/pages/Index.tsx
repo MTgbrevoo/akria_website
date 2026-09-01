@@ -297,7 +297,7 @@ function ClaimSet1() {
                         y: 0,
                     })
                     if (i < claims.length - 1) {
-                        gsap.set(`.claim-arrow-${i}`, { opacity: 0, strokeDashoffset: 200 })
+                        gsap.set(`.claim-arrow-${i}`, { opacity: 0, strokeDashoffset: 100 })
                     }
                 })
 
@@ -328,9 +328,9 @@ function ClaimSet1() {
                         tl.to(`.claim-arrow-${i}`, {
                             opacity: 1,
                             strokeDashoffset: 0,
-                            duration: 0.6,
-                            ease: 'power2.inOut',
-                        }, startTime + 0.8)
+                            duration: 0.45,
+                            ease: 'sine.inOut',
+                        }, startTime + 0.9)
                     }
                 })
             })
@@ -358,12 +358,12 @@ function ClaimSet1() {
 
                     if (i < claims.length - 1) {
                         gsap.fromTo(`.claim-arrow-${i}`,
-                            { opacity: 0, strokeDashoffset: 200 },
+                            { opacity: 0, strokeDashoffset: 100 },
                             {
                                 opacity: 1,
                                 strokeDashoffset: 0,
-                                duration: 0.45,
-                                ease: 'power2.inOut',
+                                duration: 0.4,
+                                ease: 'sine.inOut',
                                 scrollTrigger: {
                                     trigger: `.claim-arrow-${i}`,
                                     start: 'top 90%',
@@ -428,16 +428,18 @@ function ClaimSet1() {
                                 </div>
 
                                 {i < claims.length - 1 && (
-                                    <div className="py-2 md:py-0">
+                                    <div className="relative z-10 flex h-12 items-center justify-center py-1 md:h-14 md:py-2">
                                         <svg
-                                            className={`claim-arrow-${i} w-10 h-10 md:w-20 md:h-20 mx-auto my-[-1.5rem] md:my-[-2rem] text-accent z-20 ${i % 2 === 0 ? 'lg:translate-x-[0.5rem] lg:rotate-[15deg]' : 'lg:translate-x-[-0.5rem] lg:rotate-[-15deg]'}`}
+                                            className={`claim-arrow-${i} h-11 w-11 text-accent md:h-12 md:w-12 ${i % 2 === 0 ? 'lg:translate-x-1 lg:rotate-[4deg]' : 'lg:-translate-x-1 lg:rotate-[-4deg]'}`}
                                             viewBox="0 0 100 100"
                                             fill="none"
+                                            style={{ strokeDasharray: 100, strokeDashoffset: 100 }}
                                         >
                                             <path
-                                                d="M50 10 C 40 35, 60 45, 50 80 M 35 65 C 40 75, 50 85, 50 80 M 65 65 C 60 75, 50 85, 50 80"
+                                                d="M50 10 C35 29 65 47 50 74 M41 64 L50 74 L59 64"
+                                                pathLength="100"
                                                 stroke="currentColor"
-                                                strokeWidth="4"
+                                                strokeWidth="4.5"
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
                                             />
