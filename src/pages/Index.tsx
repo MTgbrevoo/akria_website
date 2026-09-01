@@ -269,19 +269,19 @@ function ClaimSet1() {
     const sectionRef = useRef<HTMLElement>(null)
     const claims = [
         {
-            phase: '01 — JETZT',
+            phase: 'JETZT',
             title: 'Zugang zur Ernte 26/27 sichern',
-            desc: 'Wir ernten nur einmal im Jahr. Trag dich jetzt ein und wir informieren dich als Erstes, sobald die Vorbestellung für diese Saison startet.',
-            cta: 'Zugang sichern',
+            desc: 'Wir ernten nur einmal im Jahr.',
+            descAfter: 'und wir informieren dich als Erstes, sobald die Vorbestellung für diese Saison startet.',
         },
         {
-            phase: '02 — HERBST 2026',
+            phase: 'HERBST 2026',
             title: 'Vorbestellung öffnet',
             desc: 'Du erhältst eine E-Mail von uns und kannst deine gewünschte Menge verbindlich vorbestellen. Voraussichtlich 17–19 € pro Liter, abhängig von der Ernte.',
         },
         {
-            phase: '03 — FRÜHJAHR 2027',
-            title: 'Dein frischgepresstes Olivenöl erhalten',
+            phase: 'FRÜHJAHR 2027',
+            title: 'Erhalte dein Olivenöl',
             desc: 'Per Post zu dir nach Hause oder bei unserem kostenlosen Abholevent mit Verkostung.',
         },
     ]
@@ -362,28 +362,30 @@ function ClaimSet1() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-16 items-start lg:items-center flex-1">
                     <div className="relative flex flex-col gap-2 md:gap-3 order-1">
                         {claims.map((claim, i) => (
-                            <div key={i} className="relative">
+                            <div key={i} className="relative pt-3 md:pt-4">
+                                <p className="absolute top-0 left-4 md:left-7 z-10 bg-primary px-3 font-display text-base md:text-lg font-bold tracking-[0.12em] uppercase text-accent">
+                                    {claim.phase}
+                                </p>
                                 <div
                                     className={`claim-card-${i} glass-card p-5 md:p-8 flex flex-col gap-3 group hover:bg-white/10`}
                                 >
-                                    <p className="font-display text-[10px] md:text-xs font-semibold tracking-[0.2em] uppercase text-accent">
-                                        {claim.phase}
-                                    </p>
                                     <h3 className="font-display font-bold text-lg md:text-2xl text-white">
                                         {claim.title}
                                     </h3>
                                     <p className="text-white/70 text-sm md:text-base leading-relaxed">
-                                        {claim.desc}
+                                        {claim.desc}{' '}
+                                        {claim.descAfter && (
+                                            <>
+                                                <Link
+                                                    to="/waitlist"
+                                                    className="font-semibold text-accent underline decoration-accent/60 underline-offset-4 transition-colors hover:text-white focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                                                >
+                                                    Trag dich jetzt ein
+                                                </Link>{' '}
+                                                {claim.descAfter}
+                                            </>
+                                        )}
                                     </p>
-                                    {claim.cta && (
-                                        <Link
-                                            to="/waitlist"
-                                            className="btn-magnetic btn-accent mt-2 w-fit px-6 py-3 text-sm shadow-[0_10px_30px_rgba(254,65,0,0.3)]"
-                                        >
-                                            {claim.cta}
-                                            <ArrowRight className="ml-2 h-4 w-4" />
-                                        </Link>
-                                    )}
                                 </div>
 
                                 {i < claims.length - 1 && (
