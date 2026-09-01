@@ -430,7 +430,7 @@ function ClaimSet1() {
                                 {i < claims.length - 1 && (
                                     <div className="relative z-10 flex h-8 items-center justify-center md:h-10">
                                         <ArrowDown
-                                            className={`claim-arrow-${i} h-6 w-6 text-accent md:h-7 md:w-7`}
+                                            className={`claim-arrow-${i} h-6 w-6 text-[#1866b3] md:h-7 md:w-7`}
                                             strokeWidth={2.5}
                                             aria-hidden="true"
                                         />
