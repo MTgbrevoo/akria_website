@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ArrowDown, ArrowRight, ChevronDown, X } from 'lucide-react'
+import { ArrowRight, ChevronDown, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import ProductSection from '../components/ProductSection'
 import { getSupabaseAssetUrl } from '../lib/supabaseAssets'
@@ -294,8 +294,7 @@ function ClaimSet1() {
         {
             phase: 'JETZT',
             title: 'Zugang zur Ernte 26/27 sichern',
-            desc: 'Wir ernten nur einmal im Jahr.',
-            descAfter: 'und wir informieren dich als Erstes, sobald die Vorbestellung für diese Saison startet.',
+            desc: 'Wir ernten nur einmal im Jahr und informieren dich als Erstes, sobald die Vorbestellung für diese Saison startet.',
         },
         {
             phase: 'HERBST 2026',
@@ -312,17 +311,17 @@ function ClaimSet1() {
     useEffect(() => {
         const media = gsap.matchMedia()
         const ctx = gsap.context(() => {
+            const video = sectionRef.current?.querySelector('video')
+            video?.play().catch(() => { })
+
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                gsap.set('.claim-step', { opacity: 1, y: 0 })
+                return
+            }
+
             media.add('(min-width: 1024px)', () => {
-                claims.forEach((_, i) => {
-                    gsap.set(`.claim-card-${i}`, {
-                        opacity: i === 0 ? 1 : 0,
-                        x: i === 0 ? 0 : (i % 2 === 0 ? -40 : 40),
-                        y: 0,
-                    })
-                    if (i < claims.length - 1) {
-                        gsap.set(`.claim-arrow-${i}`, { opacity: 0, y: -6 })
-                    }
-                })
+                gsap.set('.claim-step', { opacity: 0, y: 20 })
+                gsap.set('.claim-step-0', { opacity: 1, y: 0 })
 
                 const tl = gsap.timeline({
                     scrollTrigger: {
@@ -336,72 +335,39 @@ function ClaimSet1() {
                 })
 
                 claims.forEach((_, i) => {
-                    const startTime = i * 1.5
+                    if (i === 0) return
 
-                    if (i > 0) {
-                        tl.to(`.claim-card-${i}`, {
-                            opacity: 1,
-                            x: 0,
-                            duration: 1,
-                            ease: 'power2.out',
-                        }, startTime)
-                    }
-
-                    if (i < claims.length - 1) {
-                        tl.to(`.claim-arrow-${i}`, {
-                            opacity: 1,
-                            y: 0,
-                            duration: 0.3,
-                            ease: 'sine.out',
-                        }, startTime + 0.9)
-                    }
+                    tl.to(`.claim-step-${i}`, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 1,
+                        ease: 'power2.out',
+                    }, i * 1.5)
                 })
             })
 
             media.add('(max-width: 1023px)', () => {
-                gsap.set('.claim-card-0', { opacity: 1, x: 0, y: 0 })
+                gsap.set('.claim-step-0', { opacity: 1, y: 0 })
 
                 claims.forEach((_, i) => {
-                    if (i > 0) {
-                        gsap.fromTo(`.claim-card-${i}`,
-                            { opacity: 0, y: 32 },
-                            {
-                                opacity: 1,
-                                y: 0,
-                                duration: 0.65,
-                                ease: 'power2.out',
-                                scrollTrigger: {
-                                    trigger: `.claim-card-${i}`,
-                                    start: 'top 88%',
-                                    once: true,
-                                },
-                            },
-                        )
-                    }
+                    if (i === 0) return
 
-                    if (i < claims.length - 1) {
-                        gsap.fromTo(`.claim-arrow-${i}`,
-                            { opacity: 0, y: -6 },
-                            {
-                                opacity: 1,
-                                y: 0,
-                                duration: 0.3,
-                                ease: 'sine.out',
-                                scrollTrigger: {
-                                    trigger: `.claim-arrow-${i}`,
-                                    start: 'top 90%',
-                                    once: true,
-                                },
+                    gsap.fromTo(`.claim-step-${i}`,
+                        { opacity: 0, y: 20 },
+                        {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.65,
+                            ease: 'power2.out',
+                            scrollTrigger: {
+                                trigger: `.claim-step-${i}`,
+                                start: 'top 88%',
+                                once: true,
                             },
-                        )
-                    }
+                        },
+                    )
                 })
             })
-
-            const video = sectionRef.current?.querySelector('video')
-            if (video) {
-                video.play().catch(() => { })
-            }
         }, sectionRef)
 
         return () => {
@@ -421,60 +387,47 @@ function ClaimSet1() {
                     In 3 Schritten von der Ernte zu deinem Olivenöl
                 </h2>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-16 items-start lg:items-center flex-1">
-                    <div className="relative flex flex-col gap-2 md:gap-3 order-1">
+                <div className="grid flex-1 grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
+                    <ol className="glass-card order-1 p-6 md:p-8" aria-label="Ablauf von der Anmeldung bis zur Lieferung">
                         {claims.map((claim, i) => (
-                            <div key={i} className="relative pt-3 md:pt-4">
-                                <div
-                                    className={`claim-card-${i} glass-card relative p-5 md:p-8 flex flex-col gap-3 group hover:bg-white/10`}
-                                >
-                                    <p className="absolute -top-3 md:-top-4 left-5 md:left-8 z-10 font-display text-base md:text-lg font-bold tracking-[0.12em] uppercase text-accent">
+                            <li
+                                key={claim.phase}
+                                className={`claim-step claim-step-${i} grid grid-cols-[1rem_1fr] gap-4 md:grid-cols-[1.25rem_1fr] md:gap-5 ${i > 0 ? 'border-t border-white/10 pt-7' : ''} ${i < claims.length - 1 ? 'pb-7' : ''}`}
+                            >
+                                <div className="relative flex justify-center" aria-hidden="true">
+                                    <span className="mt-1.5 h-2.5 w-2.5 rounded-full border border-white/60 bg-white/15" />
+                                    {i < claims.length - 1 && (
+                                        <span className="absolute -bottom-7 top-4 w-px bg-white/20" />
+                                    )}
+                                </div>
+                                <div>
+                                    <p className="mb-2 font-display text-xs font-semibold uppercase tracking-[0.16em] text-white/55">
                                         {claim.phase}
                                     </p>
-                                    <h3 className="font-display font-bold text-lg md:text-2xl text-white">
+                                    <h3 className="font-display text-lg font-bold text-white md:text-2xl">
                                         {claim.title}
                                     </h3>
-                                    <p className="text-white/70 text-sm md:text-base leading-relaxed">
-                                        {claim.desc}{' '}
-                                        {claim.descAfter && (
-                                            <>
-                                                <Link
-                                                    to="/waitlist"
-                                                    className="font-semibold text-accent underline decoration-accent/60 underline-offset-4 transition-colors hover:text-white focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                                                >
-                                                    Trag dich jetzt ein
-                                                </Link>{' '}
-                                                {claim.descAfter}
-                                            </>
-                                        )}
+                                    <p className="mt-2 text-sm leading-relaxed text-white/70 md:text-base">
+                                        {claim.desc}
                                     </p>
                                 </div>
-
-                                {i < claims.length - 1 && (
-                                    <div className="relative z-10 flex h-8 items-center justify-center md:h-10">
-                                        <ArrowDown
-                                            className={`claim-arrow-${i} h-6 w-6 text-white/55 md:h-7 md:w-7`}
-                                            strokeWidth={2.5}
-                                            aria-hidden="true"
-                                        />
-                                    </div>
-                                )}
-                            </div>
+                            </li>
                         ))}
-                    </div>
+                    </ol>
 
-                    <div className="oil-video-container relative flex items-center justify-center lg:justify-end order-2">
-                        <div className="video-mask w-full max-w-sm lg:max-w-md aspect-[3/4] relative overflow-hidden shadow-2xl rounded-3xl">
+                    <div className="oil-video-container relative order-2 flex items-center justify-center lg:justify-end">
+                        <div className="video-mask relative aspect-[3/4] w-full max-w-xs overflow-hidden rounded-2xl shadow-[0_20px_55px_rgba(3,28,55,0.28)] lg:max-w-sm">
                             <video
                                 autoPlay
                                 muted
                                 loop
                                 playsInline
                                 preload="auto"
-                                className="absolute inset-0 w-full h-full object-cover"
+                                className="absolute inset-0 h-full w-full object-cover opacity-90"
                             >
                                 <source src={getSupabaseAssetUrl('Vids_Images', 'Oil Flowing From Press.mp4')} type="video/mp4" />
                             </video>
+                            <div className="pointer-events-none absolute inset-0 bg-primary/10" aria-hidden="true" />
                         </div>
                     </div>
                 </div>
