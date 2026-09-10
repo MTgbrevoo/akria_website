@@ -187,7 +187,7 @@ export default function ProductSection() {
                 >
                   <span
                     aria-hidden="true"
-                    className={`absolute left-1 top-1 h-6 w-6 rounded-full bg-white shadow-md transition-transform ${
+                    className={`absolute inset-y-0 left-1 my-auto h-6 w-6 rounded-full bg-white shadow-md transition-transform ${
                       isPreorder ? 'translate-x-5' : 'translate-x-0'
                     }`}
                   />
