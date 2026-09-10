@@ -8,7 +8,6 @@ import { getSupabaseAssetUrl } from '../lib/supabaseAssets'
 gsap.registerPlugin(ScrollTrigger)
 
 type StoryStep = {
-  title: string
   text: string
   image: string
   alt: string
@@ -18,20 +17,17 @@ const PRODUCT_FOLDER = 'Unser-Produkt'
 
 const storySteps: StoryStep[] = [
   {
-    title: 'In der Mani verwurzelt',
-    text: 'Unsere Koroneiki-Oliven wachsen im Süden Griechenlands. Sonne, steinige Böden und die Nähe zum Meer geben ihnen ihren unverwechselbaren Charakter.',
+    text: 'Die Oliven werden ganz am Anfang der Saison geerntet. Hier sind sie klein, grün und hart wie Stein.',
     image: '01-oliven-am-baum.webp',
     alt: 'Grüne Koroneiki-Oliven an einem Olivenbaum in der Mani',
   },
   {
-    title: 'Von Hand geerntet',
-    text: 'Wir ernten zum optimalen Zeitpunkt und bringen die Oliven auf kurzem Weg zur Mühle. So bleiben Frische, Aromen und wertvolle Inhaltsstoffe bestmöglich erhalten.',
+    text: 'Und davon braucht es viele. Bis zu 9kg Oliven für 1 Liter von unserem (super intensiven) Öl.',
     image: '02-ernte-und-transport.webp',
     alt: 'Oliven während der Ernte und des Transports zur Ölmühle',
   },
   {
-    title: 'Für deinen Tisch',
-    text: 'Das Ergebnis ist ein extra natives Olivenöl mit intensivem, frischem Geschmack – direkt von unserer Ernte zu dir nach Hause.',
+    text: 'Die jungen Oliven sind voller konzentriertem Geschmack. Perfekt als Finishing Öl und zum leichten braten.',
     image: '03-olivenoel-serviert.webp',
     alt: 'Serviertes Olivenöl auf einem gedeckten Tisch mit Essen',
   },
@@ -125,12 +121,6 @@ export default function ProductSection() {
                     index % 2 === 0 ? 'col-start-1' : 'col-start-3'
                   } ${textFirst ? 'md:order-1' : 'md:order-2'}`}
                 >
-                  <p className="mb-3 font-display text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-                    0{index + 1}
-                  </p>
-                  <h3 className="mb-4 font-serif text-3xl font-bold italic leading-tight text-white md:text-4xl">
-                    {step.title}
-                  </h3>
                   <p className="text-sm leading-relaxed text-white/75 sm:text-base md:text-lg">
                     {step.text}
                   </p>
@@ -144,15 +134,20 @@ export default function ProductSection() {
           data-product-reveal
           className="mx-auto mt-28 grid max-w-6xl items-center gap-10 md:mt-36 md:grid-cols-2 md:gap-14 lg:gap-20"
         >
-          <div className="aspect-square overflow-hidden rounded-[2rem] bg-white/5 shadow-[0_28px_80px_rgba(3,28,55,0.35)]">
-            <img
-              src={getSupabaseAssetUrl(PRODUCT_FOLDER, '04-bag-in-box.webp')}
-              alt="AKRIA Olivenöl als 5-Liter-Bag-in-Box"
-              loading="lazy"
-              decoding="async"
-              onLoad={refreshScrollTriggers}
-              className="h-full w-full object-cover"
-            />
+          <div className="space-y-5">
+            <div className="aspect-square overflow-hidden rounded-[2rem] bg-white/5 shadow-[0_28px_80px_rgba(3,28,55,0.35)]">
+              <img
+                src={getSupabaseAssetUrl(PRODUCT_FOLDER, '04-bag-in-box.webp')}
+                alt="AKRIA Olivenöl als 5-Liter-Bag-in-Box"
+                loading="lazy"
+                decoding="async"
+                onLoad={refreshScrollTriggers}
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div className="rounded-[1.5rem] border border-white/10 bg-[#07539a] p-6 text-sm leading-relaxed text-white/75 shadow-[0_20px_55px_rgba(3,28,55,0.25)] sm:p-8 sm:text-base">
+              Aktuell verkaufen wir unser Öl in 5l Gebinden. Bag-in-Box schützt das Öl vor Licht und Sauerstoff (seinen größten Feinden) um den Geschmack lange Zeit nach der Ernte zu erhalten.
+            </div>
           </div>
 
           <div className="rounded-[2rem] border border-white/10 bg-[#07539a] p-6 shadow-[0_24px_70px_rgba(3,28,55,0.28)] sm:p-8 lg:p-11">
