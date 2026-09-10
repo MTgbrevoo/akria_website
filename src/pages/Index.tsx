@@ -5,16 +5,10 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowDown, ArrowRight, ChevronDown, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import ProductSection from '../components/ProductSection'
+import { getSupabaseAssetUrl } from '../lib/supabaseAssets'
 
 gsap.registerPlugin(ScrollTrigger)
-
-/* ═══════════════════════════════════════════════════════════
-   SUPABASE ASSET HELPER
-   ═══════════════════════════════════════════════════════════ */
-const getSupabaseAssetUrl = (folder: string, filename: string) => {
-    const baseUrl = "https://khizcgryvscakouefofc.supabase.co/storage/v1/object/public/Website%20Assets";
-    return `${baseUrl}/${folder}/${encodeURIComponent(filename)}`;
-};
 
 /* ═══════════════════════════════════════════════════════════
    NOISE OVERLAY — SVG turbulence for texture
@@ -97,12 +91,41 @@ function FloatingCTA() {
         window.addEventListener('scroll', handleScroll, { passive: true });
         window.addEventListener('resize', updateDock);
 
+        const productSection = document.getElementById('unser-produkt');
+        const sectionObserver = productSection
+            ? new IntersectionObserver(([entry]) => {
+                const hidden = entry.isIntersecting;
+                const container = containerRef.current;
+                const button = scaleRef.current;
+                if (!container || !button) return;
+
+                container.style.pointerEvents = hidden ? 'none' : 'auto';
+                container.setAttribute('aria-hidden', hidden ? 'true' : 'false');
+                const link = container.querySelector('a');
+                if (link) {
+                    link.tabIndex = hidden ? -1 : 0;
+                    if (hidden && document.activeElement === link) link.blur();
+                }
+                gsap.to(button, {
+                    opacity: hidden ? 0 : 1,
+                    y: hidden ? 16 : 0,
+                    duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 0.35,
+                    ease: 'power2.out',
+                    overwrite: 'auto',
+                });
+            })
+            : null;
+
+        if (productSection && sectionObserver) sectionObserver.observe(productSection);
+
         // Initial positioning (after layout settles)
         const initTimeout = setTimeout(updateDock, 300);
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
             window.removeEventListener('resize', updateDock);
+            sectionObserver?.disconnect();
+            if (scaleRef.current) gsap.killTweensOf(scaleRef.current);
             if (timeoutRef.current) clearTimeout(timeoutRef.current);
             clearTimeout(initTimeout);
         };
@@ -111,8 +134,8 @@ function FloatingCTA() {
     return (
         <div ref={containerRef} className="fixed bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 z-[70] hero-cta">
             <div ref={scaleRef} className="will-change-transform">
-                <Link 
-                    to="/waitlist" 
+                <Link
+                    to="/waitlist"
                     className="btn-magnetic btn-accent text-base py-3 md:py-4 px-10 whitespace-nowrap shadow-[0_15px_45px_rgba(254,65,0,0.5)] border border-white/10"
                 >
                     Jetzt sichern
@@ -461,182 +484,6 @@ function ClaimSet1() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   CLAIM SET 2 — Falling Cards Stacking Effect
-   ═══════════════════════════════════════════════════════════ */
-function ClaimSet2() {
-    const sectionRef = useRef<HTMLElement>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    const cards = [
-        {
-            headline: "100% Koroneiki-Oliven",
-            desc: "Koroneiki-Oliven sind klein, wachsen gut im trockenen Klima der Mani und gehören zu den Sorten mit besonders vielen naturally vorkommenden Polyphenolen.",
-            bg: "bg-[#0c5eaf]",
-            illustration: getSupabaseAssetUrl('Illustrations', 'Olive.png')
-        },
-        {
-            headline: "Intensives Aroma",
-            desc: "Vergiss fades Supermarktöl, das nichts zum Kochen beiträgt. Unser Öl hat Charakter und macht ein trockenes Brot mit Salz zu einem Geschmackshighlight.",
-            bg: "bg-[#0c5eaf]",
-            illustration: getSupabaseAssetUrl('Illustrations', 'Aroma.png')
-        },
-        {
-            headline: "Reich an Gesundmachern",
-            desc: "Vollgepackt mit Polyphenolen, Vitamin E und Antioxidantien. Unser Olivenöl ist nicht nur lecker. Es tut dir auch richtig gut.",
-            bg: "bg-[#0c5eaf]",
-            illustration: getSupabaseAssetUrl('Illustrations', 'Herz.png')
-        }
-    ];
-
-    useEffect(() => {
-        const ctx = gsap.context(() => {
-            const tl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: sectionRef.current,
-                    start: "top top",
-                    end: `+=${cards.length * 100}%`,
-                    pin: true,
-                    scrub: 1,
-                    anticipatePin: 1
-                }
-            });
-
-            cards.forEach((_, i) => {
-                if (i === 0) {
-                    gsap.set(`.stack-card-0`, { zIndex: 10 });
-                    return;
-                }
-
-                tl.fromTo(`.stack-card-${i}`,
-                    {
-                        y: "100vh",
-                        rotateX: -15,
-                        scale: 1.1,
-                        zIndex: 10 + i
-                    },
-                    {
-                        y: "0vh",
-                        rotateX: 0,
-                        scale: 1,
-                        duration: 1.5,
-                        ease: "power2.inOut"
-                    },
-                    `card-${i}`
-                );
-
-                for (let j = 0; j < i; j++) {
-                    tl.to(`.stack-card-${j}`, {
-                        scale: 0.9 - (i - j) * 0.05,
-                        filter: `blur(${(i - j) * 5}px)`,
-                        opacity: 0.6 / (i - j),
-                        y: -20 * (i - j),
-                        duration: 1.5,
-                        ease: "power2.inOut"
-                    }, `card-${i}`);
-                }
-            });
-        }, sectionRef);
-
-        return () => ctx.revert();
-    }, []);
-
-    return (
-        <section ref={sectionRef} className="relative w-full h-[100svh] overflow-hidden bg-primary" id="qualitaet">
-            <div ref={containerRef} className="relative w-full h-full flex items-center justify-center">
-                {cards.map((card, i) => (
-                    <div
-                        key={i}
-                        className={`stack-card-${i} absolute w-full max-w-4xl px-4 md:px-0 flex items-center justify-center`}
-                        style={{ zIndex: 10 + i }}
-                    >
-                        <div className={`w-full ${card.bg} rounded-[2.5rem] p-8 md:p-12 lg:p-16 shadow-[-20px_40px_80px_rgba(0,0,0,0.4)] border border-white/10 flex flex-col md:flex-row gap-6 md:gap-12 lg:gap-16 items-center`}>
-                            <div className="flex-1 text-center md:text-left">
-                                <h2 className="font-serif italic font-900 text-3xl md:text-5xl lg:text-6xl text-white mb-4 md:mb-6 leading-tight">
-                                    {card.headline}
-                                </h2>
-                                <p className="text-white/70 text-sm md:text-base lg:text-lg font-light leading-relaxed mb-4">
-                                    {card.desc}
-                                </p>
-                            </div>
-                            <div className="w-32 h-32 md:w-56 md:h-56 lg:w-64 lg:h-64 relative">
-                                <div className="absolute inset-0 bg-accent/10 rounded-full blur-3xl animate-pulse" />
-                                <div className="relative z-10 w-full h-full flex items-center justify-center">
-                                    <img src={card.illustration} className="w-full h-auto object-contain max-h-full" alt="" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </section>
-    );
-}
-
-/* ═══════════════════════════════════════════════════════════
-   IMAGE GALLERY — Horizontal Scroll Carousel
-   ═══════════════════════════════════════════════════════════ */
-function ImageGallery() {
-    const galleryRef = useRef<HTMLElement>(null)
-
-    const images = [
-        getSupabaseAssetUrl('Vids_Images', 'DSCF4045.webp'),
-        getSupabaseAssetUrl('Vids_Images', 'DSCF4042.webp'),
-        getSupabaseAssetUrl('Vids_Images', 'DSCF4075.webp'),
-        getSupabaseAssetUrl('Vids_Images', 'DSCF4085.webp'),
-        getSupabaseAssetUrl('Vids_Images', 'DSCF4011.webp'),
-        getSupabaseAssetUrl('Vids_Images', 'DSCF3997 (1).webp'),
-        getSupabaseAssetUrl('Vids_Images', 'DSCF3954 (1).webp'),
-        getSupabaseAssetUrl('Vids_Images', 'DJI_0340.webp'),
-        getSupabaseAssetUrl('Vids_Images', 'DJI_0356.webp')
-    ]
-
-    useEffect(() => {
-        const ctx = gsap.context(() => {
-            gsap.fromTo(galleryRef.current,
-                { y: 50, opacity: 0 },
-                {
-                    y: 0,
-                    opacity: 1,
-                    duration: 1,
-                    ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: galleryRef.current,
-                        start: "top 80%",
-                        toggleActions: "play none none reverse"
-                    }
-                }
-            )
-        }, galleryRef)
-        return () => ctx.revert()
-    }, [])
-
-    return (
-        <section ref={galleryRef} className="py-12 md:py-24 bg-primary overflow-hidden">
-            <div className="w-full">
-                <div
-                    className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-6 px-6 md:px-12 lg:px-16 pb-8 scrollbar-hide"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                >
-                    {images.map((src, idx) => (
-                        <div
-                            key={idx}
-                            className="flex-none w-[85vw] sm:w-[60vw] md:w-[45vw] lg:w-[30vw] aspect-[4/3] snap-center"
-                        >
-                            <img
-                                src={src}
-                                alt={`Gallery image ${idx + 1}`}
-                                className="w-full h-full object-cover rounded-2xl md:rounded-3xl shadow-xl"
-                                loading="lazy"
-                            />
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </section>
-    )
-}
-
-/* ═══════════════════════════════════════════════════════════
    WAITLIST CTA — Unified Full-Bleed Design
    ═══════════════════════════════════════════════════════════ */
 function WaitlistSection() {
@@ -832,7 +679,7 @@ function Footer({ onShowImpressum }: { onShowImpressum: () => void }) {
                         <div className="flex flex-col gap-2">
                             <a href="#hero" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Start</a>
                             <a href="#herkunft" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Herkunft</a>
-                            <a href="#qualitaet" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Qualität</a>
+                            <a href="#unser-produkt" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Unser Produkt</a>
                             <Link to="/waitlist" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Warteliste</Link>
                         </div>
                     </div>
@@ -956,8 +803,7 @@ export default function Index() {
             <main>
                 <Hero />
                 <ClaimSet1 />
-                <ClaimSet2 />
-                <ImageGallery />
+                <ProductSection />
                 <WaitlistSection />
             </main>
             <Footer onShowImpressum={() => setShowImpressum(true)} />
