@@ -300,7 +300,7 @@ function ClaimSet1() {
         {
             phase: 'HERBST 2026',
             title: 'Vorbestellung öffnet',
-            desc: 'Du erhältst eine E-Mail von uns und kannst deine gewünschte Menge verbindlich vorbestellen. Voraussichtlich 17–19 € pro Liter, abhängig von der Ernte.',
+            desc: 'Du erhältst eine Email von uns und kannst dann verbindlich vorbestellen. Der Preis beträgt 85€ für 5l.',
         },
         {
             phase: 'FRÜHJAHR 2027',
@@ -453,7 +453,7 @@ function ClaimSet1() {
                                 {i < claims.length - 1 && (
                                     <div className="relative z-10 flex h-8 items-center justify-center md:h-10">
                                         <ArrowDown
-                                            className={`claim-arrow-${i} h-6 w-6 text-accent md:h-7 md:w-7`}
+                                            className={`claim-arrow-${i} h-6 w-6 text-white/55 md:h-7 md:w-7`}
                                             strokeWidth={2.5}
                                             aria-hidden="true"
                                         />
