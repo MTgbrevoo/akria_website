@@ -294,7 +294,9 @@ function ClaimSet1() {
         {
             phase: 'JETZT',
             title: 'Zugang zur Ernte 26/27 sichern',
-            desc: 'Wir ernten nur einmal im Jahr und informieren dich als Erstes, sobald die Vorbestellung für diese Saison startet.',
+            descBefore: 'Wir ernten nur einmal im Jahr. ',
+            linkText: 'Trage dich jetzt ein',
+            descAfter: ' und wir informieren dich, sobald die Vorbestellungen für die Saison starten.',
         },
         {
             phase: 'HERBST 2026',
@@ -388,19 +390,17 @@ function ClaimSet1() {
                 </h2>
 
                 <div className="grid flex-1 grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
-                    <ol className="glass-card order-1 p-6 md:p-8" aria-label="Ablauf von der Anmeldung bis zur Lieferung">
+                    <ol className="glass-card relative order-1 overflow-hidden p-6 md:p-8" aria-label="Ablauf von der Anmeldung bis zur Lieferung">
+                        <span className="absolute inset-y-0 left-8 w-px bg-white/20 md:left-[2.625rem]" aria-hidden="true" />
                         {claims.map((claim, i) => (
                             <li
                                 key={claim.phase}
-                                className={`claim-step claim-step-${i} grid grid-cols-[1rem_1fr] gap-4 md:grid-cols-[1.25rem_1fr] md:gap-5 ${i > 0 ? 'border-t border-white/10 pt-7' : ''} ${i < claims.length - 1 ? 'pb-7' : ''}`}
+                                className={`claim-step claim-step-${i} relative grid grid-cols-[1rem_1fr] gap-4 md:grid-cols-[1.25rem_1fr] md:gap-5 ${i > 0 ? 'pt-7' : ''} ${i < claims.length - 1 ? 'pb-7' : ''}`}
                             >
-                                <div className="relative flex justify-center" aria-hidden="true">
-                                    <span className="mt-1.5 h-2.5 w-2.5 rounded-full border border-white/60 bg-white/15" />
-                                    {i < claims.length - 1 && (
-                                        <span className="absolute -bottom-7 top-4 w-px bg-white/20" />
-                                    )}
+                                <div className="relative z-10 flex justify-center" aria-hidden="true">
+                                    <span className="mt-1.5 h-2.5 w-2.5 rounded-full border-2 border-accent bg-accent shadow-[0_0_0_4px_rgba(12,94,175,0.8)]" />
                                 </div>
-                                <div>
+                                <div className={i > 0 ? '-mt-7 border-t border-white/10 pt-7' : ''}>
                                     <p className="mb-2 font-display text-xs font-semibold uppercase tracking-[0.16em] text-white/55">
                                         {claim.phase}
                                     </p>
@@ -408,7 +408,18 @@ function ClaimSet1() {
                                         {claim.title}
                                     </h3>
                                     <p className="mt-2 text-sm leading-relaxed text-white/70 md:text-base">
-                                        {claim.desc}
+                                        {claim.linkText ? (
+                                            <>
+                                                {claim.descBefore}
+                                                <Link
+                                                    to="/waitlist"
+                                                    className="font-semibold text-accent underline decoration-accent/50 underline-offset-4 transition-colors hover:text-white focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                                                >
+                                                    {claim.linkText}
+                                                </Link>
+                                                {claim.descAfter}
+                                            </>
+                                        ) : claim.desc}
                                     </p>
                                 </div>
                             </li>
