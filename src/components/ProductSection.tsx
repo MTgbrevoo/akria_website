@@ -151,16 +151,6 @@ export default function ProductSection() {
           </div>
 
           <div className="rounded-[2rem] border border-white/10 bg-[#07539a] p-6 shadow-[0_24px_70px_rgba(3,28,55,0.28)] sm:p-8 lg:p-11">
-            <p className="mb-3 font-display text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-              Die Ernte 2026/27
-            </p>
-            <h3 className="mb-5 font-serif text-3xl font-bold italic leading-tight text-white sm:text-4xl lg:text-5xl">
-              5 Liter pures Griechenland
-            </h3>
-            <p className="mb-8 text-base leading-relaxed text-white/75 lg:text-lg">
-              Intensiv, fruchtig und frisch: Unser extra natives Olivenöl kommt in einer Bag-in-Box zu dir, die das Öl zuverlässig vor Licht und Sauerstoff schützt.
-            </p>
-
             <div className="mb-8 flex flex-wrap items-end justify-between gap-5 border-y border-white/10 py-6">
               <div aria-live="polite">
                 <p className="font-display text-4xl font-bold text-white sm:text-5xl">
