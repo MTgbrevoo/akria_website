@@ -4,7 +4,7 @@ const WEBSITE_ASSETS_BUCKET = 'Website Assets'
 const WEBSITE_ASSETS_BASE_URL =
   'https://khizcgryvscakouefofc.supabase.co/storage/v1/object/public/Website%20Assets'
 const CAROUSEL_FOLDER = 'Karussell'
-const CAROUSEL_FILE_PATTERN = /^karussell_(\d+)\.webp$/i
+const CAROUSEL_FILE_PATTERN = /^(\d+)\.webp$/i
 const STORAGE_PAGE_SIZE = 100
 
 export type CarouselAsset = {
