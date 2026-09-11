@@ -18,17 +18,17 @@ const PRODUCT_FOLDER = 'Unser-Produkt'
 const storySteps: StoryStep[] = [
   {
     text: 'Die Oliven werden ganz am Anfang der Saison geerntet. Hier sind sie klein, grün und hart wie Stein.',
-    image: '01-oliven-am-baum.webp',
+    image: 'unserprodukt_01.webp',
     alt: 'Grüne Koroneiki-Oliven an einem Olivenbaum in der Mani',
   },
   {
     text: 'Und davon braucht es viele. Bis zu 9kg Oliven für 1 Liter von unserem (super intensiven) Öl.',
-    image: '02-ernte-und-transport.webp',
+    image: 'unserprodukt_02.webp',
     alt: 'Oliven während der Ernte und des Transports zur Ölmühle',
   },
   {
     text: 'Die jungen Oliven sind voller konzentriertem Geschmack. Perfekt als Finishing Öl und zum leichten braten.',
-    image: '03-olivenoel-serviert.webp',
+    image: 'unserprodukt_03.webp',
     alt: 'Serviertes Olivenöl auf einem gedeckten Tisch mit Essen',
   },
 ]
@@ -137,7 +137,7 @@ export default function ProductSection() {
           <div className="space-y-5">
             <div className="aspect-square overflow-hidden rounded-[2rem] bg-white/5 shadow-[0_28px_80px_rgba(3,28,55,0.35)]">
               <img
-                src={getSupabaseAssetUrl(PRODUCT_FOLDER, '04-bag-in-box.webp')}
+                src={getSupabaseAssetUrl(PRODUCT_FOLDER, 'unserprodukt_04.webp')}
                 alt="AKRIA Olivenöl als 5-Liter-Bag-in-Box"
                 loading="lazy"
                 decoding="async"
@@ -214,7 +214,7 @@ export default function ProductSection() {
           <div className="grid overflow-hidden rounded-[2rem] border border-white/10 bg-[#07539a] shadow-[0_28px_80px_rgba(3,28,55,0.3)] md:grid-cols-[1.15fr_0.85fr] md:items-stretch">
             <div className="aspect-[3/2] overflow-hidden md:aspect-auto md:min-h-[430px]">
               <img
-                src={getSupabaseAssetUrl(PRODUCT_FOLDER, '05-zeno-und-denis.webp')}
+                src={getSupabaseAssetUrl(PRODUCT_FOLDER, 'unserprodukt_05.webp')}
                 alt="Zeno Meyer und Denis Tiffert, die Gründer von AKRIA"
                 loading="lazy"
                 decoding="async"
