@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { ArrowRight, Check } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import AboutCarousel from './AboutCarousel'
 import { getSupabaseAssetUrl } from '../lib/supabaseAssets'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -74,7 +75,7 @@ export default function ProductSection() {
     }
   }, [])
 
-  const refreshScrollTriggers = () => ScrollTrigger.refresh()
+  const refreshScrollTriggers = useCallback(() => ScrollTrigger.refresh(), [])
 
   return (
     <section
@@ -242,6 +243,8 @@ export default function ProductSection() {
               </div>
             </div>
           </div>
+
+          <AboutCarousel onLayoutChange={refreshScrollTriggers} />
         </div>
       </div>
     </section>
