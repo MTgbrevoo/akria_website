@@ -233,18 +233,21 @@ export default function ProductSection() {
               />
             </div>
             <div className="flex flex-col justify-center p-7 sm:p-9 lg:p-12">
-              <p className="mb-3 font-display text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-                Zeno &amp; Denis
-              </p>
-              <h4 className="mb-5 font-serif text-3xl font-bold italic leading-tight text-white lg:text-4xl">
-                Olivenöl, das Herkunft hat
-              </h4>
               <div className="space-y-4 text-sm leading-relaxed text-white/75 sm:text-base lg:text-lg">
                 <p>
-                  Wir sind Zeno und Denis. Mit AKRIA bringen wir das Olivenöl aus unserer zweiten Heimat in der Mani direkt zu dir.
+                  Wir sind Zeno &amp; Denis, und wir machen richtig gutes Olivenöl.
                 </p>
                 <p>
-                  Wir kennen die Menschen, die Bäume und jeden Schritt von der Ernte bis zur Abfüllung. Darum stehen wir für ehrliche Qualität, kurze Wege und vollen Geschmack.
+                  Vor 15 Jahren sind wir zum ersten Mal in die Region Mani in Griechenland gereist und seitdem jedes Jahr zurückgekommen. Bei Ouzo in der Taverne wurden Späße gemacht, jetzt haben wir den Salat (aber mit gutem Olivenöl).
+                </p>
+                <p>
+                  Nun klappern wir jedes Jahr zur Ernte die lokalen Bauern ab und das beste Öl bringen wir zu unseren Freunden nach Hause.
+                </p>
+                <p>
+                  Unser Ziel: Menschen bei gutem Essen zusammenzubringen
+                </p>
+                <p>
+                  Yamas!
                 </p>
               </div>
             </div>
