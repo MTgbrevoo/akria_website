@@ -135,7 +135,7 @@ function FloatingCTA() {
         <div ref={containerRef} className="fixed bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 z-[70] hero-cta">
             <div ref={scaleRef} className="will-change-transform">
                 <Link
-                    to="/waitlist"
+                    to="/bestellen"
                     className="btn-magnetic btn-accent text-base py-3 md:py-4 px-10 whitespace-nowrap shadow-[0_15px_45px_rgba(254,65,0,0.5)] border border-white/10"
                 >
                     Jetzt sichern
@@ -293,15 +293,15 @@ function ClaimSet1() {
     const claims = [
         {
             phase: 'JETZT',
-            title: 'Zugang zur Ernte 26/27 sichern',
+            title: 'Olivenöl der Ernte 26/27 bestellen',
             descBefore: 'Wir ernten nur einmal im Jahr. ',
-            linkText: 'Trage dich jetzt ein',
-            descAfter: ' und wir informieren dich, sobald die Vorbestellungen für die Saison starten.',
+            linkText: 'Bestelle jetzt',
+            descAfter: ' deine 5-Liter-Bag-in-Box. Bezahlt wird bei Erhalt.',
         },
         {
-            phase: 'HERBST 2026',
-            title: 'Vorbestellung öffnet',
-            desc: 'Du erhältst eine Email von uns und kannst dann verbindlich vorbestellen. Der Preis beträgt 85€ für 5l.',
+            phase: 'DEZEMBER / JANUAR',
+            title: 'Abholung oder Versand?',
+            desc: 'Wir melden uns per E-Mail, damit du zwischen kostenlosem Abhol-Event und Versand auf deine Kosten wählen kannst.',
         },
         {
             phase: 'FRÜHJAHR 2027',
@@ -412,7 +412,7 @@ function ClaimSet1() {
                                             <>
                                                 {claim.descBefore}
                                                 <Link
-                                                    to="/waitlist"
+                                                    to="/bestellen"
                                                     className="font-semibold text-accent underline decoration-accent/50 underline-offset-4 transition-colors hover:text-white focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                                                 >
                                                     {claim.linkText}
@@ -513,10 +513,10 @@ function WaitlistSection() {
                             Ernte 2026/27
                         </p>
                         <h2 className="font-serif italic font-bold text-4xl lg:text-5xl xl:text-6xl text-white mb-6 leading-tight drop-shadow-2xl">
-                            Zugang zur Ernte 26/27 sichern
+                            Olivenöl der Ernte 26/27 bestellen
                         </h2>
                         <p className="text-white/80 text-base lg:text-lg max-w-md mx-auto leading-relaxed mb-8 font-light drop-shadow-lg">
-                            Deine Anmeldung ist unverbindlich und reserviert keine Menge. Wir informieren dich im Herbst 2026, sobald die Vorbestellung startet.
+                            Bestelle deine gewünschte Menge. Du erhältst eine Eingangsbestätigung per E-Mail; die Lieferzusage folgt nach unserer Prüfung. Bezahlt wird bei Erhalt.
                         </p>
 
                         {/* Slot where the persistent floating CTA docks into place */}
@@ -644,7 +644,7 @@ function Footer({ onShowImpressum }: { onShowImpressum: () => void }) {
                             <a href="#hero" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Start</a>
                             <a href="#herkunft" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Herkunft</a>
                             <a href="#unser-produkt" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Unser Produkt</a>
-                            <Link to="/waitlist" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Warteliste</Link>
+                            <Link to="/bestellen" className="text-white/40 hover:text-white text-sm hover-lift transition-colors">Bestellen</Link>
                         </div>
                     </div>
 

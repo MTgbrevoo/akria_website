@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { ArrowRight, Check } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import AboutCarousel from './AboutCarousel'
+import { useCheckoutConfig, formatMoney, formatCutoff } from '../lib/orders'
 import { getSupabaseAssetUrl } from '../lib/supabaseAssets'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -43,7 +44,7 @@ const productDetails = [
 
 export default function ProductSection() {
   const sectionRef = useRef<HTMLElement>(null)
-  const [isPreorder, setIsPreorder] = useState(true)
+  const config = useCheckoutConfig()
 
   useEffect(() => {
     const section = sectionRef.current
@@ -152,38 +153,10 @@ export default function ProductSection() {
           </div>
 
           <div className="rounded-[2rem] border border-white/10 bg-[#07539a] p-6 shadow-[0_24px_70px_rgba(3,28,55,0.28)] sm:p-8 lg:p-11">
-            <div className="mb-8 flex flex-wrap items-end justify-between gap-5 border-y border-white/10 py-6">
-              <div aria-live="polite">
-                <p className="font-display text-4xl font-bold text-white sm:text-5xl">
-                  {isPreorder ? '85 €*' : '95 €'}
-                </p>
-                <p className={`mt-1 text-sm text-white/60 ${isPreorder ? 'visible' : 'invisible'}`}>
-                  * Vorbestellung
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <span id="preorder-label" className="text-sm font-medium text-white/85">
-                  Vorbestellung
-                </span>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={isPreorder}
-                  aria-labelledby="preorder-label"
-                  onClick={() => setIsPreorder((current) => !current)}
-                  className={`relative h-8 w-14 rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-4 focus-visible:ring-offset-[#07539a] ${
-                    isPreorder ? 'border-accent bg-accent' : 'border-white/30 bg-white/10'
-                  }`}
-                >
-                  <span
-                    aria-hidden="true"
-                    className={`absolute inset-y-0 left-1 my-auto h-6 w-6 rounded-full bg-white shadow-md transition-transform ${
-                      isPreorder ? 'translate-x-5' : 'translate-x-0'
-                    }`}
-                  />
-                </button>
-              </div>
+            <div className="mb-8 border-y border-white/10 py-6" aria-live="polite">
+              <p className="font-display text-4xl font-bold text-white sm:text-5xl">{config ? formatMoney(config.unit_price_cents) : 'Preis im Bestellformular'}</p>
+              {config && <p className="mt-3 text-sm text-white/65">{formatMoney(config.preorder_price_cents)} bis einschließlich {formatCutoff(config.preorder_until)}, danach {formatMoney(config.regular_price_cents)} je 5-Liter-Bag-in-Box.</p>}
+              <p className="mt-2 text-sm text-white/65">Zahlung bei Erhalt. Versand auf Kosten des Empfängers oder kostenlose Abholung.</p>
             </div>
 
             <h4 className="mb-4 font-display text-sm font-semibold uppercase tracking-[0.16em] text-white">
@@ -199,10 +172,10 @@ export default function ProductSection() {
             </ul>
 
             <Link
-              to="/waitlist"
+              to="/bestellen"
               className="btn-magnetic btn-accent w-full px-5 py-4 text-center shadow-[0_12px_35px_rgba(254,65,0,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
-              Zur Ernte 26/27 anmelden
+              Jetzt bestellen
               <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
             </Link>
           </div>

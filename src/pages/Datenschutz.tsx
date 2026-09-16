@@ -7,7 +7,7 @@ const sections = [
     ['allgemeines', 'Allgemeine Hinweise'],
     ['hosting', 'Hosting durch Vercel'],
     ['supabase', 'Supabase als Backend'],
-    ['warteliste', 'Warteliste und E-Mails'],
+    ['warteliste', 'Bestellungen und E-Mails'],
     ['resend', 'Versand über Resend'],
     ['herkunftsparameter', 'Herkunftsparameter'],
     ['speicher', 'Cookies und lokaler Speicher'],
@@ -59,7 +59,7 @@ export default function Datenschutz() {
         }
 
         document.title = 'Datenschutzerklärung | AKRIA';
-        description.content = 'Datenschutzerklärung von AKRIA zur Website, Warteliste, E-Mail-Kommunikation und den eingesetzten Dienstleistern.';
+        description.content = 'Datenschutzerklärung von AKRIA zur Website, Bestellabwicklung, E-Mail-Kommunikation und den eingesetzten Dienstleistern.';
 
         return () => {
             document.title = previousTitle;
@@ -110,7 +110,7 @@ export default function Datenschutz() {
                         </h1>
                         <p className="mt-5 text-sm font-medium uppercase tracking-[0.16em] text-white/50">Stand: März 2026</p>
                         <p className="mt-8 max-w-3xl text-base font-light leading-8 text-white/70 md:text-lg">
-                            Hier informieren wir dich darüber, welche personenbezogenen Daten beim Besuch unserer Website und bei der Anmeldung zur AKRIA-Warteliste verarbeitet werden.
+                            Hier informieren wir dich darüber, welche personenbezogenen Daten beim Besuch unserer Website und bei Bestellungen und der Anmeldung zu AKRIA-Neuigkeiten verarbeitet werden.
                         </p>
                     </div>
                 </div>
@@ -159,7 +159,7 @@ export default function Datenschutz() {
 
                         <LegalSection id="allgemeines" title="2. Allgemeine Hinweise zur Datenverarbeitung">
                             <p>
-                                Wir verarbeiten personenbezogene Daten nur, soweit dies für die Bereitstellung dieser Website, die technische Sicherheit, die Bearbeitung deiner Wartelistenanmeldung und die gewünschte E-Mail-Kommunikation erforderlich ist. Je nach Verarbeitung stützen wir uns auf deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO), die Durchführung vorvertraglicher Maßnahmen (Art. 6 Abs. 1 lit. b DSGVO), gesetzliche Pflichten (Art. 6 Abs. 1 lit. c DSGVO) oder unsere berechtigten Interessen an einem sicheren und wirtschaftlichen Webangebot sowie der Zuordnung eigener Kampagnen (Art. 6 Abs. 1 lit. f DSGVO).
+                                Wir verarbeiten personenbezogene Daten nur, soweit dies für die Bereitstellung dieser Website, die technische Sicherheit, die Bearbeitung deiner Bestellung und Newsletter-Anmeldung und die gewünschte E-Mail-Kommunikation erforderlich ist. Je nach Verarbeitung stützen wir uns auf deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO), die Durchführung vorvertraglicher Maßnahmen (Art. 6 Abs. 1 lit. b DSGVO), gesetzliche Pflichten (Art. 6 Abs. 1 lit. c DSGVO) oder unsere berechtigten Interessen an einem sicheren und wirtschaftlichen Webangebot sowie der Zuordnung eigener Kampagnen (Art. 6 Abs. 1 lit. f DSGVO).
                             </p>
                             <p>
                                 Wir treffen angemessene technische und organisatorische Sicherheitsmaßnahmen. Die Datenübertragung zwischen deinem Browser und der Website erfolgt verschlüsselt über HTTPS/TLS. Empfänger erhalten Daten nur, soweit dies für den jeweiligen Zweck erforderlich ist oder eine gesetzliche Verpflichtung besteht.
@@ -185,11 +185,11 @@ export default function Datenschutz() {
                             </p>
                             <h3 className="pt-2 font-semibold text-white">Authentifizierung und Double-Opt-in</h3>
                             <p>
-                                Bei der Anmeldung übermittelt Supabase Auth die E-Mail-Adresse und die im Formular angegebenen Metadaten. Supabase erzeugt und verarbeitet den Bestätigungslink, technische Authentifizierungsdaten, Zeitstempel und Sitzungsinformationen. Erst nach dem Aufruf des Bestätigungslinks wird die Anmeldung in der Datenbank abgeschlossen. Dieses Double-Opt-in dient der Verifizierung der E-Mail-Adresse und dem Nachweis der Einwilligung.
+                                Bestellungen sind ohne Benutzerkonto und ohne Bestätigungsklick möglich. Für freiwillige AKRIA-Neuigkeiten verwenden wir einen separaten Double-Opt-in-Link. Dabei speichern wir Anmeldung, Einwilligungstext und Bestätigung. Bereits versendete Links aus der früheren Warteliste können über Supabase Auth verarbeitet werden; dabei fallen Authentifizierungsdaten und Sitzungsinformationen an.
                             </p>
                             <h3 className="pt-2 font-semibold text-white">Datenbank und Storage</h3>
                             <p>
-                                In der Datenbank werden die bestätigten Wartelistendaten gespeichert. Über Supabase Storage stellen wir außerdem Bilder und Videos der Website bereit. Dabei entstehen die unter Abschnitt 10 beschriebenen technischen Abrufdaten. Die Verarbeitung erfolgt für die Warteliste auf Grundlage deiner Einwilligung und für den sicheren technischen Betrieb auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO.
+                                In der Datenbank werden Kontakte, Bestellungen, Newsletter-Einwilligungen und Versandaufträge gespeichert. Jede Bestellung enthält die bei ihrer Aufgabe angegebenen Namen, Adressdaten und Preise. Über Supabase Storage stellen wir außerdem Bilder und Videos der Website bereit. Dabei entstehen die unter Abschnitt 10 beschriebenen technischen Abrufdaten. Die Verarbeitung erfolgt zur Bestellabwicklung auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO, für den Newsletter auf Grundlage deiner Einwilligung und für den sicheren technischen Betrieb auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO.
                             </p>
                             <p>
                                 Mit Supabase ist eine Auftragsverarbeitung nach Art. 28 DSGVO vorzusehen. Auch bei einer EU-Projektregion können Zugriffe des Anbieters aus Drittländern nicht vollständig ausgeschlossen werden. Weitere Informationen enthält die{' '}
@@ -197,21 +197,12 @@ export default function Datenschutz() {
                             </p>
                         </LegalSection>
 
-                        <LegalSection id="warteliste" title="5. Warteliste und E-Mail-Kommunikation">
-                            <p>
-                                Wenn du dich für die Warteliste anmeldest, verarbeiten wir deinen <strong className="font-semibold text-white">Vornamen, Nachnamen, deine E-Mail-Adresse, den Einwilligungsstatus und einen Akquisitions- beziehungsweise Quellcode</strong>. Hinzu kommen technisch erforderliche Authentifizierungs- und Versanddaten sowie Zeitstempel, die dem Nachweis des Anmeldevorgangs dienen können.
-                            </p>
-                            <p>
-                                Wir verwenden diese Daten, um deine E-Mail-Adresse im Double-Opt-in-Verfahren zu bestätigen, dich über Ernte- und Reservierungsmöglichkeiten zu informieren und dir weitere für AKRIA relevante Informationen zu senden. Rechtsgrundlage ist deine Einwilligung nach Art. 6 Abs. 1 lit. a DSGVO.
-                            </p>
-                            <p>
-                                Du kannst deine Einwilligung jederzeit mit Wirkung für die Zukunft per E-Mail an{' '}
-                                <a href="mailto:meyertiffertgbr@gmail.com" className="text-accent underline decoration-accent/40 underline-offset-4 hover:text-white focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">meyertiffertgbr@gmail.com</a>{' '}
-                                widerrufen. Ab dem Widerruf senden wir keine entsprechenden Informationen mehr und löschen die aktiven Wartelistendaten, sofern keine andere Rechtsgrundlage oder gesetzliche Pflicht entgegensteht. Ein Widerruf berührt die Rechtmäßigkeit der bis dahin erfolgten Verarbeitung nicht.
-                            </p>
-                            <p>
-                                Aktive Wartelisten- und Kommunikationsdaten speichern wir bis zum Widerruf oder bis der Zweck entfällt. Soweit dies zur Verteidigung gegen Rechtsansprüche erforderlich ist, können minimale Nachweise der Einwilligung anschließend gesperrt bis zum Ablauf der gesetzlichen Nachweis- und Verjährungsfristen aufbewahrt werden.
-                            </p>
+                        <LegalSection id="warteliste" title="5. Bestellungen und E-Mail-Kommunikation">
+                            <p>Bei einer Bestellung verarbeiten wir Vorname, Nachname, E-Mail-Adresse, Straße, Hausnummer, PLZ, Ort, Land, Stückzahl, Preis, Bestellnummer, Zeitpunkt sowie gegebenenfalls den Akquisitionscode. Wir benötigen diese Daten zur Bearbeitung deiner Bestellung, zur Eingangsbestätigung und zur späteren Abstimmung von Lieferung und Zahlung (Art. 6 Abs. 1 lit. b DSGVO). Eine Bestellung meldet dich nicht automatisch zum Newsletter an.</p>
+                            <p>Mit deiner separaten freiwilligen Einwilligung informieren wir dich per E-Mail über kommende Ernten und neue AKRIA-Produkte (Art. 6 Abs. 1 lit. a DSGVO). Neue Anmeldungen werden erst durch den Double-Opt-in-Link bestätigt. Wir speichern den Einwilligungstext beziehungsweise seine Version sowie Anmelde-, Bestätigungs- und gegebenenfalls Abmeldezeitpunkte.</p>
+                            <p>Du kannst deine Newsletter-Einwilligung jederzeit über den Abmeldelink oder per E-Mail an <a href="mailto:meyertiffertgbr@gmail.com" className="text-accent underline">meyertiffertgbr@gmail.com</a> widerrufen. Deine Bestellungen und dafür erforderliche Kommunikation bleiben davon unberührt. Der Widerruf berührt die Rechtmäßigkeit der vorherigen Verarbeitung nicht.</p>
+                            <p>Bestelldaten speichern wir für die Abwicklung und anschließend soweit gesetzliche Aufbewahrungspflichten oder die Geltendmachung beziehungsweise Abwehr von Ansprüchen dies erfordern. Newsletterdaten speichern wir bis zum Widerruf oder Wegfall des Zwecks; erforderliche Einwilligungsnachweise können darüber hinaus eingeschränkt aufbewahrt werden.</p>
+                            <p>Zum Schutz vor missbräuchlichen Bestellungen und Mailversand verarbeiten wir kurzzeitig einen mit einem geheimen Wert gehashten Netzwerkbezug und Anfragezähler. Offene Bestellvorgänge und die letzte Bestätigung werden im sessionStorage deines Browsers gespeichert, damit Wiederholungen keine doppelten Bestellungen auslösen. Diese Speicherung dient der von dir angeforderten Bestellfunktion und endet üblicherweise beim Schließen des Tabs. Bei einer weiteren Bestellung wird die vorherige Bestätigung entfernt.</p>
                         </LegalSection>
 
                         <LegalSection id="resend" title="6. Versanddienst Resend">
@@ -229,10 +220,10 @@ export default function Datenschutz() {
 
                         <LegalSection id="herkunftsparameter" title="7. Herkunfts- und Akquisitionsparameter">
                             <p>
-                                Enthält die aufgerufene Adresse den Parameter <code className="rounded bg-white/10 px-1.5 py-0.5 text-white">src</code>, speichern wir dessen Wert während der aktuellen Browser-Sitzung im <code className="rounded bg-white/10 px-1.5 py-0.5 text-white">sessionStorage</code>. Bei einer Wartelistenanmeldung wird dieser Quellcode gemeinsam mit der Anmeldung gespeichert. Ohne Parameter wird der allgemeine Wert „website“ verwendet.
+                                Enthält die aufgerufene Adresse den Parameter <code className="rounded bg-white/10 px-1.5 py-0.5 text-white">src</code>, speichern wir dessen Wert während der aktuellen Browser-Sitzung im <code className="rounded bg-white/10 px-1.5 py-0.5 text-white">sessionStorage</code>. Bei einer Bestellung wird dieser Quellcode gemeinsam mit der Bestellung gespeichert. Ohne Parameter wird der allgemeine Wert „website“ verwendet.
                             </p>
                             <p>
-                                Zweck ist die Zuordnung eigener Kampagnen und Zugangswege. Es findet dadurch kein anbieter- oder websiteübergreifendes Tracking statt. Rechtsgrundlage ist unser berechtigtes Interesse an der Bewertung eigener Kampagnen nach Art. 6 Abs. 1 lit. f DSGVO. Der Wert im sessionStorage wird in der Regel beim Schließen des Tabs beziehungsweise der Browsersitzung gelöscht; der mit einer Anmeldung übernommene Wert wird so lange wie die Wartelistendaten gespeichert.
+                                Zweck ist die Zuordnung eigener Kampagnen und Zugangswege. Es findet dadurch kein anbieter- oder websiteübergreifendes Tracking statt. Rechtsgrundlage ist unser berechtigtes Interesse an der Bewertung eigener Kampagnen nach Art. 6 Abs. 1 lit. f DSGVO. Der Wert im sessionStorage wird in der Regel beim Schließen des Tabs beziehungsweise der Browsersitzung gelöscht; der mit einer Bestellung übernommene Wert wird im Rahmen der Bestelldaten gespeichert.
                             </p>
                         </LegalSection>
 
@@ -296,7 +287,7 @@ export default function Datenschutz() {
 
                         <LegalSection id="bereitstellung" title="13. Pflicht zur Bereitstellung und automatisierte Entscheidungen">
                             <p>
-                                Die Nutzung der frei zugänglichen Website ist grundsätzlich ohne Angabe von Wartelistendaten möglich. Für die Aufnahme in die Warteliste benötigen wir Vorname, Nachname, E-Mail-Adresse und deine Einwilligung. Ohne diese Angaben können wir die Anmeldung und die gewünschte Kommunikation nicht durchführen. Eine gesetzliche Pflicht zur Bereitstellung dieser Daten besteht nicht.
+                                Die Nutzung der frei zugänglichen Website ist ohne Angabe von Bestelldaten möglich. Für eine Bestellung benötigen wir die als Pflichtfelder gekennzeichneten Kontakt-, Adress- und Mengenangaben. Ohne diese können wir deine Bestellung nicht bearbeiten. Die Newsletter-Anmeldung ist freiwillig und keine Voraussetzung einer Bestellung.
                             </p>
                             <p>
                                 Eine automatisierte Entscheidungsfindung einschließlich Profiling im Sinne des Art. 22 DSGVO findet nicht statt.

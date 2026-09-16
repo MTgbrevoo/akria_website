@@ -1,7 +1,8 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import Index from './pages/Index';
-import Waitlist from './pages/Waitlist';
+import Order from './pages/Order';
+import Newsletter from './pages/Newsletter';
 import Success from './pages/Success';
 import Datenschutz from './pages/Datenschutz';
 
@@ -18,7 +19,7 @@ function TrackingInitializer() {
     const urlParams = new URLSearchParams(search);
     const source = urlParams.get('src');
     if (source) {
-      sessionStorage.setItem('acquisition_source_code', source);
+      try { sessionStorage.setItem('acquisition_source_code', source.slice(0, 100)); } catch { /* optional attribution */ }
     }
   }, [search, hash]);
 
@@ -42,7 +43,9 @@ function App() {
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Index />} />
-        <Route path="/waitlist" element={<Waitlist />} />
+        <Route path="/bestellen" element={<Order />} />
+        <Route path="/waitlist" element={<Navigate to="/bestellen" replace />} />
+        <Route path="/newsletter" element={<Newsletter />} />
         <Route path="/success" element={<Success />} />
         <Route path="/datenschutz" element={<Datenschutz />} />
       </Routes>

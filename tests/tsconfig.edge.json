@@ -1,0 +1,1 @@
+{"compilerOptions":{"target":"ES2022","module":"ESNext","moduleResolution":"Bundler","lib":["ESNext","DOM"],"strict":true,"skipLibCheck":true,"noEmit":true},"files":["edge-globals.d.ts","../supabase/functions/orders-api/index.ts"]}

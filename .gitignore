@@ -27,3 +27,13 @@ dist-ssr
 Image_and_video_assets/
 public/assets/olive-trees.mp4
 .dyad/
+
+# Browser test output
+test-results/
+playwright-report/
+
+# Local environment and secrets (already tracked files are unaffected)
+.env
+.env.*
+*.env
+!.env.example
