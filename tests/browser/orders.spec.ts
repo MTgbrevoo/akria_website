@@ -27,6 +27,19 @@ test('guest checkout, optional newsletter, saved confirmation and mobile layout'
   await page.reload(); await expect(page.getByText(receipt.id)).toBeVisible();
   await page.screenshot({path:'test-results/receipt-mobile.png',fullPage:true});
 });
+test('checkout works on mobile browsers without AbortSignal.timeout', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(() => {
+    Object.defineProperty(AbortSignal, 'timeout', { value: undefined, configurable: true });
+  });
+  await page.route('**/functions/v1/orders-api/order', route => route.fulfill({ status: 201, json: { receipt } }));
+  await page.goto('/bestellen');
+  await expect(page.getByRole('button', { name: 'Zahlungspflichtig bestellen' })).toBeEnabled();
+  await expect(page.getByText('Der aktuelle Preis konnte nicht geladen werden.', { exact: false })).toHaveCount(0);
+  await fill(page);
+  await page.getByRole('button', { name: 'Zahlungspflichtig bestellen' }).click();
+  await expect(page.getByRole('heading', { name: 'Deine Bestellung ist eingegangen.' })).toBeVisible();
+});
 test('price conflict requires explicit consent, with new request only after rejecting old quote', async ({ page }) => {
   const attempts: any[]=[];
   await page.route('**/functions/v1/orders-api/order', async route => {

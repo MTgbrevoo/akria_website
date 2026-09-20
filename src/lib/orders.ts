@@ -19,14 +19,21 @@ export class OrderApiError extends Error {
   }
 }
 export async function orderApi<T>(action: string, body?: unknown, token?: string): Promise<T> {
-  const response = await fetch(`${SUPABASE_URL}/functions/v1/orders-api/${action}`, {
-    method: body === undefined ? 'GET' : 'POST',
-    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-    body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(25000),
-  });
-  const data = await response.json();
-  if (!response.ok) throw new OrderApiError(data.error || 'unknown', response.status, data);
-  return data as T;
+  // Older mobile browsers support AbortController but not AbortSignal.timeout.
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 25000);
+  try {
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/orders-api/${action}`, {
+      method: body === undefined ? 'GET' : 'POST',
+      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: body === undefined ? undefined : JSON.stringify(body), signal: controller.signal,
+    });
+    const data = await response.json();
+    if (!response.ok) throw new OrderApiError(data.error || 'unknown', response.status, data);
+    return data as T;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 export function useCheckoutConfig() {
   const [config, setConfig] = useState<CheckoutConfig | null>(null);
