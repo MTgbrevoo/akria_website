@@ -51,3 +51,15 @@ test('API refuses oversized streamed bodies and reports price conflict', async (
   const response = await handler(new Request('https://edge.example/order', { method: 'POST', body: JSON.stringify({ ...input, request_id: crypto.randomUUID() }) }));
   assert.equal(response.status, 409); assert.equal((await response.json()).unit_price_cents, 9500);
 });
+
+test('order mail uses the public number in subject and body, with legacy payload fallback', () => {
+  const payload = { ...input, id: 'legacy-order-id', order_number: 'AK-7K3M9P', quantity: 2, unit_price_cents: 8500, total_cents: 17000, campaign: '2026/27' };
+  const mail = mailContent({ kind: 'order_received', payload });
+  assert.equal(mail.subject, 'Deine AKRIA-Bestellung AK-7K3M9P ist eingegangen');
+  assert.match(mail.text, /Bestellnummer: AK-7K3M9P/);
+  assert.doesNotMatch(mail.text, /legacy-order-id/);
+  const { order_number, ...legacy } = payload;
+  const oldMail = mailContent({ kind: 'order_received', payload: legacy });
+  assert.match(oldMail.subject, /legacy-order-id/);
+  assert.match(oldMail.text, /Bestellnummer: legacy-order-id/);
+});

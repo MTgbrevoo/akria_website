@@ -5,7 +5,8 @@ from public.mail_outbox where status='failed' or (status in ('pending','sending'
 order by created_at;
 
 -- LESEN: operative Bestellliste, einschließlich Kontaktzuordnung.
-select id as bestell_id,customer_id as kontakt_id,firstname,lastname,email,quantity as stueck,
+-- Nach Anwendung der Migration short_order_numbers:
+select order_number as bestellnummer,id as bestell_id,customer_id as kontakt_id,firstname,lastname,email,quantity as stueck,
   unit_price_cents/100.0 as stueckpreis_eur,total_amount as warenbetrag_eur,
   street,house_number,zip,city,country,status,created_at
 from public.orders where checkout_version=1 order by created_at desc;

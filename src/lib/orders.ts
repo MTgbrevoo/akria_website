@@ -11,7 +11,7 @@ export type OrderInput = {
   source: string; expected_price_cents: number; request_id: string; website: string;
 };
 export type Receipt = Omit<OrderInput, 'newsletter' | 'source' | 'expected_price_cents' | 'request_id' | 'website'> & {
-  id: string; created_at: string; campaign: string; unit_price_cents: number; total_cents: number; currency: 'EUR';
+  id: string; order_number?: string; created_at: string; campaign: string; unit_price_cents: number; total_cents: number; currency: 'EUR';
 };
 export class OrderApiError extends Error {
   constructor(public code: string, public status: number, public details: Record<string, unknown>) {

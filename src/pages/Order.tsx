@@ -88,13 +88,13 @@ export default function Order() {
           <h1 ref={heading} tabIndex={-1} className="font-serif text-3xl font-bold italic focus:outline-none">Deine Bestellung ist eingegangen.</h1>
           <p className="mt-4 text-white/75">Vielen Dank! Wir prüfen deine Bestellung und bestätigen dir die Lieferung separat. Deine Eingangsbestätigung wird per E-Mail versendet.</p>
           <dl className="my-7 space-y-3 rounded-xl bg-white/5 p-5">
-            <div><dt className="text-sm text-white/60">Bestellnummer</dt><dd className="break-all font-mono text-sm">{receipt.id}</dd></div>
+            <div><dt className="text-sm text-white/60">Bestellnummer</dt><dd className="break-all font-mono text-sm">{receipt.order_number || receipt.id}</dd></div>
             <div><dt className="text-sm text-white/60">Ernte {receipt.campaign}</dt><dd>{receipt.quantity} × 5-Liter-Bag-in-Box</dd></div>
             <div><dt className="text-sm text-white/60">Stückpreis / Warenbetrag</dt><dd>{formatMoney(receipt.unit_price_cents)} / <strong>{formatMoney(receipt.total_cents)}</strong></dd></div>
             <div><dt className="text-sm text-white/60">Deine Angaben</dt><dd>{receipt.firstname} {receipt.lastname}<br />{receipt.street} {receipt.house_number}<br />{receipt.zip} {receipt.city}<br />{receipt.country === 'CH' ? 'Schweiz' : 'Deutschland'}<br />{receipt.email}</dd></div>
           </dl>
           <p className="text-sm leading-relaxed text-white/75">Lieferung im Frühjahr 2027. Im Dezember/Januar melden wir uns zur Auswahl zwischen kostenlosem Abhol-Event und Versand auf deine Kosten. Versandkosten sind noch nicht enthalten. Bezahlt wird bei Erhalt.</p>
-          <p className="mt-4 text-sm text-white/75">Änderungen oder Fragen? Schreib uns mit deiner Bestellnummer an <a className="break-all text-accent underline" href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Bestellung ${receipt.id}`)}`}>{CONTACT_EMAIL}</a>.</p>
+          <p className="mt-4 text-sm text-white/75">Änderungen oder Fragen? Schreib uns mit deiner Bestellnummer an <a className="break-all text-accent underline" href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Bestellung ${receipt.order_number || receipt.id}`)}`}>{CONTACT_EMAIL}</a>.</p>
           <button className="mt-8 rounded-lg border border-white/30 px-4 py-3" onClick={() => { store(RECEIPT, null); setReceipt(null); setForm({ ...empty }); setPriceChanged(false); setAcceptedPrice(false); void loadConfig(); }}>Weitere Bestellung aufgeben</button>
         </> : <>
           <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">Ernte {config?.campaign || '2026/27'}</p>

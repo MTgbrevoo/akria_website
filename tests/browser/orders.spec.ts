@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 const config = { campaign: '2026/27', preorder_until: '2026-12-15T23:00:00Z', preorder_price_cents: 8500, regular_price_cents: 9500, unit_price_cents: 8500, currency: 'EUR', ordering_open: true };
-const receipt = { id: '12345678-1234-4234-8234-123456789abc', created_at: '2026-09-16T12:00:00Z', campaign: '2026/27', firstname: 'Ada', lastname: 'Lovelace', email: 'ada@example.com', street: 'Testweg', house_number: '2', zip: '01234', city: 'Berlin', country: 'DE', quantity: 2, unit_price_cents: 8500, total_cents: 17000, currency: 'EUR' };
+const receipt = { order_number: 'AK-7K3M9P', id: '12345678-1234-4234-8234-123456789abc', created_at: '2026-09-16T12:00:00Z', campaign: '2026/27', firstname: 'Ada', lastname: 'Lovelace', email: 'ada@example.com', street: 'Testweg', house_number: '2', zip: '01234', city: 'Berlin', country: 'DE', quantity: 2, unit_price_cents: 8500, total_cents: 17000, currency: 'EUR' };
 async function fill(page: Page) {
   for (const [label,value] of [['Vorname','Ada'],['Nachname','Lovelace'],['E-Mail-Adresse','ada@example.com'],['Straße','Testweg'],['Hausnummer','2'],['PLZ','01234'],['Ort','Berlin']]) await page.getByLabel(label,{exact:true}).fill(value);
   await page.getByLabel('Anzahl 5l-Kartons').fill('2');
@@ -23,8 +23,10 @@ test('guest checkout, optional newsletter, saved confirmation and mobile layout'
   await page.screenshot({path:'test-results/order-mobile.png',fullPage:true});
   await page.getByRole('button',{name:'Bestellung bestätigen'}).click();
   await expect(page.getByRole('heading',{name:'Deine Bestellung ist eingegangen.'})).toBeVisible();
+  await expect(page.getByRole('link', { name: 'meyertiffertgbr@gmail.com' })).toHaveAttribute('href', /subject=Bestellung%20AK-7K3M9P/);
+  await expect(page.getByText(receipt.id)).toHaveCount(0);
   expect(submitted.newsletter).toBe(false); expect(submitted.quantity).toBe(2);
-  await page.reload(); await expect(page.getByText(receipt.id)).toBeVisible();
+  await page.reload(); await expect(page.getByText(receipt.order_number)).toBeVisible();
   await page.screenshot({path:'test-results/receipt-mobile.png',fullPage:true});
 });
 test('checkout works on mobile browsers without AbortSignal.timeout', async ({ page }) => {
@@ -66,7 +68,7 @@ test('ambiguous network outcome survives reload and retries identical request', 
   await expect(page.getByRole('alert')).toContainText('nicht sicher abrufen');
   await expect(page.getByLabel('Vorname',{exact:true})).toBeDisabled();
   await page.reload(); await page.getByRole('button',{name:'Bestellstatus erneut prüfen'}).click();
-  await expect(page.getByText(receipt.id)).toBeVisible(); expect(attempts[1]).toEqual(attempts[0]);
+  await expect(page.getByText(receipt.order_number)).toBeVisible(); expect(attempts[1]).toEqual(attempts[0]);
 });
 test('newsletter link opening never confirms automatically', async ({ page }) => {
   let calls=0;
@@ -87,4 +89,13 @@ test('local preview shows price without a backend and cannot submit orders', asy
   await expect(page.getByRole('button',{name:'Vorschau – keine Bestellung'})).toBeDisabled();
   await expect(page.getByRole('alert')).toHaveCount(0);
   expect(requests).toBe(0);
+});
+
+
+test('saved legacy receipts retain their original reference', async ({ page }) => {
+  const { order_number, ...legacy } = receipt;
+  await page.addInitScript(value => sessionStorage.setItem('akria-order-receipt-v1', JSON.stringify(value)), legacy);
+  await page.goto('/bestellen');
+  await expect(page.getByText(receipt.id)).toBeVisible();
+  await expect(page.getByRole('link', { name: 'meyertiffertgbr@gmail.com' })).toHaveAttribute('href', new RegExp(receipt.id));
 });

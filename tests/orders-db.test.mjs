@@ -5,6 +5,7 @@ import { PGlite } from '@electric-sql/pglite';
 const legacy = '11111111-1111-4111-8111-111111111111';
 let db;
 const migration = await readFile(new URL('../supabase/manual/01-preorders.sql', import.meta.url), 'utf8');
+const shortNumbers = await readFile(new URL('../supabase/migrations/20260921154632_short_order_numbers.sql', import.meta.url), 'utf8');
 async function setup() {
   const instance = new PGlite();
   await instance.exec(`create role anon; create role authenticated; create role service_role bypassrls;
@@ -20,7 +21,7 @@ async function setup() {
     insert into orders(customer_id,status,total_amount) values('${legacy}','old',85);`);
   return instance;
 }
-before(async () => { db = await setup(); await db.exec(migration); });
+before(async () => { db = await setup(); await db.exec(migration); await db.exec(shortNumbers); });
 after(async () => { await db?.close(); });
 const input = (extra = {}) => ({ firstname: 'Ada', lastname: 'Lovelace', email: 'ada@example.com', street: 'Testweg', house_number: '2', zip: '01234', city: 'Berlin', country: 'DE', quantity: 2, expected_price_cents: 8500, newsletter: false, source: 'website', ...extra });
 async function place(data = input(), id = crypto.randomUUID(), fingerprint = JSON.stringify(data)) {
@@ -41,6 +42,9 @@ test('atomic order, snapshot, outbox and retry independent of later price switch
   const id = crypto.randomUUID(); const data = input();
   const first = await place(data,id);
   assert.equal(first.receipt.total_cents,17000);
+  assert.match(first.receipt.order_number, /^AK-[2-9A-HJ-NP-Z]{6}$/);
+  assert.equal(await scalar('select order_number as value from orders where id=$1',[first.receipt.id]), first.receipt.order_number);
+  assert.equal(await scalar("select payload->>'order_number' as value from mail_outbox where order_id=$1",[first.receipt.id]), first.receipt.order_number);
   assert.equal(await scalar('select count(*)::int as value from mail_outbox where order_id=$1',[first.receipt.id]), 1);
   await db.exec("update preorder_settings set preorder_until=now()-interval '1 second'");
   assert.deepEqual(await place(data,id), first);
@@ -104,4 +108,49 @@ test('legacy confirmation transition syncs pending consent but never reactivates
   assert.equal(await scalar("select status as value from newsletter_subscriptions where contact_id='33333333-3333-4333-8333-333333333333'"),'confirmed');
   await db.exec("update newsletter_subscriptions set status='unsubscribed' where contact_id='33333333-3333-4333-8333-333333333333'; update auth.users set email_confirmed_at=now() where id='33333333-3333-4333-8333-333333333333'");
   assert.equal(await scalar("select status as value from newsletter_subscriptions where contact_id='33333333-3333-4333-8333-333333333333'"),'unsubscribed');
+});
+
+
+test('random number collisions retry without duplicate orders or mail', async () => {
+  const existing = (await place()).receipt;
+  await db.exec('begin');
+  try {
+    await db.exec(`create sequence public.test_number_attempts;
+      create or replace function public.random_order_number() returns text
+      language plpgsql volatile set search_path=pg_catalog as $$
+      begin
+        if nextval('public.test_number_attempts') = 1 then return '${existing.order_number}'; end if;
+        return 'AK-ZZZZZZ';
+      end $$;`);
+    const result = await place(input({email:'collision@example.com'}));
+    assert.equal(result.receipt.order_number, 'AK-ZZZZZZ');
+    assert.equal(await scalar('select last_value::int as value from test_number_attempts'), 2);
+    assert.equal(await scalar('select count(*)::int as value from orders where id=$1',[result.receipt.id]), 1);
+    assert.equal(await scalar('select count(*)::int as value from mail_outbox where order_id=$1',[result.receipt.id]), 1);
+    await assert.rejects(db.query('update orders set order_number=$1 where id=$2',[existing.order_number,result.receipt.id]), /orders_order_number_key/);
+  } finally { await db.exec('rollback'); }
+});
+
+test('number migration preserves existing order IDs and queued mail payloads', async () => {
+  const isolated = await setup();
+  try {
+    await isolated.exec(migration);
+    await isolated.exec("update preorder_settings set preorder_until=now()+interval '1 day'");
+    const args = [input(),crypto.randomUUID(),'before-migration','confirm','unsubscribe',{}];
+    const query = 'select place_preorder($1,$2,$3,$4,$5,$6) as value';
+    const original = (await isolated.query(query,args)).rows[0].value.receipt;
+    const oldMail = (await isolated.query('select payload from mail_outbox where order_id=$1',[original.id])).rows[0].payload;
+    await isolated.exec(shortNumbers);
+    const current = (await isolated.query(query,args)).rows[0].value.receipt;
+    assert.equal(current.id, original.id);
+    assert.match(current.order_number, /^AK-[2-9A-HJ-NP-Z]{6}$/);
+    const { order_number, ...unchanged } = current;
+    assert.deepEqual(unchanged, original);
+    assert.deepEqual((await isolated.query('select payload from mail_outbox where order_id=$1',[original.id])).rows[0].payload, oldMail);
+    assert.equal((await isolated.query('select count(*)::int as count from orders where order_number is null')).rows[0].count, 0);
+    for (const role of ['anon','authenticated']) {
+      assert.equal((await isolated.query(`select has_function_privilege('${role}','random_order_number()','EXECUTE') as allowed`)).rows[0].allowed,false);
+      assert.equal((await isolated.query(`select has_function_privilege('${role}','place_preorder(jsonb,uuid,text,text,text,jsonb)','EXECUTE') as allowed`)).rows[0].allowed,false);
+    }
+  } finally { await isolated.close(); }
 });

@@ -39,9 +39,10 @@ export function mailContent(mail: Pick<Mail, 'kind' | 'payload'>) {
     to: String(p.email), subject: 'Bitte bestätige deine Anmeldung zu AKRIA-Neuigkeiten',
     text: `Du hast dich für AKRIA-Neuigkeiten angemeldet.\n${CONSENT_TEXT}\n\nBestätige deine Anmeldung innerhalb von 7 Tagen:\n${p.confirm_url}\n\nDeine Bestellung ist davon unabhängig. Wenn du dich nicht angemeldet hast, ignoriere diese E-Mail.\nAbmelden / Anmeldung verwerfen: ${p.unsubscribe_url}\n\nAKRIA · Meyer & Tiffert GbR\n${CONTACT}`,
   };
+  const orderNumber = p.order_number || p.id;
   return {
-    to: String(p.email), subject: `Deine AKRIA-Bestellung ${p.id} ist eingegangen`,
-    text: `Hallo ${p.firstname},\n\ndeine Bestellung ist eingegangen. Diese E-Mail bestätigt den Eingang; die Lieferzusage erhältst du nach unserer Prüfung separat.\n\nBestellnummer: ${p.id}\nErnte: ${p.campaign}\n${p.quantity} × 5-Liter-Bag-in-Box Olivenöl\nStückpreis: ${money(p.unit_price_cents)}\nWarenbetrag: ${money(p.total_cents)}\n\n${p.firstname} ${p.lastname}\n${p.street} ${p.house_number}\n${p.zip} ${p.city}\n${p.country === 'CH' ? 'Schweiz' : 'Deutschland'}\nE-Mail: ${p.email}\n\nLieferung im Frühjahr 2027. Im Dezember/Januar melden wir uns zur Auswahl zwischen kostenlosem Abhol-Event und Versand auf deine Kosten. Versandkosten sind im Warenbetrag nicht enthalten. Bezahlt wird bei Erhalt der Ware.\n\nFür Änderungen oder Fragen antworte bitte mit deiner Bestellnummer auf diese E-Mail.\n\nAKRIA · Meyer & Tiffert GbR\n${CONTACT}`,
+    to: String(p.email), subject: `Deine AKRIA-Bestellung ${orderNumber} ist eingegangen`,
+    text: `Hallo ${p.firstname},\n\ndeine Bestellung ist eingegangen. Diese E-Mail bestätigt den Eingang; die Lieferzusage erhältst du nach unserer Prüfung separat.\n\nBestellnummer: ${orderNumber}\nErnte: ${p.campaign}\n${p.quantity} × 5-Liter-Bag-in-Box Olivenöl\nStückpreis: ${money(p.unit_price_cents)}\nWarenbetrag: ${money(p.total_cents)}\n\n${p.firstname} ${p.lastname}\n${p.street} ${p.house_number}\n${p.zip} ${p.city}\n${p.country === 'CH' ? 'Schweiz' : 'Deutschland'}\nE-Mail: ${p.email}\n\nLieferung im Frühjahr 2027. Im Dezember/Januar melden wir uns zur Auswahl zwischen kostenlosem Abhol-Event und Versand auf deine Kosten. Versandkosten sind im Warenbetrag nicht enthalten. Bezahlt wird bei Erhalt der Ware.\n\nFür Änderungen oder Fragen antworte bitte mit deiner Bestellnummer auf diese E-Mail.\n\nAKRIA · Meyer & Tiffert GbR\n${CONTACT}`,
   };
 }
 
