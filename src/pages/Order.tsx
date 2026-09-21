@@ -98,8 +98,8 @@ export default function Order() {
           <button className="mt-8 rounded-lg border border-white/30 px-4 py-3" onClick={() => { store(RECEIPT, null); setReceipt(null); setForm({ ...empty }); setPriceChanged(false); setAcceptedPrice(false); void loadConfig(); }}>Weitere Bestellung aufgeben</button>
         </> : <>
           <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">Ernte {config?.campaign || '2026/27'}</p>
-          <h1 className="font-serif text-4xl font-bold italic">Dein Olivenöl bestellen</h1>
-          <p className="mt-4 text-white/70">5 Liter in der Bag-in-Box. Bezahlt wird erst bei Erhalt. Abholung oder Versand klären wir später mit dir.</p>
+          <h1 className="font-serif text-4xl font-bold italic">Bestelle dein Olivenöl</h1>
+          <p className="mt-4 text-white/70">5 Liter in der Bag-in-Box. Bezahlt wird erst bei Erhalt. Ob Abholung oder Versand klären wir kurz vor der Auslieferung mit dir.</p>
           {!config && !uncertain && <button type="button" className="mt-5 underline" onClick={loadConfig}>Preis neu laden</button>}
           <form className="mt-8 space-y-6" onSubmit={submit}>
             <fieldset disabled={busy || uncertain} className="grid gap-5 sm:grid-cols-2">
@@ -113,27 +113,27 @@ export default function Order() {
               <label><span className="text-sm text-white/80">Land</span><select className={inputClass} name="country" autoComplete="country" value={form.country} onChange={e => setForm(current => ({ ...current, country: e.target.value }))}>
                 <option className="bg-primary" value="DE">Deutschland</option><option className="bg-primary" value="CH">Schweiz</option>
               </select></label>
-              <label className="sm:col-span-2"><span className="text-sm text-white/80">Anzahl 5-Liter-Bag-in-Box</span>
+              <label className="sm:col-span-2"><span className="text-sm text-white/80">Anzahl 5l-Kartons</span>
                 <input className={inputClass} name="quantity" type="number" min="1" step="1" required value={form.quantity || ''} onChange={e => setForm(current => ({ ...current, quantity: Number(e.target.value) }))} />
               </label>
               <div className="absolute -left-[10000px]" aria-hidden="true"><label>Website<input name="website" tabIndex={-1} autoComplete="off" value={form.website} onChange={e => setForm(current => ({ ...current, website: e.target.value }))} /></label></div>
               <label className="flex items-start gap-3 rounded-xl border border-white/15 p-4 sm:col-span-2">
                 <input className="mt-1 h-5 w-5 shrink-0 accent-accent" type="checkbox" checked={form.newsletter} onChange={e => setForm(current => ({ ...current, newsletter: e.target.checked }))} />
-                <span><strong className="font-medium">Wir planen viel Neues. Dürfen wir dich informieren?</strong><span className="mt-1 block text-sm text-white/60">Erhalte E-Mails zu kommenden Ernten und neuen AKRIA-Produkten. Jederzeit abmeldbar. Freiwillig; wir schicken dir einen separaten Bestätigungslink.</span></span>
+                <span><strong className="font-medium">Möchtest Du über die nächste Ernte von uns informiert werden?</strong><span className="mt-1 block text-sm text-white/60">Wir nehmen dich automatisch in unsere Liste für die nächsten Ernten mit auf. Du kannst dich jederzeit davon abmelden. Hierfür bekommst Du einen separaten Bestätigungslink.</span></span>
               </label>
             </fieldset>
             {config && <div className="rounded-xl bg-white/5 p-5" aria-live="polite">
               <p>{form.quantity || 0} × {formatMoney(attempt.current?.expected_price_cents || config.unit_price_cents)}</p>
               <p className="mt-1 text-2xl font-bold">{formatMoney((form.quantity || 0) * (attempt.current?.expected_price_cents || config.unit_price_cents))}</p>
-              <p className="mt-2 text-sm text-white/65">Warenbetrag. Bei Versand kommen Versandkosten hinzu; diese trägt der Empfänger. Kostenlose Abholung beim Event möglich.</p>
+              <p className="mt-2 text-sm text-white/65">zzgl. Versand.</p>
               <p className="mt-2 text-xs text-white/55">{formatMoney(config.preorder_price_cents)} je Stück bis einschließlich {formatCutoff(config.preorder_until)}, danach {formatMoney(config.regular_price_cents)}.</p>
             </div>}
             {priceChanged && <label className="flex gap-3 text-sm"><input type="checkbox" required checked={acceptedPrice} onChange={e => setAcceptedPrice(e.target.checked)} />Ich bestätige den neuen Stückpreis von {formatMoney(config?.unit_price_cents || 0)}.</label>}
-            <p className="text-sm leading-relaxed text-white/65">Du gibst eine verbindliche Bestellung ab. Unsere automatische E-Mail bestätigt deren Eingang; die Lieferzusage erfolgt nach Prüfung separat. Lieferung im Frühjahr 2027, Zahlung bei Erhalt. Zur Liefermethode melden wir uns im Dezember/Januar. Informationen zur Verarbeitung deiner Daten findest du in der <Link className="text-accent underline" to="/datenschutz" target="_blank" rel="noreferrer">Datenschutzerklärung</Link>.</p>
+            <p className="text-sm leading-relaxed text-white/65">Hierbei handelt es sich um eine verbindliche Vorbestellung. Lieferung erfolgt nach der Ernte im Frühjahr 2027, Zahlung erfolgt erst bei Erhalt der Ware. Du erhältst eine Bestätigung per Mail.</p>
             {uncertain && !error && <p role="status" className="rounded-xl bg-white/10 p-4">Ein vorheriger Bestellvorgang ist noch offen. Bitte prüfe seinen Status, bevor du eine weitere Bestellung aufgibst.</p>}
             {error && <p role="alert" className="rounded-xl border border-accent/50 bg-accent/10 p-4">{error}</p>}
             <button disabled={busy || (!uncertain && (!config?.ordering_open || (priceChanged && !acceptedPrice)))} className="btn-magnetic btn-accent w-full px-5 py-4 disabled:cursor-not-allowed disabled:opacity-50" type="submit">
-              {preview ? 'Vorschau – keine Bestellung' : busy ? <><Loader2 className="mr-2 animate-spin" size={20} /> Wird geprüft …</> : uncertain ? 'Bestellstatus erneut prüfen' : 'Zahlungspflichtig bestellen'}
+              {preview ? 'Vorschau – keine Bestellung' : busy ? <><Loader2 className="mr-2 animate-spin" size={20} /> Wird geprüft …</> : uncertain ? 'Bestellstatus erneut prüfen' : 'Bestellung bestätigen'}
             </button>
             {!preview && config && !config.ordering_open && <p role="status">Aktuell nehmen wir keine neuen Bestellungen an.</p>}
           </form>
