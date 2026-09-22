@@ -20,10 +20,8 @@ export function validateOrder(body: Json): Json {
   if (!/^[0-9]{4}$/.test(input.zip as string) && input.country === 'CH') throw new InputError('Bitte gib eine vierstellige Schweizer PLZ ein.');
   if (!Number.isInteger(body.quantity) || Number(body.quantity) < 1 || Number(body.quantity) > 2147483647) throw new InputError('Bitte gib eine gültige ganze Stückzahl ein.');
   if (!Number.isInteger(body.expected_price_cents) || Number(body.expected_price_cents) < 1) throw new InputError('Bitte lade den aktuellen Preis neu.');
-  if (typeof body.newsletter !== 'boolean') throw new InputError('Bitte prüfe die Newsletter-Auswahl.');
   input.quantity = body.quantity;
   input.expected_price_cents = body.expected_price_cents;
-  input.newsletter = body.newsletter;
   input.source = typeof body.source === 'string' ? body.source.trim().slice(0, 100) : 'website';
   return input;
 }
@@ -31,7 +29,6 @@ export async function sha256(value: string) {
   const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
   return Array.from(new Uint8Array(hash), b => b.toString(16).padStart(2, '0')).join('');
 }
-function token() { return crypto.randomUUID().replaceAll('-', '') + crypto.randomUUID().replaceAll('-', ''); }
 function money(cents: unknown) { return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(Number(cents) / 100); }
 export function mailContent(mail: Pick<Mail, 'kind' | 'payload'>) {
   const p = mail.payload;
@@ -144,11 +141,15 @@ export function createHandler(env: Environment, fetcher: typeof fetch = fetch) {
       if (typeof body.request_id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.request_id)) return respond({ error: 'invalid_input' }, 400);
       const input = validateOrder(body);
       if (!await rpc<boolean>('checkout_rate_limit', { p_key: await sha256(`${salt}:email:${input.email}`), p_limit: 12 })) return respond({ error: 'rate_limited' }, 429);
-      const confirmation = token(); const unsubscribe = token();
+      // Preserve fingerprints of pre-removal retries without passing consent to the database.
+      const { source, ...orderFields } = input;
+      const fingerprintInput = typeof body.newsletter === 'boolean'
+        ? { ...orderFields, newsletter: body.newsletter, source }
+        : input;
       const result = await rpc<Json>('place_preorder', {
-        p_input: input, p_request_id: body.request_id, p_fingerprint: await sha256(JSON.stringify(input)),
-        p_confirmation_hash: await sha256(confirmation), p_unsubscribe_hash: await sha256(unsubscribe),
-        p_links: { confirm_url: `${site}/newsletter#action=confirm&token=${confirmation}`, unsubscribe_url: `${site}/newsletter#action=unsubscribe&token=${unsubscribe}` },
+        p_input: input, p_request_id: body.request_id, p_fingerprint: await sha256(JSON.stringify(fingerprintInput)),
+        // Keep compatibility with databases awaiting the cleanup migration.
+        p_confirmation_hash: null, p_unsubscribe_hash: null, p_links: {},
       });
       if (result.error) return respond(result, ['price_changed', 'request_conflict'].includes(String(result.error)) ? 409 : 400);
       return respond(result, 201);

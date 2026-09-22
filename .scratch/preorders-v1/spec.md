@@ -25,7 +25,7 @@ Vom Nutzer bestätigt. Implementiert; manuelle Einrichtung von Datenbank, Edge F
 - Eine Bestelleingangsbestätigung per E-Mail gehört nun zu V1. Sie verlangt keinen Bestätigungsklick.
 - Informationen über die nächste Ernte und neue Produkte (z. B. Flaschen) sind gewünscht. Separate freiwillige Newsletter-Anmeldung mit Double-Opt-in, unabhängig von der Bestellung. CTA: „Wir planen viel Neues. Dürfen wir dich informieren?“; ergänzender Textvorschlag: „Erhalte E-Mails zu kommenden Ernten und neuen AKRIA-Produkten. Jederzeit abmeldbar.“
 - Bereits bestätigte Newsletter-Abonnenten müssen sich nicht erneut anmelden. Eine bei einer weiteren Bestellung nicht aktivierte Checkbox ist keine Abmeldung.
-- Preis je 5-Liter-Bag-in-Box: 85 Euro bis einschließlich 15. Dezember 2026, 95 Euro ab 16. Dezember 2026, 00:00 Uhr deutscher/Schweizer Ortszeit. Das Datum kann sich ändern und muss zentral konfigurierbar sein.
+- Preis je 5-Liter-Bag-in-Box: 85 Euro bis einschließlich 15. November 2026, 95 Euro ab 16. November 2026, 00:00 Uhr deutscher/Schweizer Ortszeit. Das Datum kann sich ändern und muss zentral konfigurierbar sein.
 - Für den Preis ist der serverseitige Eingang maßgeblich; der Stückpreis wird je Bestellung festgehalten. Ein Preiswechsel zwischen Öffnen und Absenden des Formulars verlangt eine ausdrückliche Bestätigung des neuen Preises.
 - Fest vereinbarter Europreis auch für Schweizer Bestellungen. Eine mögliche spätere CHF-Zahlung ist nicht Teil des Bestellformulars.
 - Der Kunde gibt eine verbindliche Bestellung ab. Die automatische Nachricht bestätigt nur den Eingang; die Lieferzusage erfolgt separat nach Prüfung durch AKRIA.
@@ -56,7 +56,7 @@ Vom Nutzer bestätigt. Implementiert; manuelle Einrichtung von Datenbank, Edge F
 
 ### Preis, Speicherung und Versand
 
-- Stichtag zentral konfigurierbar; initial 16. Dezember 2026, 00:00 Uhr Europe/Berlin. Bereits gespeicherte Preise bleiben bei Änderung des Stichtags unverändert.
+- Stichtag zentral konfigurierbar; initial 16. November 2026, 00:00 Uhr Europe/Berlin. Bereits gespeicherte Preise bleiben bei Änderung des Stichtags unverändert.
 - Server validiert Pflichtfelder, Land, positive ganze Menge und Preis. Keine geschäftliche Mengenobergrenze; große gültige Mengen wie 1.000 akzeptieren.
 - Kontaktzuordnung/-anlage, Bestellung und dauerhaften Versandauftrag atomar speichern. Erst danach Erfolg anzeigen.
 - Pro Absendevorgang eindeutiger Schlüssel gegen doppelte Verarbeitung. Technische Wiederholung erzeugt keine zweite Bestellung; derselbe Schlüssel mit verändertem Inhalt wird nicht stillschweigend akzeptiert.

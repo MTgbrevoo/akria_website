@@ -12,8 +12,8 @@ select order_number as bestellnummer,id as bestell_id,customer_id as kontakt_id,
 from public.orders where checkout_version=1 order by created_at desc;
 
 -- ÄNDERUNGEN: Nur die benötigte Anweisung separat markieren und ausführen.
--- Stichtag: exklusives Ende, d.h. am 16.12. ab 00:00 gilt der reguläre Preis.
--- update public.preorder_settings set preorder_until='2026-12-16 00:00:00 Europe/Berlin' where id;
+-- Stichtag: exklusives Ende, d.h. am 16.11. ab 00:00 gilt der reguläre Preis.
+-- update public.preorder_settings set preorder_until='2026-11-16 00:00:00 Europe/Berlin' where id;
 -- Neue Bestellungen vorübergehend stoppen (Wiederholungen gespeicherter Vorgänge bleiben abrufbar):
 -- update public.preorder_settings set ordering_open=false where id;
 -- Wieder öffnen:

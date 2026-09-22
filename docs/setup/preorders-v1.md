@@ -64,7 +64,7 @@ Mit laufendem Entwicklungsserver zeigt `/bestellen?vorschau=1` das Formular mit 
 
 ## Stichtag später ändern
 
-Im Table Editor `preorder_settings` die einzige Zeile bearbeiten oder die auskommentierte Anweisung aus `03-operations.sql` verwenden. `preorder_until` ist das **exklusive** Ende: `2026-12-16 00:00:00 Europe/Berlin` bedeutet 85 Euro einschließlich 15. Dezember. Website und Server verwenden dieselbe Konfiguration; Frontend liest sie regelmäßig neu. Ein bereits abgesendeter Auftrag behält seinen gespeicherten Preis.
+Im Table Editor `preorder_settings` die einzige Zeile bearbeiten oder die auskommentierte Anweisung aus `03-operations.sql` verwenden. `preorder_until` ist das **exklusive** Ende: `2026-11-16 00:00:00 Europe/Berlin` bedeutet 85 Euro einschließlich 15. November. Website und Server verwenden dieselbe Konfiguration; Frontend liest sie regelmäßig neu. Ein bereits abgesendeter Auftrag behält seinen gespeicherten Preis.
 
 ## Newsletter und Aufbewahrung
 
@@ -77,3 +77,7 @@ Rate-Limit-Daten werden täglich nach zwei Tagen gelöscht. Für Bestell-, Einwi
 `npm test` prüft den echten SQL-Migrationstext mit PGlite (lokales PostgreSQL) und den Edge-Handler mit simulierten HTTP-Diensten. `npm run typecheck` prüft Frontend und Edge Function. `npm run test:browser` prüft den Ablauf mit Playwright und lokal installiertem Google Chrome; alle externen Bestellaufrufe sind dabei simuliert und können keine echten Bestellungen auslösen. Live-Supabase, Vault/Cron-Erweiterungen, produktive Trigger und tatsächliche Resend-Zustellung werden dadurch nicht geprüft. Das SQL-Skript basiert auf dem vom Nutzer bereitgestellten Ausgangsschema und bricht bei unpassenden Voraussetzungen ab.
 
 Offizielle Einrichtungsquellen: [Supabase Dashboard-Deployment](https://supabase.com/docs/guides/functions/quickstart-dashboard), [geplante Edge-Function-Aufrufe](https://supabase.com/docs/guides/functions/schedule-functions), [Resend-Idempotenz](https://resend.com/docs/dashboard/emails/idempotency-keys).
+
+### Änderung des Stichtags auf den 15. November 2026
+
+Für bereits eingerichtete Datenbanken die Folgemigration `supabase/migrations/20260922124935_preorder_window_november.sql` anwenden. Sie setzt den Stichtag für die Kampagne 2026/27 und den Standardwert auf den 16. November um 00:00 Uhr Europe/Berlin. Produktbereich und Bestellformular übernehmen den Wert aus `checkout_config`. Auch bei einer Neuinstallation nach `01-preorders.sql` die Folgemigrationen anwenden; historische Einrichtungsskripte und Live-Prüfberichte dokumentieren weiterhin ihren damaligen Stand.

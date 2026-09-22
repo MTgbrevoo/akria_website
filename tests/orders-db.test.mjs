@@ -6,6 +6,8 @@ const legacy = '11111111-1111-4111-8111-111111111111';
 let db;
 const migration = await readFile(new URL('../supabase/manual/01-preorders.sql', import.meta.url), 'utf8');
 const shortNumbers = await readFile(new URL('../supabase/migrations/20260921154632_short_order_numbers.sql', import.meta.url), 'utf8');
+const removeNewsletter = await readFile(new URL('../supabase/migrations/20260922121348_remove_checkout_newsletter.sql', import.meta.url), 'utf8');
+const novemberWindow = await readFile(new URL('../supabase/migrations/20260922124935_preorder_window_november.sql', import.meta.url), 'utf8');
 async function setup() {
   const instance = new PGlite();
   await instance.exec(`create role anon; create role authenticated; create role service_role bypassrls;
@@ -21,9 +23,9 @@ async function setup() {
     insert into orders(customer_id,status,total_amount) values('${legacy}','old',85);`);
   return instance;
 }
-before(async () => { db = await setup(); await db.exec(migration); await db.exec(shortNumbers); });
+before(async () => { db = await setup(); await db.exec(migration); await db.exec(shortNumbers); await db.exec(removeNewsletter); await db.exec(novemberWindow); });
 after(async () => { await db?.close(); });
-const input = (extra = {}) => ({ firstname: 'Ada', lastname: 'Lovelace', email: 'ada@example.com', street: 'Testweg', house_number: '2', zip: '01234', city: 'Berlin', country: 'DE', quantity: 2, expected_price_cents: 8500, newsletter: false, source: 'website', ...extra });
+const input = (extra = {}) => ({ firstname: 'Ada', lastname: 'Lovelace', email: 'ada@example.com', street: 'Testweg', house_number: '2', zip: '01234', city: 'Berlin', country: 'DE', quantity: 2, expected_price_cents: 8500, source: 'website', ...extra });
 async function place(data = input(), id = crypto.randomUUID(), fingerprint = JSON.stringify(data)) {
   const result = await db.query('select place_preorder($1,$2,$3,$4,$5,$6) as value', [data, id, fingerprint, crypto.randomUUID(), crypto.randomUUID(), { confirm_url: 'https://example/confirm', unsubscribe_url: 'https://example/unsubscribe' }]);
   return result.rows[0].value;
@@ -36,6 +38,12 @@ test('migration preserves legacy ids/orders/consent without inventing DOI timest
   assert.ok(await scalar('select confirmed_at as value from newsletter_subscriptions where contact_id=$1',[legacy]));
   assert.equal(await scalar("select status as value from newsletter_subscriptions where contact_id='33333333-3333-4333-8333-333333333333'"), 'pending');
   assert.equal(await scalar('select status as value from newsletter_subscriptions where contact_id=$1',[legacy]), 'confirmed');
+});
+test('preorder window ends after 15 November in German and Swiss local time', async () => {
+  const config = await scalar('select checkout_config() as value');
+  assert.equal(new Date(config.preorder_until).toISOString(), '2026-11-15T23:00:00.000Z');
+  assert.equal(await scalar("select to_char(preorder_until at time zone 'Europe/Berlin', 'YYYY-MM-DD HH24:MI:SS') as value from preorder_settings"), '2026-11-16 00:00:00');
+  assert.equal(await scalar("select to_char(preorder_until at time zone 'Europe/Zurich', 'YYYY-MM-DD HH24:MI:SS') as value from preorder_settings"), '2026-11-16 00:00:00');
 });
 test('atomic order, snapshot, outbox and retry independent of later price switch', async () => {
   await db.exec("update preorder_settings set preorder_until=now()+interval '1 day'");
@@ -56,17 +64,37 @@ test('atomic order, snapshot, outbox and retry independent of later price switch
   assert.equal(await scalar("select count(*)::int as value from contacts where email='ada@example.com'"), 1);
   await db.exec("update preorder_settings set preorder_until=now()+interval '1 day'");
 });
-test('pending newsletter is separate, confirm idempotent, unsubscribe invalidates confirmation', async () => {
-  const data = input({email:'newsletter@example.com',newsletter:true});
-  const result = (await db.query('select place_preorder($1,$2,$3,$4,$5,$6) as value',[data,crypto.randomUUID(),'newsletter','confirm-token','unsubscribe-token',{}])).rows[0].value;
-  const c = await scalar('select customer_id as value from orders where id=$1',[result.receipt.id]);
-  assert.equal(await scalar('select status as value from newsletter_subscriptions where contact_id=$1',[c]),'pending');
-  assert.equal(await scalar("select newsletter_action('confirm-token','confirm') as value"),true);
-  assert.equal(await scalar("select newsletter_action('confirm-token','confirm') as value"),true);
-  await place(input({email:'newsletter@example.com',newsletter:false}));
-  assert.equal(await scalar('select status as value from newsletter_subscriptions where contact_id=$1',[c]),'confirmed');
-  assert.equal(await scalar("select newsletter_action('unsubscribe-token','unsubscribe') as value"),true);
-  assert.equal(await scalar("select newsletter_action('confirm-token','confirm') as value"),false);
+test('checkout never creates newsletter subscriptions, events or confirmation mail', async () => {
+  const before = await db.query('select * from newsletter_subscriptions order by contact_id');
+  const events = await scalar('select count(*)::int as value from newsletter_events');
+  for (const extra of [{}, { newsletter: true }, { newsletter: false }, { email: 'old@example.com', newsletter: true }]) {
+    const result = await place(input({ email: 'no-newsletter@example.com', ...extra }));
+    assert.ok(result.receipt.id);
+    const mails = (await db.query('select kind from mail_outbox where order_id=$1', [result.receipt.id])).rows;
+    assert.deepEqual(mails, [{ kind: 'order_received' }]);
+  }
+  assert.deepEqual((await db.query('select * from newsletter_subscriptions order by contact_id')).rows, before.rows);
+  assert.equal(await scalar('select count(*)::int as value from newsletter_events'), events);
+});
+test('cleanup preserves existing newsletter links, queued mail and order retries', async () => {
+  const isolated = await setup();
+  try {
+    await isolated.exec(migration);
+    await isolated.exec(shortNumbers);
+    await isolated.exec("update preorder_settings set preorder_until=now()+interval '1 day'");
+    const args = [input({ newsletter: true }), crypto.randomUUID(), 'old-fingerprint', 'confirm-token', 'unsubscribe-token', {}];
+    const query = 'select place_preorder($1,$2,$3,$4,$5,$6) as value';
+    const original = (await isolated.query(query, args)).rows[0].value;
+    const mails = (await isolated.query('select * from mail_outbox order by id')).rows;
+    await isolated.exec(removeNewsletter);
+    assert.deepEqual((await isolated.query(query, args)).rows[0].value, original);
+    assert.deepEqual((await isolated.query('select * from mail_outbox order by id')).rows, mails);
+    for (const action of ['confirm', 'confirm', 'unsubscribe']) {
+      const token = action === 'confirm' ? 'confirm-token' : 'unsubscribe-token';
+      assert.equal((await isolated.query('select newsletter_action($1,$2) as value', [token, action])).rows[0].value, true);
+    }
+    assert.equal((await isolated.query("select newsletter_action('confirm-token','confirm') as value")).rows[0].value, false);
+  } finally { await isolated.close(); }
 });
 test('mail leases prevent stale acknowledgement; provider failure keeps order and retries', async () => {
   const mails = (await db.query('select * from claim_order_mails()')).rows;

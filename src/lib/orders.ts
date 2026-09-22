@@ -7,10 +7,10 @@ export type CheckoutConfig = {
 };
 export type OrderInput = {
   firstname: string; lastname: string; email: string; street: string; house_number: string;
-  zip: string; city: string; country: string; quantity: number; newsletter: boolean;
+  zip: string; city: string; country: string; quantity: number;
   source: string; expected_price_cents: number; request_id: string; website: string;
 };
-export type Receipt = Omit<OrderInput, 'newsletter' | 'source' | 'expected_price_cents' | 'request_id' | 'website'> & {
+export type Receipt = Omit<OrderInput, 'source' | 'expected_price_cents' | 'request_id' | 'website'> & {
   id: string; order_number?: string; created_at: string; campaign: string; unit_price_cents: number; total_cents: number; currency: 'EUR';
 };
 export class OrderApiError extends Error {

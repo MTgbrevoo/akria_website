@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-const config = { campaign: '2026/27', preorder_until: '2026-12-15T23:00:00Z', preorder_price_cents: 8500, regular_price_cents: 9500, unit_price_cents: 8500, currency: 'EUR', ordering_open: true };
+const config = { campaign: '2026/27', preorder_until: '2026-11-15T23:00:00Z', preorder_price_cents: 8500, regular_price_cents: 9500, unit_price_cents: 8500, currency: 'EUR', ordering_open: true };
 const receipt = { order_number: 'AK-7K3M9P', id: '12345678-1234-4234-8234-123456789abc', created_at: '2026-09-16T12:00:00Z', campaign: '2026/27', firstname: 'Ada', lastname: 'Lovelace', email: 'ada@example.com', street: 'Testweg', house_number: '2', zip: '01234', city: 'Berlin', country: 'DE', quantity: 2, unit_price_cents: 8500, total_cents: 17000, currency: 'EUR' };
 async function fill(page: Page) {
   for (const [label,value] of [['Vorname','Ada'],['Nachname','Lovelace'],['E-Mail-Adresse','ada@example.com'],['Straße','Testweg'],['Hausnummer','2'],['PLZ','01234'],['Ort','Berlin']]) await page.getByLabel(label,{exact:true}).fill(value);
@@ -10,14 +10,25 @@ test.beforeEach(async ({ page }) => {
   await page.route('https://**/*', route => route.abort());
   await page.route('**/functions/v1/orders-api/config', route => route.fulfill({ json: config }));
 });
-test('guest checkout, optional newsletter, saved confirmation and mobile layout', async ({ page }) => {
+test('guest checkout without newsletter, saved confirmation and mobile layout', async ({ page }) => {
   await page.setViewportSize({width:390,height:844});
   let submitted: any;
   await page.route('**/functions/v1/orders-api/order', async route => { submitted=route.request().postDataJSON(); await route.fulfill({status:201,json:{receipt}}); });
   await page.goto('/waitlist'); await expect(page).toHaveURL(/bestellen/);
+  const prices = page.getByRole('region', { name: 'Preisübersicht' });
+  const regularPrice = prices.locator('div').filter({ has: page.getByText('Regulärer Stückpreis', { exact: true }) }).locator('dd');
+  const finalPrice = prices.locator('div').filter({ has: page.getByText('Dein Stückpreis', { exact: false }) }).locator('dd');
+  await expect(regularPrice).toContainText('95,00');
+  await expect(prices.getByText('− 10,00', { exact: false })).toBeVisible();
+  await expect(finalPrice).toContainText('85,00');
+  expect(await finalPrice.evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThan(
+    await regularPrice.evaluate(el => parseFloat(getComputedStyle(el).fontSize)),
+  );
   await fill(page);
-  await expect(page.getByRole('checkbox')).not.toBeChecked();
+  await expect(page.getByRole('checkbox')).toHaveCount(0);
+  await expect(page.getByText('Möchtest Du über die nächste Ernte', { exact: false })).toHaveCount(0);
   await expect(page.getByText('170,00', {exact:false})).toBeVisible();
+  await expect(page.getByText('bis einschließlich 15.11.2026', { exact: false })).toBeVisible();
   await expect(page.getByRole('button',{name:'Bestellung bestätigen'})).toBeEnabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({path:'test-results/order-mobile.png',fullPage:true});
@@ -25,7 +36,7 @@ test('guest checkout, optional newsletter, saved confirmation and mobile layout'
   await expect(page.getByRole('heading',{name:'Deine Bestellung ist eingegangen.'})).toBeVisible();
   await expect(page.getByRole('link', { name: 'meyertiffertgbr@gmail.com' })).toHaveAttribute('href', /subject=Bestellung%20AK-7K3M9P/);
   await expect(page.getByText(receipt.id)).toHaveCount(0);
-  expect(submitted.newsletter).toBe(false); expect(submitted.quantity).toBe(2);
+  expect(submitted).not.toHaveProperty('newsletter'); expect(submitted.quantity).toBe(2);
   await page.reload(); await expect(page.getByText(receipt.order_number)).toBeVisible();
   await page.screenshot({path:'test-results/receipt-mobile.png',fullPage:true});
 });
@@ -51,6 +62,8 @@ test('price conflict requires explicit consent, with new request only after reje
   await page.goto('/bestellen'); await fill(page);
   await page.getByRole('button',{name:'Bestellung bestätigen'}).click();
   await expect(page.getByRole('alert')).toContainText('Preis hat sich geändert');
+  await expect(page.getByText('Vorbestellrabatt', { exact: false })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Preisübersicht' })).toContainText('190,00');
   await expect(page.getByRole('button',{name:'Bestellung bestätigen'})).toBeDisabled();
   await page.getByLabel('Ich bestätige den neuen Stückpreis',{exact:false}).check();
   await page.getByRole('button',{name:'Bestellung bestätigen'}).click();
@@ -84,6 +97,7 @@ test('local preview shows price without a backend and cannot submit orders', asy
   await page.route('**/functions/v1/orders-api/**', async route => { requests++; await route.abort(); });
   await page.goto('/bestellen?vorschau=1');
   await expect(page.getByText('Lokale Vorschau', {exact:false})).toBeVisible();
+  await expect(page.getByText('bis einschließlich 15.11.2026', { exact: false })).toBeVisible();
   await page.getByLabel('Anzahl 5l-Kartons').fill('3');
   await expect(page.getByText('255,00', {exact:false})).toBeVisible();
   await expect(page.getByRole('button',{name:'Vorschau – keine Bestellung'})).toBeDisabled();
@@ -98,4 +112,27 @@ test('saved legacy receipts retain their original reference', async ({ page }) =
   await page.goto('/bestellen');
   await expect(page.getByText(receipt.id)).toBeVisible();
   await expect(page.getByRole('link', { name: 'meyertiffertgbr@gmail.com' })).toHaveAttribute('href', new RegExp(receipt.id));
+});
+
+test('saved checkout attempts from before removal retain their retry identity', async ({ page }) => {
+  const legacyAttempt = { ...receipt, newsletter: true, expected_price_cents: 8500, source: 'website', website: '', request_id: crypto.randomUUID() };
+  await page.addInitScript(value => sessionStorage.setItem('akria-order-attempt-v1', JSON.stringify(value)), legacyAttempt);
+  let submitted: unknown;
+  await page.route('**/functions/v1/orders-api/order', async route => {
+    submitted = route.request().postDataJSON();
+    await route.fulfill({ status: 201, json: { receipt } });
+  });
+  await page.goto('/bestellen');
+  await expect(page.getByRole('checkbox')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Bestellstatus erneut prüfen' }).click();
+  await expect(page.getByText(receipt.order_number)).toBeVisible();
+  expect(submitted).toEqual(legacyAttempt);
+});
+
+test('product section displays the November deadline from checkout configuration', async ({ page }) => {
+  await page.goto('/');
+  const deadline = page.getByText('bis einschließlich 15.11.2026', { exact: false });
+  await deadline.scrollIntoViewIfNeeded();
+  await expect(deadline).toBeVisible();
+  await expect(page.getByText('15.12.2026', { exact: false })).toHaveCount(0);
 });

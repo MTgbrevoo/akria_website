@@ -11,7 +11,7 @@ function readStored<T>(key: string): T | null {
 function store(key: string, value: unknown) {
   try { if (value === null) sessionStorage.removeItem(key); else sessionStorage.setItem(key, JSON.stringify(value)); } catch { /* in-memory flow remains usable */ }
 }
-const empty = { firstname: '', lastname: '', email: '', street: '', house_number: '', zip: '', city: '', country: 'DE', quantity: 1, newsletter: false, website: '' };
+const empty = { firstname: '', lastname: '', email: '', street: '', house_number: '', zip: '', city: '', country: 'DE', quantity: 1, website: '' };
 const fields = [
   ['firstname', 'Vorname', 'given-name'], ['lastname', 'Nachname', 'family-name'],
   ['email', 'E-Mail-Adresse', 'email'], ['street', 'Straße', 'address-line1'],
@@ -22,7 +22,9 @@ const inputClass = 'mt-2 w-full rounded-xl border border-white/20 bg-white/5 px-
 export default function Order() {
   const preview = import.meta.env.DEV && new URLSearchParams(window.location.search).get('vorschau') === '1';
   const attempt = useRef<OrderInput | null>(preview ? null : readStored<OrderInput>(ATTEMPT));
-  const [form, setForm] = useState(() => ({ ...empty, ...attempt.current }));
+  const [form, setForm] = useState(() => Object.fromEntries(
+    Object.entries(empty).map(([key, value]) => [key, attempt.current?.[key as keyof typeof empty] ?? value]),
+  ) as typeof empty);
   const [receipt, setReceipt] = useState<Receipt | null>(() => preview ? null : readStored<Receipt>(RECEIPT));
   const [config, setConfig] = useState<CheckoutConfig | null>(null);
   const [busy, setBusy] = useState(false);
@@ -34,7 +36,7 @@ export default function Order() {
   const heading = useRef<HTMLHeadingElement>(null);
   const loadConfig = async () => {
     if (preview) {
-      setConfig({ campaign: '2026/27', preorder_until: '2026-12-15T23:00:00Z', preorder_price_cents: 8500, regular_price_cents: 9500, unit_price_cents: 8500, currency: 'EUR', ordering_open: false });
+      setConfig({ campaign: '2026/27', preorder_until: '2026-11-15T23:00:00Z', preorder_price_cents: 8500, regular_price_cents: 9500, unit_price_cents: 8500, currency: 'EUR', ordering_open: false });
       setError('');
       return;
     }
@@ -78,6 +80,9 @@ export default function Order() {
     } finally { submitting.current = false; setBusy(false); }
   };
 
+  const unitPrice = attempt.current?.expected_price_cents ?? config?.unit_price_cents ?? 0;
+  const preorderDiscount = config ? Math.max(0, config.regular_price_cents - unitPrice) : 0;
+
   return <main className="min-h-screen bg-primary px-5 py-12 text-white sm:py-20">
     <div className="mx-auto max-w-2xl">
       <Link to="/" className="mb-8 inline-flex items-center gap-2 text-white/70 hover:text-white"><ArrowLeft size={16} /> Zur Startseite</Link>
@@ -117,17 +122,30 @@ export default function Order() {
                 <input className={inputClass} name="quantity" type="number" min="1" step="1" required value={form.quantity || ''} onChange={e => setForm(current => ({ ...current, quantity: Number(e.target.value) }))} />
               </label>
               <div className="absolute -left-[10000px]" aria-hidden="true"><label>Website<input name="website" tabIndex={-1} autoComplete="off" value={form.website} onChange={e => setForm(current => ({ ...current, website: e.target.value }))} /></label></div>
-              <label className="flex items-start gap-3 rounded-xl border border-white/15 p-4 sm:col-span-2">
-                <input className="mt-1 h-5 w-5 shrink-0 accent-accent" type="checkbox" checked={form.newsletter} onChange={e => setForm(current => ({ ...current, newsletter: e.target.checked }))} />
-                <span><strong className="font-medium">Möchtest Du über die nächste Ernte von uns informiert werden?</strong><span className="mt-1 block text-sm text-white/60">Wir nehmen dich automatisch in unsere Liste für die nächsten Ernten mit auf. Du kannst dich jederzeit davon abmelden. Hierfür bekommst Du einen separaten Bestätigungslink.</span></span>
-              </label>
             </fieldset>
-            {config && <div className="rounded-xl bg-white/5 p-5" aria-live="polite">
-              <p>{form.quantity || 0} × {formatMoney(attempt.current?.expected_price_cents || config.unit_price_cents)}</p>
-              <p className="mt-1 text-2xl font-bold">{formatMoney((form.quantity || 0) * (attempt.current?.expected_price_cents || config.unit_price_cents))}</p>
+            {config && <section aria-label="Preisübersicht" className="rounded-xl bg-white/5 p-5" aria-live="polite">
+              <dl>
+                {preorderDiscount > 0 && <>
+                  <div className="flex items-baseline justify-between gap-4 text-sm text-white/65">
+                    <dt>Regulärer Stückpreis</dt>
+                    <dd className="shrink-0 text-lg tabular-nums">{formatMoney(config.regular_price_cents)}</dd>
+                  </div>
+                  <div className="mt-3 flex items-baseline justify-between gap-4 text-sm text-accent">
+                    <dt>Vorbestellrabatt<span className="mt-1 block text-xs text-white/55">bis einschließlich {formatCutoff(config.preorder_until)}</span></dt>
+                    <dd className="shrink-0 tabular-nums">− {formatMoney(preorderDiscount)}</dd>
+                  </div>
+                </>}
+                <div className={`flex flex-wrap items-baseline justify-between gap-3 ${preorderDiscount > 0 ? 'mt-4 border-t border-white/15 pt-4' : ''}`}>
+                  <dt className="text-sm text-white/80">Dein Stückpreis<span className="mt-1 block text-xs text-white/55">je 5-Liter-Bag-in-Box</span></dt>
+                  <dd className="text-4xl font-bold tabular-nums">{formatMoney(unitPrice)}</dd>
+                </div>
+                <div className="mt-5 flex flex-wrap items-baseline justify-between gap-3 border-t border-white/15 pt-4">
+                  <dt className="text-sm text-white/80">Gesamtbetrag<span className="mt-1 block text-xs text-white/55">{form.quantity || 0} × {formatMoney(unitPrice)}</span></dt>
+                  <dd className="text-2xl font-bold tabular-nums">{formatMoney((form.quantity || 0) * unitPrice)}</dd>
+                </div>
+              </dl>
               <p className="mt-2 text-sm text-white/65">zzgl. Versand.</p>
-              <p className="mt-2 text-xs text-white/55">{formatMoney(config.preorder_price_cents)} je Stück bis einschließlich {formatCutoff(config.preorder_until)}, danach {formatMoney(config.regular_price_cents)}.</p>
-            </div>}
+            </section>}
             {priceChanged && <label className="flex gap-3 text-sm"><input type="checkbox" required checked={acceptedPrice} onChange={e => setAcceptedPrice(e.target.checked)} />Ich bestätige den neuen Stückpreis von {formatMoney(config?.unit_price_cents || 0)}.</label>}
             <p className="text-sm leading-relaxed text-white/65">Hierbei handelt es sich um eine verbindliche Vorbestellung. Lieferung erfolgt nach der Ernte im Frühjahr 2027, Zahlung erfolgt erst bei Erhalt der Ware. Du erhältst eine Bestätigung per Mail.</p>
             {uncertain && !error && <p role="status" className="rounded-xl bg-white/10 p-4">Ein vorheriger Bestellvorgang ist noch offen. Bitte prüfe seinen Status, bevor du eine weitere Bestellung aufgibst.</p>}

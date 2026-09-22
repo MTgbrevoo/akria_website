@@ -1,11 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { validateOrder, mailContent, createHandler, sha256 } from '../supabase/functions/orders-api/index.ts';
-const input = { firstname: ' Ada ', lastname: 'Lovelace', email: ' ADA@EXAMPLE.COM ', street: 'Testweg', house_number: '1a', zip: '01234', city: 'Berlin', country: 'DE', quantity: 1000, expected_price_cents: 8500, newsletter: false };
+const input = { firstname: ' Ada ', lastname: 'Lovelace', email: ' ADA@EXAMPLE.COM ', street: 'Testweg', house_number: '1a', zip: '01234', city: 'Berlin', country: 'DE', quantity: 1000, expected_price_cents: 8500 };
 test('validates address and normalizes email without a business quantity cap', () => {
   const actual = validateOrder(input);
   assert.equal(actual.email, 'ada@example.com'); assert.equal(actual.quantity, 1000); assert.equal(actual.zip, '01234');
-  for (const patch of [{ quantity: 0 }, { quantity: 1.5 }, { country: 'AT' }, { zip: '123' }, { firstname: '\n' }, { newsletter: 'true' }]) assert.throws(() => validateOrder({ ...input, ...patch }));
+  for (const patch of [{ quantity: 0 }, { quantity: 1.5 }, { country: 'AT' }, { zip: '123' }, { firstname: '\n' }]) assert.throws(() => validateOrder({ ...input, ...patch }));
   assert.equal(validateOrder({ ...input, country: 'CH', zip: '8000' }).zip, '8000');
 });
 test('transactional mail contains order snapshot but no marketing opt-in', () => {
@@ -20,7 +20,7 @@ test('CORS denial and worker authorization happen before database calls', async 
   assert.equal((await handler(new Request('https://edge.example/config', { headers: { origin: 'https://evil.example' } }))).status, 403);
   assert.equal((await handler(new Request('https://edge.example/worker', { method: 'POST' }))).status, 401);
 });
-test('order request creates separate opaque newsletter links and returns only receipt', async () => {
+test('order request needs no newsletter choice and creates no newsletter links', async () => {
   let args;
   const handler = createHandler(env, async (url, init) => {
     if (url.endsWith('checkout_rate_limit')) return json(true);
@@ -29,9 +29,10 @@ test('order request creates separate opaque newsletter links and returns only re
   });
   const result = await handler(new Request('https://edge.example/order', { method: 'POST', body: JSON.stringify({ ...input, request_id: crypto.randomUUID() }) }));
   assert.equal(result.status, 201); assert.deepEqual(await result.json(), { receipt: { id: 'order-id' } });
-  assert.notEqual(args.p_confirmation_hash, args.p_unsubscribe_hash);
-  const token = new URLSearchParams(new URL(args.p_links.confirm_url).hash.slice(1)).get('token');
-  assert.equal(await sha256(token), args.p_confirmation_hash);
+  assert.equal(args.p_confirmation_hash, null);
+  assert.equal(args.p_unsubscribe_hash, null);
+  assert.deepEqual(args.p_links, {});
+  assert.equal(Object.hasOwn(args.p_input, 'newsletter'), false);
 });
 test('worker retains stable provider idempotency key and records provider failure for retry', async () => {
   let finished; let key;
@@ -62,4 +63,25 @@ test('order mail uses the public number in subject and body, with legacy payload
   const oldMail = mailContent({ kind: 'order_received', payload: legacy });
   assert.match(oldMail.subject, /legacy-order-id/);
   assert.match(oldMail.text, /Bestellnummer: legacy-order-id/);
+});
+
+test('legacy checkout retries preserve fingerprints but cannot subscribe', async () => {
+  for (const newsletter of [true, false]) {
+    const normalized = validateOrder(input);
+    const { source, ...fields } = normalized;
+    const fingerprint = await sha256(JSON.stringify({ ...fields, newsletter, source }));
+    const handler = createHandler(env, async (url, init) => {
+      if (url.endsWith('checkout_rate_limit')) return json(true);
+      const args = JSON.parse(init.body);
+      assert.equal(args.p_fingerprint, fingerprint);
+      assert.equal(Object.hasOwn(args.p_input, 'newsletter'), false);
+      assert.deepEqual(args.p_links, {});
+      return json({ receipt: { id: 'existing-order' } });
+    });
+    const response = await handler(new Request('https://edge.example/order', {
+      method: 'POST', body: JSON.stringify({ ...input, newsletter, request_id: crypto.randomUUID() }),
+    }));
+    assert.equal(response.status, 201);
+  }
+  assert.deepEqual(validateOrder({ ...input, newsletter: 'obsolete' }), validateOrder(input));
 });
