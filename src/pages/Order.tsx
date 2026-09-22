@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
+import StreetInput from '../components/StreetInput';
 import { ArrowLeft, CheckCircle2, Loader2 } from 'lucide-react';
 import { CONTACT_EMAIL, formatCutoff, formatMoney, orderApi, OrderApiError, type CheckoutConfig, type OrderInput, type Receipt } from '../lib/orders';
 
@@ -109,13 +110,14 @@ export default function Order() {
           <form className="mt-8 space-y-6" onSubmit={submit}>
             <fieldset disabled={busy || uncertain} className="grid gap-5 sm:grid-cols-2">
               <legend className="sr-only">Deine Bestellangaben</legend>
-              {fields.map(([name, label, autoComplete]) => <label key={name} className={name === 'email' ? 'sm:col-span-2' : ''}>
+              {fields.map(([name, label, autoComplete]) => name === 'street' ? <StreetInput key={name} value={form.street} country={form.country} disabled={busy || uncertain} className={inputClass}
+                onChange={street => setForm(current => ({ ...current, street }))} onSelect={address => setForm(current => ({ ...current, ...address }))} /> : <label key={name} className={name === 'email' ? 'sm:col-span-2' : ''}>
                 <span className="text-sm text-white/80">{label}</span>
                 <input className={inputClass} name={name} autoComplete={autoComplete} type={name === 'email' ? 'email' : 'text'} required maxLength={254}
                   inputMode={name === 'zip' ? 'numeric' : undefined} pattern={name === 'zip' ? (form.country === 'CH' ? '[0-9]{4}' : '[0-9]{5}') : undefined}
                   value={form[name]} onChange={e => setForm(current => ({ ...current, [name]: e.target.value }))} />
               </label>)}
-              <label><span className="text-sm text-white/80">Land</span><select className={inputClass} name="country" autoComplete="country" value={form.country} onChange={e => setForm(current => ({ ...current, country: e.target.value }))}>
+              <label><span className="text-sm text-white/80">Land</span><select aria-label="Land" className={inputClass} name="country" autoComplete="country" value={form.country} onChange={e => setForm(current => ({ ...current, country: e.target.value }))}>
                 <option className="bg-primary" value="DE">Deutschland</option><option className="bg-primary" value="CH">Schweiz</option>
               </select></label>
               <label className="sm:col-span-2"><span className="text-sm text-white/80">Anzahl 5l-Kartons</span>
