@@ -26,6 +26,7 @@ export default function Order() {
   const [form, setForm] = useState(() => Object.fromEntries(
     Object.entries(empty).map(([key, value]) => [key, attempt.current?.[key as keyof typeof empty] ?? value]),
   ) as typeof empty);
+  const [manualCountry, setManualCountry] = useState(() => !['DE', 'CH'].includes(form.country));
   const [receipt, setReceipt] = useState<Receipt | null>(() => preview ? null : readStored<Receipt>(RECEIPT));
   const [config, setConfig] = useState<CheckoutConfig | null>(null);
   const [busy, setBusy] = useState(false);
@@ -97,11 +98,11 @@ export default function Order() {
             <div><dt className="text-sm text-white/60">Bestellnummer</dt><dd className="break-all font-mono text-sm">{receipt.order_number || receipt.id}</dd></div>
             <div><dt className="text-sm text-white/60">Ernte {receipt.campaign}</dt><dd>{receipt.quantity} × 5-Liter-Bag-in-Box</dd></div>
             <div><dt className="text-sm text-white/60">Stückpreis / Warenbetrag</dt><dd>{formatMoney(receipt.unit_price_cents)} / <strong>{formatMoney(receipt.total_cents)}</strong></dd></div>
-            <div><dt className="text-sm text-white/60">Deine Angaben</dt><dd>{receipt.firstname} {receipt.lastname}<br />{receipt.street} {receipt.house_number}<br />{receipt.zip} {receipt.city}<br />{receipt.country === 'CH' ? 'Schweiz' : 'Deutschland'}<br />{receipt.email}</dd></div>
+            <div><dt className="text-sm text-white/60">Deine Angaben</dt><dd>{receipt.firstname} {receipt.lastname}<br />{receipt.street} {receipt.house_number}<br />{receipt.zip} {receipt.city}<br />{receipt.country === 'CH' ? 'Schweiz' : receipt.country === 'DE' ? 'Deutschland' : receipt.country}<br />{receipt.email}</dd></div>
           </dl>
           <p className="text-sm leading-relaxed text-white/75">Lieferung im Frühjahr 2027. Im Dezember/Januar melden wir uns zur Auswahl zwischen kostenlosem Abhol-Event und Versand auf deine Kosten. Versandkosten sind noch nicht enthalten. Bezahlt wird bei Erhalt.</p>
           <p className="mt-4 text-sm text-white/75">Änderungen oder Fragen? Schreib uns mit deiner Bestellnummer an <a className="break-all text-accent underline" href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Bestellung ${receipt.order_number || receipt.id}`)}`}>{CONTACT_EMAIL}</a>.</p>
-          <button className="mt-8 rounded-lg border border-white/30 px-4 py-3" onClick={() => { store(RECEIPT, null); setReceipt(null); setForm({ ...empty }); setPriceChanged(false); setAcceptedPrice(false); void loadConfig(); }}>Weitere Bestellung aufgeben</button>
+          <button className="mt-8 rounded-lg border border-white/30 px-4 py-3" onClick={() => { store(RECEIPT, null); setReceipt(null); setForm({ ...empty }); setManualCountry(false); setPriceChanged(false); setAcceptedPrice(false); void loadConfig(); }}>Weitere Bestellung aufgeben</button>
         </> : <>
           <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">Ernte {config?.campaign || '2026/27'}</p>
           <h1 className="font-serif text-4xl font-bold italic">Bestelle dein Olivenöl</h1>
@@ -110,16 +111,20 @@ export default function Order() {
           <form className="mt-8 space-y-6" onSubmit={submit}>
             <fieldset disabled={busy || uncertain} className="grid gap-5 sm:grid-cols-2">
               <legend className="sr-only">Deine Bestellangaben</legend>
-              {fields.map(([name, label, autoComplete]) => name === 'street' ? <StreetInput key={name} value={form.street} country={form.country} disabled={busy || uncertain} className={inputClass}
-                onChange={street => setForm(current => ({ ...current, street }))} onSelect={address => setForm(current => ({ ...current, ...address }))} /> : <label key={name} className={name === 'email' ? 'sm:col-span-2' : ''}>
+              {fields.map(([name, label, autoComplete]) => name === 'street' ? <StreetInput key={name} value={form.street} country={manualCountry ? '' : form.country} disabled={busy || uncertain} className={inputClass}
+                onChange={street => setForm(current => ({ ...current, street }))} onSelect={address => { setManualCountry(false); setForm(current => ({ ...current, ...address })); }} /> : <label key={name} className={name === 'email' ? 'sm:col-span-2' : ''}>
                 <span className="text-sm text-white/80">{label}</span>
                 <input className={inputClass} name={name} autoComplete={autoComplete} type={name === 'email' ? 'email' : 'text'} required maxLength={254}
-                  inputMode={name === 'zip' ? 'numeric' : undefined} pattern={name === 'zip' ? (form.country === 'CH' ? '[0-9]{4}' : '[0-9]{5}') : undefined}
+                  inputMode={name === 'zip' && ['DE', 'CH'].includes(form.country) ? 'numeric' : undefined} pattern={name === 'zip' ? (form.country === 'CH' ? '[0-9]{4}' : form.country === 'DE' ? '[0-9]{5}' : undefined) : undefined}
                   value={form[name]} onChange={e => setForm(current => ({ ...current, [name]: e.target.value }))} />
               </label>)}
-              <label><span className="text-sm text-white/80">Land</span><select aria-label="Land" className={inputClass} name="country" autoComplete="country" value={form.country} onChange={e => setForm(current => ({ ...current, country: e.target.value }))}>
-                <option className="bg-primary" value="DE">Deutschland</option><option className="bg-primary" value="CH">Schweiz</option>
+              <label><span className="text-sm text-white/80">Land</span><select aria-label="Land" className={inputClass} name="country" autoComplete="country" value={manualCountry ? 'OTHER' : form.country} onChange={e => { const country = e.target.value; setManualCountry(country === 'OTHER'); setForm(current => ({ ...current, country: country === 'OTHER' ? '' : country })); }}>
+                <option className="bg-primary" value="DE">Deutschland</option><option className="bg-primary" value="CH">Schweiz</option><option className="bg-primary" value="OTHER">Sonstige...</option>
               </select></label>
+              {manualCountry && <label><span className="text-sm text-white/80">Land manuell eingeben</span>
+                <input className={inputClass} name="country_manual" autoComplete="country-name" required maxLength={254} pattern={".*\\S.*"} value={form.country}
+                  onChange={e => setForm(current => ({ ...current, country: e.target.value }))} />
+              </label>}
               <label className="sm:col-span-2"><span className="text-sm text-white/80">Anzahl 5l-Kartons</span>
                 <input className={inputClass} name="quantity" type="number" min="1" step="1" required value={form.quantity || ''} onChange={e => setForm(current => ({ ...current, quantity: Number(e.target.value) }))} />
               </label>

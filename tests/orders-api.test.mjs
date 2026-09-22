@@ -5,12 +5,12 @@ const input = { firstname: ' Ada ', lastname: 'Lovelace', email: ' ADA@EXAMPLE.C
 test('validates address and normalizes email without a business quantity cap', () => {
   const actual = validateOrder(input);
   assert.equal(actual.email, 'ada@example.com'); assert.equal(actual.quantity, 1000); assert.equal(actual.zip, '01234');
-  for (const patch of [{ quantity: 0 }, { quantity: 1.5 }, { country: 'AT' }, { zip: '123' }, { firstname: '\n' }]) assert.throws(() => validateOrder({ ...input, ...patch }));
+  for (const patch of [{ quantity: 0 }, { quantity: 1.5 }, { country: '  ' }, { zip: '123' }, { firstname: '\n' }]) assert.throws(() => validateOrder({ ...input, ...patch }));
   assert.equal(validateOrder({ ...input, country: 'CH', zip: '8000' }).zip, '8000');
 });
 test('transactional mail contains order snapshot but no marketing opt-in', () => {
   const mail = mailContent({ kind: 'order_received', payload: { ...input, id: 'order-id', quantity: 2, unit_price_cents: 8500, total_cents: 17000, campaign: '2026/27' } });
-  assert.match(mail.text, /170,00/); assert.match(mail.text, /Lieferzusage/); assert.doesNotMatch(mail.text, /Newsletter|Bestätige deine Anmeldung/);
+  assert.match(mail.text, /170,00/); assert.match(mail.text, /vielen Dank für deine Bestellung!/); assert.doesNotMatch(mail.text, /Newsletter|Bestätige deine Anmeldung/);
 });
 const config = { SITE_URL: 'https://akria.example', SUPABASE_URL: 'https://db.example', SUPABASE_SERVICE_ROLE_KEY: 'private', ORDER_RATE_LIMIT_SALT: 'salt', ORDER_WORKER_SECRET: 'a'.repeat(40), RESEND_API_KEY: 'secret', ORDER_FROM_EMAIL: 'AKRIA <order@example.com>' };
 const env = name => config[name];
@@ -53,6 +53,7 @@ test('API refuses oversized streamed bodies and reports price conflict', async (
   assert.equal(response.status, 409); assert.equal((await response.json()).unit_price_cents, 9500);
 });
 
+
 test('order mail uses the public number in subject and body, with legacy payload fallback', () => {
   const payload = { ...input, id: 'legacy-order-id', order_number: 'AK-7K3M9P', quantity: 2, unit_price_cents: 8500, total_cents: 17000, campaign: '2026/27' };
   const mail = mailContent({ kind: 'order_received', payload });
@@ -84,4 +85,14 @@ test('legacy checkout retries preserve fingerprints but cannot subscribe', async
     assert.equal(response.status, 201);
   }
   assert.deepEqual(validateOrder({ ...input, newsletter: 'obsolete' }), validateOrder(input));
+});
+
+test('manual country and international postcode survive validation and mail rendering', () => {
+  const address = validateOrder({ ...input, country: ' Vereinigtes Königreich ', zip: 'SW1A 1AA' });
+  assert.equal(address.country, 'Vereinigtes Königreich');
+  assert.equal(address.zip, 'SW1A 1AA');
+  const mail = mailContent({ kind: 'order_received', payload: { ...address, quantity: 1, unit_price_cents: 8500, total_cents: 8500 } });
+  assert.match(mail.text, /Vereinigtes Königreich/);
+  assert.doesNotMatch(mail.text, /Deutschland/);
+  for (const country of ['', ' ', 'x'.repeat(255), 'Land\nZeile']) assert.throws(() => validateOrder({ ...input, country }));
 });

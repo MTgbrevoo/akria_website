@@ -136,3 +136,41 @@ test('product section displays the November deadline from checkout configuration
   await expect(deadline).toBeVisible();
   await expect(page.getByText('15.12.2026', { exact: false })).toHaveCount(0);
 });
+
+test('manual country is required, supports international postcodes and appears in receipt', async ({ page }) => {
+  let submitted: any;
+  await page.route('**/functions/v1/orders-api/order', async route => {
+    submitted = route.request().postDataJSON();
+    await route.fulfill({ status: 201, json: { receipt: { ...receipt, ...submitted } } });
+  });
+  await page.goto('/bestellen');
+  await fill(page);
+  await page.getByLabel('Land', { exact: true }).selectOption('OTHER');
+  const manualCountry = page.getByLabel('Land manuell eingeben', { exact: true });
+  await expect(manualCountry).toBeVisible();
+  await page.getByRole('button', { name: 'Bestellung bestätigen' }).click();
+  expect(submitted).toBeUndefined();
+  await manualCountry.fill('Vereinigtes Königreich');
+  await page.getByLabel('PLZ', { exact: true }).fill('SW1A 1AA');
+  await page.getByRole('button', { name: 'Bestellung bestätigen' }).click();
+  await expect(page.getByRole('heading', { name: 'Deine Bestellung ist eingegangen.' })).toBeVisible();
+  expect(submitted.country).toBe('Vereinigtes Königreich');
+  expect(submitted.zip).toBe('SW1A 1AA');
+  await expect(page.getByText('Vereinigtes Königreich', { exact: false })).toBeVisible();
+  await page.reload();
+  await expect(page.getByText('Vereinigtes Königreich', { exact: false })).toBeVisible();
+  await page.getByRole('button', { name: 'Weitere Bestellung aufgeben' }).click();
+  await expect(page.getByLabel('Land', { exact: true })).toHaveValue('DE');
+  await expect(manualCountry).toHaveCount(0);
+});
+
+test('switching back to Germany restores its postcode validation', async ({ page }) => {
+  await page.goto('/bestellen');
+  const country = page.getByLabel('Land', { exact: true });
+  await country.selectOption('OTHER');
+  await page.getByLabel('Land manuell eingeben').fill('Österreich');
+  await page.getByLabel('PLZ', { exact: true }).fill('1010');
+  await country.selectOption('DE');
+  await expect(page.getByLabel('Land manuell eingeben')).toHaveCount(0);
+  expect(await page.getByLabel('PLZ', { exact: true }).evaluate((el: HTMLInputElement) => el.validity.patternMismatch)).toBe(true);
+});

@@ -4,6 +4,7 @@ import { addressFromComponents, loadPlaces, placesEnabled, withPlacesTimeout, ty
 type Props = { value: string; disabled: boolean; country: string; className: string; onChange(value: string): void; onSelect(address: Address): void };
 export default function StreetInput({ value, disabled, country, className, onChange, onSelect }: Props) {
   const id = useId();
+  const autocompleteEnabled = placesEnabled && ['DE', 'CH'].includes(country);
   const [suggestions, setSuggestions] = useState<Prediction[]>([]);
   const [active, setActive] = useState(-1);
   const [focused, setFocused] = useState(false);
@@ -18,7 +19,7 @@ export default function StreetInput({ value, disabled, country, className, onCha
   useEffect(() => {
     const version = ++generation.current;
     setSuggestions([]); setActive(-1);
-    if (!placesEnabled || disabled || !focused || query.trim().length < 3 || query !== value || selecting.current) return;
+    if (!autocompleteEnabled || disabled || !focused || query.trim().length < 3 || query !== value || selecting.current) return;
     const timeout = window.setTimeout(async () => {
       setStatus('Adressen werden gesucht …');
       try {
@@ -36,7 +37,7 @@ export default function StreetInput({ value, disabled, country, className, onCha
       }
     }, 300);
     return () => { window.clearTimeout(timeout); ++generation.current; };
-  }, [query, value, focused, disabled, country]);
+  }, [query, value, focused, disabled, country, autocompleteEnabled]);
 
   async function select(prediction: Prediction) {
     const version = ++generation.current;
@@ -61,10 +62,10 @@ export default function StreetInput({ value, disabled, country, className, onCha
   return <div className="relative">
     <label htmlFor={id} className="text-sm text-white/80">Straße</label>
     <input id={id} className={className} name="street" required maxLength={254} value={value} disabled={disabled}
-      autoComplete={placesEnabled ? 'off' : 'address-line1'}
-      role={placesEnabled ? 'combobox' : undefined} aria-autocomplete={placesEnabled ? 'list' : undefined}
-      aria-expanded={placesEnabled ? suggestions.length > 0 : undefined} aria-controls={suggestions.length ? `${id}-options` : undefined}
-      aria-activedescendant={active >= 0 ? `${id}-option-${active}` : undefined} aria-describedby={placesEnabled ? `${id}-help` : undefined}
+      autoComplete={autocompleteEnabled ? 'off' : 'address-line1'}
+      role={autocompleteEnabled ? 'combobox' : undefined} aria-autocomplete={autocompleteEnabled ? 'list' : undefined}
+      aria-expanded={autocompleteEnabled ? suggestions.length > 0 : undefined} aria-controls={suggestions.length ? `${id}-options` : undefined}
+      aria-activedescendant={active >= 0 ? `${id}-option-${active}` : undefined} aria-describedby={autocompleteEnabled ? `${id}-help` : undefined}
       onFocus={() => setFocused(true)} onBlur={() => { if (!selecting.current) setFocused(false); }}
       onChange={event => { ++generation.current; selecting.current = false; setSuggestions([]); setActive(-1); setStatus(''); setQuery(event.target.value); onChange(event.target.value); }}
       onKeyDown={event => {
@@ -83,6 +84,6 @@ export default function StreetInput({ value, disabled, country, className, onCha
       <a href="/datenschutz#google-places" className="block px-4 text-xs text-white/70 underline">Über diese Ergebnisse</a>
       <div translate="no" className="whitespace-nowrap px-4 py-2 text-right font-sans text-xs font-normal not-italic tracking-normal text-white">Google Maps</div>
     </div>}
-    {placesEnabled && <p id={`${id}-help`} role="status" className="mt-2 text-xs text-white/60">{status || <>Adressvorschläge von Google Maps. Du kannst auch manuell eingeben. <a href="/datenschutz#google-places" className="underline">Datenschutz</a></>}</p>}
+    {autocompleteEnabled && <p id={`${id}-help`} role="status" className={status ? "mt-2 text-xs text-white/60" : "sr-only"}>{status}</p>}
   </div>;
 }

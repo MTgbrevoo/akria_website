@@ -8,6 +8,7 @@ const migration = await readFile(new URL('../supabase/manual/01-preorders.sql', 
 const shortNumbers = await readFile(new URL('../supabase/migrations/20260921154632_short_order_numbers.sql', import.meta.url), 'utf8');
 const removeNewsletter = await readFile(new URL('../supabase/migrations/20260922121348_remove_checkout_newsletter.sql', import.meta.url), 'utf8');
 const novemberWindow = await readFile(new URL('../supabase/migrations/20260922124935_preorder_window_november.sql', import.meta.url), 'utf8');
+const manualCountry = await readFile(new URL('../supabase/migrations/20260922135430_allow_manual_country.sql', import.meta.url), 'utf8');
 async function setup() {
   const instance = new PGlite();
   await instance.exec(`create role anon; create role authenticated; create role service_role bypassrls;
@@ -23,7 +24,7 @@ async function setup() {
     insert into orders(customer_id,status,total_amount) values('${legacy}','old',85);`);
   return instance;
 }
-before(async () => { db = await setup(); await db.exec(migration); await db.exec(shortNumbers); await db.exec(removeNewsletter); await db.exec(novemberWindow); });
+before(async () => { db = await setup(); await db.exec(migration); await db.exec(shortNumbers); await db.exec(removeNewsletter); await db.exec(novemberWindow); await db.exec(manualCountry); });
 after(async () => { await db?.close(); });
 const input = (extra = {}) => ({ firstname: 'Ada', lastname: 'Lovelace', email: 'ada@example.com', street: 'Testweg', house_number: '2', zip: '01234', city: 'Berlin', country: 'DE', quantity: 2, expected_price_cents: 8500, source: 'website', ...extra });
 async function place(data = input(), id = crypto.randomUUID(), fingerprint = JSON.stringify(data)) {
@@ -181,4 +182,15 @@ test('number migration preserves existing order IDs and queued mail payloads', a
       assert.equal((await isolated.query(`select has_function_privilege('${role}','place_preorder(jsonb,uuid,text,text,text,jsonb)','EXECUTE') as allowed`)).rows[0].allowed,false);
     }
   } finally { await isolated.close(); }
+});
+
+test('manual country persists in order, contact, receipt and mail snapshot', async () => {
+  const data = input({ email: 'international@example.com', country: 'Vereinigtes Königreich', zip: 'SW1A 1AA' });
+  const result = await place(data);
+  assert.equal(result.receipt.country, data.country);
+  assert.equal(result.receipt.zip, data.zip);
+  assert.equal(await scalar('select country as value from orders where id=$1', [result.receipt.id]), data.country);
+  assert.equal(await scalar('select country as value from contacts where email=$1', [data.email]), data.country);
+  assert.equal(await scalar("select payload->>'country' as value from mail_outbox where order_id=$1", [result.receipt.id]), data.country);
+  for (const country of ['', '  ', 'x'.repeat(255), 'Land\nZeile']) assert.equal((await place(input({ country }))).error, 'invalid_input');
 });
