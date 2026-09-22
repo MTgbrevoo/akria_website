@@ -17,7 +17,7 @@ test('guest checkout without newsletter, saved confirmation and mobile layout', 
   await page.goto('/waitlist'); await expect(page).toHaveURL(/bestellen/);
   const prices = page.getByRole('region', { name: 'Preisübersicht' });
   const regularPrice = prices.locator('div').filter({ has: page.getByText('Regulärer Stückpreis', { exact: true }) }).locator('dd');
-  const finalPrice = prices.locator('div').filter({ has: page.getByText('Dein Stückpreis', { exact: false }) }).locator('dd');
+  const finalPrice = prices.locator('div').filter({ has: page.getByText('Gesamtbetrag', { exact: false }) }).locator('dd');
   await expect(regularPrice).toContainText('95,00');
   await expect(prices.getByText('− 10,00', { exact: false })).toBeVisible();
   await expect(finalPrice).toContainText('85,00');
@@ -28,10 +28,13 @@ test('guest checkout without newsletter, saved confirmation and mobile layout', 
   await expect(page.getByRole('checkbox')).toHaveCount(0);
   await expect(page.getByText('Möchtest Du über die nächste Ernte', { exact: false })).toHaveCount(0);
   await expect(page.getByText('170,00', {exact:false})).toBeVisible();
-  await expect(page.getByText('bis einschließlich 15.11.2026', { exact: false })).toBeVisible();
+  await expect(prices.getByText('endet 15.11.2026', { exact: true })).toBeVisible();
   await expect(page.getByRole('button',{name:'Bestellung bestätigen'})).toBeEnabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({path:'test-results/order-mobile.png',fullPage:true});
+  await page.setViewportSize({width:1280,height:900});
+  await page.screenshot({path:'test-results/order-desktop.png',fullPage:true});
+  await page.setViewportSize({width:390,height:844});
   await page.getByRole('button',{name:'Bestellung bestätigen'}).click();
   await expect(page.getByRole('heading',{name:'Deine Bestellung ist eingegangen.'})).toBeVisible();
   await expect(page.getByRole('link', { name: 'meyertiffertgbr@gmail.com' })).toHaveAttribute('href', /subject=Bestellung%20AK-7K3M9P/);
@@ -40,6 +43,34 @@ test('guest checkout without newsletter, saved confirmation and mobile layout', 
   await page.reload(); await expect(page.getByText(receipt.order_number)).toBeVisible();
   await page.screenshot({path:'test-results/receipt-mobile.png',fullPage:true});
 });
+test('quantity controls update liters and price with keyboard and reduced motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/bestellen');
+  const quantity = page.getByLabel('Anzahl 5l-Kartons');
+  const less = page.getByRole('button', { name: 'Einen Karton weniger' });
+  const more = page.getByRole('button', { name: 'Einen Karton mehr' });
+  const prices = page.getByRole('region', { name: 'Preisübersicht' });
+  await expect(less).toBeDisabled();
+  await more.focus();
+  await page.keyboard.press('Enter');
+  await expect(quantity).toHaveValue('2');
+  await expect(page.getByText('10 Liter Olivenöl', { exact: true })).toBeVisible();
+  await expect(prices).toContainText('170,00');
+  await expect(prices).toContainText(/Du sparst insgesamt 20,00\s€\./);
+  await expect(prices.locator('.order-total')).toHaveCSS('animation-name', 'none');
+  await less.click();
+  await expect(quantity).toHaveValue('1');
+  await expect(less).toBeDisabled();
+  await expect(prices).toContainText(/Du sparst insgesamt 10,00\s€\./);
+  await quantity.fill('');
+  await more.click();
+  await expect(quantity).toHaveValue('1');
+  await quantity.fill('3');
+  await expect(page.getByText('15 Liter Olivenöl', { exact: true })).toBeVisible();
+  await expect(prices).toContainText('255,00');
+  await expect(prices).toContainText(/Du sparst insgesamt 30,00\s€\./);
+});
+
 test('checkout works on mobile browsers without AbortSignal.timeout', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.addInitScript(() => {
@@ -97,7 +128,7 @@ test('local preview shows price without a backend and cannot submit orders', asy
   await page.route('**/functions/v1/orders-api/**', async route => { requests++; await route.abort(); });
   await page.goto('/bestellen?vorschau=1');
   await expect(page.getByText('Lokale Vorschau', {exact:false})).toBeVisible();
-  await expect(page.getByText('bis einschließlich 15.11.2026', { exact: false })).toBeVisible();
+  await expect(page.getByText('endet 15.11.2026', { exact: true })).toBeVisible();
   await page.getByLabel('Anzahl 5l-Kartons').fill('3');
   await expect(page.getByText('255,00', {exact:false})).toBeVisible();
   await expect(page.getByRole('button',{name:'Vorschau – keine Bestellung'})).toBeDisabled();

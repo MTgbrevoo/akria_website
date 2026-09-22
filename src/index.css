@@ -196,3 +196,102 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 2rem;
 }
+
+/* Checkout: tactile quantity controls and immediate price feedback. */
+.order-page ::selection {
+  background: #ffffff;
+  color: #083d73;
+}
+
+.order-input {
+  caret-color: #ffffff;
+  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.order-input:enabled:hover {
+  border-color: rgb(255 255 255 / 45%);
+}
+
+.order-input:focus {
+  background-color: rgb(255 255 255 / 10%);
+}
+
+.order-form label:focus-within > span {
+  color: #ffffff;
+}
+
+.order-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  color: #ffffff;
+  transition: background-color 140ms ease, transform 140ms ease;
+}
+
+.order-step:enabled:hover {
+  background: rgb(255 255 255 / 14%);
+}
+
+.order-step:enabled:active {
+  background: rgb(255 255 255 / 22%);
+  transform: scale(.94);
+}
+
+.order-step:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+
+.order-page :is(button, a, .order-quantity-input):focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 4px;
+}
+
+.order-quantity-input {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.order-quantity-input::-webkit-inner-spin-button,
+.order-quantity-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.order-total {
+  animation: order-price-settle 240ms cubic-bezier(.16, 1, .3, 1);
+}
+
+@keyframes order-price-settle {
+  from { transform: translateY(3px); color: #b9dcff; }
+  to { transform: translateY(0); color: #ffffff; }
+}
+
+.order-submit-arrow {
+  transition: transform 180ms cubic-bezier(.16, 1, .3, 1);
+}
+
+.order-submit:enabled:hover .order-submit-arrow {
+  transform: translateX(3px);
+}
+
+.order-submit:disabled {
+  transform: none;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .order-page *, .order-page *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .order-page .btn-magnetic,
+  .order-step:enabled:active,
+  .order-submit:enabled:hover .order-submit-arrow {
+    transform: none;
+  }
+}
