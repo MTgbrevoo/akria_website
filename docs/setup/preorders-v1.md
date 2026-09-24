@@ -37,7 +37,7 @@ Resend-Absenderdomain/DNS verifizieren. Die Antwortadresse ist die bestehende ö
 
 ## 3. Automatischen Mailversand einschalten
 
-In [02-mail-scheduler.sql](../../supabase/manual/02-mail-scheduler.sql) genau zwei Werte einsetzen: Projekt-URL und dasselbe `ORDER_WORKER_SECRET`. Vollständig im SQL-Editor ausführen. Das Skript aktiviert Cron, pg_net und Vault, speichert das Geheimnis in Vault und ruft jede Minute den geschützten Worker auf. Falls Erweiterungen im Projekt nicht aktivierbar sind, im Supabase Dashboard unter Integrations/Database Extensions freischalten und erneut ausführen.
+In [02-mail-scheduler.sql](../../supabase/manual/02-mail-scheduler.sql) genau zwei Werte einsetzen: Projekt-URL und dasselbe `ORDER_WORKER_SECRET`. Vollständig im SQL-Editor ausführen. Das Skript aktiviert Cron, pg_net und Vault, speichert das Geheimnis in Vault und prüft jede Minute auf fällige Mail-Aufträge, abgelaufene Versand-Leases oder notwendige Fehlerbereinigung. Nur dann ruft es den geschützten Worker auf. Für bereits eingerichtete Projekte siehe [Hintergrundlast reduzieren](background-request-reduction.md). Falls Erweiterungen im Projekt nicht aktivierbar sind, im Supabase Dashboard unter Integrations/Database Extensions freischalten und erneut ausführen.
 
 Bis zu zehn Mails pro Aufruf; Eingangs- und Newsletter-Mails sind getrennte Versandaufträge. Fehlgeschlagene Mails werden mit wachsendem Abstand wiederholt. Resend erhält pro Versandauftrag einen stabilen Idempotenzschlüssel. Nach zehn Versuchen oder 23 Stunden seit dem ersten Versuch stoppt die Automatik mit Status `failed`, damit die 24-Stunden-Deduplizierung beim Anbieter nicht unbemerkt überschritten wird.
 

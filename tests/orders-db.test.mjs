@@ -9,6 +9,7 @@ const shortNumbers = await readFile(new URL('../supabase/migrations/202609211546
 const removeNewsletter = await readFile(new URL('../supabase/migrations/20260922121348_remove_checkout_newsletter.sql', import.meta.url), 'utf8');
 const novemberWindow = await readFile(new URL('../supabase/migrations/20260922124935_preorder_window_november.sql', import.meta.url), 'utf8');
 const manualCountry = await readFile(new URL('../supabase/migrations/20260922135430_allow_manual_country.sql', import.meta.url), 'utf8');
+const gateMailWorker = await readFile(new URL('../supabase/migrations/20260924160332_gate_order_mail_worker.sql', import.meta.url), 'utf8');
 async function setup() {
   const instance = new PGlite();
   await instance.exec(`create role anon; create role authenticated; create role service_role bypassrls;
@@ -193,4 +194,59 @@ test('manual country persists in order, contact, receipt and mail snapshot', asy
   assert.equal(await scalar('select country as value from contacts where email=$1', [data.email]), data.country);
   assert.equal(await scalar("select payload->>'country' as value from mail_outbox where order_id=$1", [result.receipt.id]), data.country);
   for (const country of ['', '  ', 'x'.repeat(255), 'Land\nZeile']) assert.equal((await place(input({ country }))).error, 'invalid_input');
+});
+
+test('scheduled worker skips idle outbox but preserves due retries, expired leases and failure cleanup', async () => {
+  await db.exec('begin');
+  try {
+    // Only the external scheduler, Vault and HTTP boundary are replaced locally.
+    // The actual migration command and real claim_order_mails run in PostgreSQL.
+    await db.exec(`
+      create schema cron; create schema net; create schema vault;
+      create table cron.job(jobid bigint primary key,jobname text,schedule text,active boolean,command text);
+      insert into cron.job values(42,'akria-order-mail-worker','* * * * *',false,'select 1');
+      create function cron.alter_job(job_id bigint,command text) returns void language sql as
+        'update cron.job set command=$2 where jobid=$1';
+      create table vault.decrypted_secrets(name text,decrypted_secret text);
+      insert into vault.decrypted_secrets values ('akria_orders_worker_url','https://example.invalid/worker'),('akria_orders_worker_secret','test-only');
+      create table net.test_calls(id bigint generated always as identity,url text);
+      create function net.http_post(url text,headers jsonb,body jsonb,timeout_milliseconds integer) returns bigint language sql as
+        'insert into net.test_calls(url) values($1) returning id';
+      update public.mail_outbox set status='sent';
+    `);
+    await db.exec(gateMailWorker);
+    const job = (await db.query('select * from cron.job where jobid=42')).rows[0];
+    assert.equal(job.schedule, '* * * * *');
+    assert.equal(job.active, false, 'migration must not reactivate a deliberately paused job');
+    await db.exec(job.command);
+    assert.equal(await scalar('select count(*)::int as value from net.test_calls'), 0);
+
+    const order = await place(input({ email: 'scheduler@example.com' }));
+    const mailId = await scalar('select id as value from mail_outbox where order_id=$1', [order.receipt.id]);
+    const cases = [
+      { name: 'new order', status: 'pending', available: '-1 minute', locked: null, first: null, attempts: 0, expected: 1, outcome: 'sending' },
+      { name: 'future backoff', status: 'pending', available: '10 minutes', locked: null, first: '-1 hour', attempts: 1, expected: 0 },
+      { name: 'due retry', status: 'pending', available: '-1 minute', locked: null, first: '-1 hour', attempts: 1, expected: 1, outcome: 'sending' },
+      { name: 'active lease', status: 'sending', available: '-1 minute', locked: '-1 minute', first: '-1 hour', attempts: 1, expected: 0 },
+      { name: 'expired lease', status: 'sending', available: '-1 minute', locked: '-6 minutes', first: '-1 hour', attempts: 1, expected: 1, outcome: 'sending' },
+      { name: 'retry limit before future backoff', status: 'pending', available: '10 minutes', locked: null, first: '-1 hour', attempts: 10, expected: 1, outcome: 'failed' },
+      { name: 'expired idempotency window before future backoff', status: 'pending', available: '10 minutes', locked: null, first: '-24 hours', attempts: 2, expected: 1, outcome: 'failed' },
+      { name: 'expired window with active lease', status: 'sending', available: '-1 minute', locked: '-1 minute', first: '-24 hours', attempts: 2, expected: 0 },
+      { name: 'expired window with expired lease', status: 'sending', available: '-1 minute', locked: '-6 minutes', first: '-24 hours', attempts: 2, expected: 1, outcome: 'failed' },
+      { name: 'already sent', status: 'sent', available: '-1 minute', locked: null, first: '-24 hours', attempts: 1, expected: 0 },
+      { name: 'already failed', status: 'failed', available: '-1 minute', locked: null, first: '-24 hours', attempts: 10, expected: 0 },
+    ];
+    for (const scenario of cases) {
+      await db.exec('delete from net.test_calls');
+      await db.query(`update mail_outbox set status=$2, available_at=now()+$3::interval,
+        locked_at=now()+$4::interval, first_attempt_at=now()+$5::interval, attempts=$6 where id=$1`,
+      [mailId, scenario.status, scenario.available, scenario.locked, scenario.first, scenario.attempts]);
+      await db.exec(job.command);
+      assert.equal(await scalar('select count(*)::int as value from net.test_calls'), scenario.expected, scenario.name);
+      if (scenario.expected) {
+        await db.query('select * from claim_order_mails()');
+        assert.equal(await scalar('select status as value from mail_outbox where id=$1', [mailId]), scenario.outcome, scenario.name);
+      }
+    }
+  } finally { await db.exec('rollback'); }
 });

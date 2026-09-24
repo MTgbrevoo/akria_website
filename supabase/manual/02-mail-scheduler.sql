@@ -21,14 +21,28 @@ begin
   if existing_id is null then perform vault.create_secret(worker_secret,'akria_orders_worker_secret');
   else perform vault.update_secret(existing_id,worker_secret); end if;
 end $$;
+-- Nur fällige Aufträge, abgelaufene Leases oder notwendige Fehlerbereinigung starten den Worker.
 select cron.schedule('akria-order-mail-worker','* * * * *',$job$
-  select net.http_post(
-    url := (select decrypted_secret from vault.decrypted_secrets where name='akria_orders_worker_url'),
-    headers := jsonb_build_object('Content-Type','application/json','x-worker-secret',
-      (select decrypted_secret from vault.decrypted_secrets where name='akria_orders_worker_secret')),
-    body := '{}'::jsonb,
-    timeout_milliseconds := 60000
-  );
+    do $worker$
+    begin
+      if exists (
+        select 1 from public.mail_outbox
+        where status in ('pending','sending') and (
+          (status = 'pending' and available_at <= now())
+          or (status = 'sending' and locked_at < now() - interval '5 minutes')
+          or ((attempts >= 10 or first_attempt_at < now() - interval '23 hours')
+              and (locked_at is null or locked_at < now() - interval '5 minutes'))
+        )
+      ) then
+        perform net.http_post(
+          url := (select decrypted_secret from vault.decrypted_secrets where name = 'akria_orders_worker_url'),
+          headers := jsonb_build_object('Content-Type','application/json','x-worker-secret',
+            (select decrypted_secret from vault.decrypted_secrets where name = 'akria_orders_worker_secret')),
+          body := '{}'::jsonb,
+          timeout_milliseconds := 60000
+        );
+      end if;
+    end $worker$;
 $job$);
 select cron.schedule('akria-checkout-rate-cleanup','17 3 * * *',$job$
   delete from public.checkout_rate_limits where window_start < now() - interval '2 days';

@@ -35,15 +35,42 @@ export async function orderApi<T>(action: string, body?: unknown, token?: string
     clearTimeout(timeout);
   }
 }
+const PRICE_REFRESH_MS = 5 * 60 * 1000;
+let landingConfig: CheckoutConfig | null = null;
+let lastPriceAttempt = -Infinity;
+let pendingPrice: Promise<CheckoutConfig | null> | null = null;
+
+// Share requests across mounted consumers and route changes, including failed attempts.
+// Checkout itself still calls orderApi directly for a fresh quote.
+function loadLandingConfig(): Promise<CheckoutConfig | null> {
+  if (pendingPrice) return pendingPrice;
+  if (Date.now() - lastPriceAttempt < PRICE_REFRESH_MS) return Promise.resolve(landingConfig);
+  lastPriceAttempt = Date.now();
+  pendingPrice = orderApi<CheckoutConfig>('config')
+    .then(value => (landingConfig = value))
+    .catch(() => landingConfig)
+    .finally(() => { pendingPrice = null; });
+  return pendingPrice;
+}
+
 export function useCheckoutConfig() {
   const [config, setConfig] = useState<CheckoutConfig | null>(null);
   useEffect(() => {
     let active = true;
-    const refresh = () => orderApi<CheckoutConfig>('config').then(value => { if (active) setConfig(value); }).catch(() => {});
+    const refresh = () => {
+      if (document.visibilityState !== 'visible') return;
+      void loadLandingConfig().then(value => { if (active) setConfig(value); });
+    };
     void refresh();
-    const interval = window.setInterval(refresh, 60000);
+    const interval = window.setInterval(refresh, PRICE_REFRESH_MS);
     window.addEventListener('focus', refresh);
-    return () => { active = false; clearInterval(interval); window.removeEventListener('focus', refresh); };
+    document.addEventListener('visibilitychange', refresh);
+    return () => {
+      active = false;
+      clearInterval(interval);
+      window.removeEventListener('focus', refresh);
+      document.removeEventListener('visibilitychange', refresh);
+    };
   }, []);
   return config;
 }
