@@ -12,6 +12,14 @@ function readStored<T>(key: string): T | null {
 function store(key: string, value: unknown) {
   try { if (value === null) sessionStorage.removeItem(key); else sessionStorage.setItem(key, JSON.stringify(value)); } catch { /* in-memory flow remains usable */ }
 }
+function newRequestId() {
+  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
 const empty = { firstname: '', lastname: '', email: '', street: '', house_number: '', zip: '', city: '', country: 'DE', quantity: 1, website: '' };
 const fields = [
   ['firstname', 'Vorname', 'given-name'], ['lastname', 'Nachname', 'family-name'],
@@ -52,13 +60,13 @@ export default function Order() {
     event.preventDefault();
     if (preview || submitting.current || (!attempt.current && (!config?.ordering_open || (priceChanged && !acceptedPrice)))) return;
     submitting.current = true; setBusy(true); setError('');
-    if (!attempt.current && config) {
-      let source = 'website';
-      try { source = sessionStorage.getItem('acquisition_source_code') || source; } catch { /* optional attribution */ }
-      attempt.current = { ...form, quantity: Number(form.quantity), request_id: crypto.randomUUID(), expected_price_cents: config.unit_price_cents, source };
-      store(ATTEMPT, attempt.current);
-    }
     try {
+      if (!attempt.current && config) {
+        let source = 'website';
+        try { source = sessionStorage.getItem('acquisition_source_code') || source; } catch { /* optional attribution */ }
+        attempt.current = { ...form, quantity: Number(form.quantity), request_id: newRequestId(), expected_price_cents: config.unit_price_cents, source };
+        store(ATTEMPT, attempt.current);
+      }
       const data = await orderApi<{ receipt: Receipt }>('order', attempt.current);
       if (!data.receipt?.id) throw new Error('Missing receipt');
       store(RECEIPT, data.receipt); store(ATTEMPT, null); attempt.current = null;

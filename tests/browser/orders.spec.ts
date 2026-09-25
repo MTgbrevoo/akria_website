@@ -84,6 +84,22 @@ test('checkout works on mobile browsers without AbortSignal.timeout', async ({ p
   await page.getByRole('button', { name: 'Bestellung bestätigen' }).click();
   await expect(page.getByRole('heading', { name: 'Deine Bestellung ist eingegangen.' })).toBeVisible();
 });
+test('checkout works on mobile browsers without crypto.randomUUID', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(() => {
+    Object.defineProperty(Crypto.prototype, 'randomUUID', { value: undefined, configurable: true });
+  });
+  let requestId = '';
+  await page.route('**/functions/v1/orders-api/order', route => {
+    requestId = route.request().postDataJSON().request_id;
+    return route.fulfill({ status: 201, json: { receipt } });
+  });
+  await page.goto('/bestellen');
+  await fill(page);
+  await page.getByRole('button', { name: 'Bestellung bestätigen' }).click();
+  await expect(page.getByRole('heading', { name: 'Deine Bestellung ist eingegangen.' })).toBeVisible();
+  expect(requestId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+});
 test('price conflict requires explicit consent, with new request only after rejecting old quote', async ({ page }) => {
   const attempts: any[]=[];
   await page.route('**/functions/v1/orders-api/order', async route => {
