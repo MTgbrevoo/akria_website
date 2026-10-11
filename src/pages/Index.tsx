@@ -138,7 +138,7 @@ function FloatingCTA() {
                     to="/bestellen"
                     className="btn-magnetic btn-accent text-base py-3 md:py-4 px-10 whitespace-nowrap shadow-[0_15px_45px_rgba(254,65,0,0.5)] border border-white/10"
                 >
-                    Jetzt sichern
+                    Jetzt bestellen
                     <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
             </div>
@@ -535,6 +535,15 @@ function Impressum({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }
     const overlayRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
+        if (!isOpen) return
+        const previousOverflow = document.body.style.overflow
+        document.body.style.overflow = 'hidden'
+        return () => {
+            document.body.style.overflow = previousOverflow
+        }
+    }, [isOpen])
+
+    useEffect(() => {
         if (isOpen) {
             gsap.to(overlayRef.current, {
                 opacity: 1,
@@ -542,7 +551,6 @@ function Impressum({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }
                 duration: 0.5,
                 ease: 'power3.out'
             })
-            document.body.style.overflow = 'hidden'
         } else {
             gsap.to(overlayRef.current, {
                 opacity: 0,
@@ -552,7 +560,6 @@ function Impressum({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }
                     gsap.set(overlayRef.current, { visibility: 'hidden' })
                 }
             })
-            document.body.style.overflow = 'auto'
         }
     }, [isOpen])
 

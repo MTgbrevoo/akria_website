@@ -1,0 +1,58 @@
+.preorder-banner {
+  position: relative;
+  z-index: 80;
+  display: flex;
+  width: 100%;
+  height: 40px;
+  overflow: hidden;
+  background: #fe4100;
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+.preorder-banner--fixed {
+  position: fixed;
+  inset: 0 0 auto;
+}
+
+.preorder-banner__viewport {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.preorder-banner__track {
+  display: flex;
+  width: max-content;
+  height: 100%;
+  animation: preorder-marquee 28s linear infinite;
+}
+
+.preorder-banner__group {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-around;
+  min-width: 100vw;
+}
+
+.preorder-banner__group span {
+  flex-shrink: 0;
+  padding-inline: 2rem;
+  white-space: nowrap;
+}
+
+@keyframes preorder-marquee {
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preorder-banner__track { animation: none; width: 100%; }
+  .preorder-banner__group { min-width: 100%; width: 100%; }
+  .preorder-banner__group span { padding-inline: .5rem; }
+  .preorder-banner__group + .preorder-banner__group,
+  .preorder-banner__group span + span { display: none; }
+}

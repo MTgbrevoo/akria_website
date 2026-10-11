@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import Index from './pages/Index';
+import PreorderBanner from './components/PreorderBanner';
 import Order from './pages/Order';
 import Newsletter from './pages/Newsletter';
 import Success from './pages/Success';
@@ -41,6 +42,7 @@ function App() {
     <BrowserRouter>
       <TrackingInitializer />
       <ScrollToTop />
+      <PreorderBanner />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/bestellen" element={<Order />} />
