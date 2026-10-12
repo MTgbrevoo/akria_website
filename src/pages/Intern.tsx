@@ -160,8 +160,7 @@ function Overview() {
     <div className="space-y-8">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="font-display text-sm font-semibold uppercase tracking-wider text-white/70">AKRIA intern</p>
-          <h1 className="mt-1 font-serif text-3xl font-bold italic sm:text-4xl">
+          <h1 className="font-serif text-3xl font-bold italic sm:text-4xl">
             Bestellungen {data?.campaign ?? ''}
           </h1>
           <p className="mt-2 text-sm text-white/70">
