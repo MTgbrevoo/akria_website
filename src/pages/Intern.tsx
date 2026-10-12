@@ -7,6 +7,7 @@ import { supabase } from '../integrations/supabase/client';
 
 const ACCENT = '#fe4100';
 const PRIMARY = '#0c5eaf';
+const PANEL = 'rounded-2xl bg-[#083d73] ring-1 ring-white/10';
 const REFRESH_MS = 5 * 60 * 1000;
 
 type Daily = { day: string; orders: number; units: number; units_cum: number };
@@ -73,9 +74,9 @@ export default function Intern() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[#f6f4ef] font-sans text-slate-900">
+    <main className="min-h-screen font-sans text-white" style={{ background: PRIMARY }}>
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-        {!ready ? <p className="text-slate-500">Wird geladen …</p> : session ? <Overview /> : <Login />}
+        {!ready ? <p className="text-white/70">Wird geladen …</p> : session ? <Overview /> : <Login />}
       </div>
     </main>
   );
@@ -97,24 +98,24 @@ function Login() {
   }
 
   return (
-    <div className="mx-auto mt-10 max-w-md rounded-3xl bg-white p-8 shadow-sm ring-1 ring-black/5">
-      <p className="font-display text-sm font-semibold uppercase tracking-wider" style={{ color: ACCENT }}>AKRIA intern</p>
-      <h1 className="mt-2 font-serif text-3xl font-bold italic" style={{ color: PRIMARY }}>Bestellübersicht</h1>
+    <div className={`mx-auto mt-10 max-w-md p-8 ${PANEL}`}>
+      <p className="font-display text-sm font-semibold uppercase tracking-wider text-white/70">AKRIA intern</p>
+      <h1 className="mt-2 font-serif text-3xl font-bold italic">Bestellübersicht</h1>
       {state === 'sent' ? (
-        <p className="mt-6 text-slate-700">Falls diese Adresse freigeschaltet ist, kommt gleich eine E-Mail mit einem Anmeldelink. Der Link öffnet diese Seite.</p>
+        <p className="mt-6 text-white/85">Falls diese Adresse freigeschaltet ist, kommt gleich eine E-Mail mit einem Anmeldelink. Der Link öffnet diese Seite.</p>
       ) : (
         <form className="mt-6 space-y-4" onSubmit={submit}>
           <label className="block">
-            <span className="text-sm text-slate-600">E-Mail-Adresse</span>
+            <span className="text-sm text-white/70">E-Mail-Adresse</span>
             <input
-              className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-[#0c5eaf] focus:ring-2 focus:ring-[#0c5eaf]/20"
+              className="mt-1 w-full rounded-xl border border-white/30 bg-white/10 px-4 py-3 text-white outline-none placeholder:text-white/40 focus:border-[#fe4100] focus:ring-2 focus:ring-[#fe4100]/30"
               type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)}
             />
           </label>
           <button className="btn-accent w-full rounded-xl p-4 font-semibold disabled:opacity-50" disabled={state === 'busy'} type="submit">
             {state === 'busy' ? 'Wird gesendet …' : 'Anmeldelink senden'}
           </button>
-          {state === 'error' && <p className="text-sm text-red-700" role="alert">Das hat nicht geklappt. Bitte später nochmals versuchen.</p>}
+          {state === 'error' && <p className="text-sm text-white" role="alert">Das hat nicht geklappt. Bitte später nochmals versuchen.</p>}
         </form>
       )}
     </div>
@@ -147,10 +148,10 @@ function Overview() {
 
   if (state === 'denied') {
     return (
-      <div className="mx-auto mt-10 max-w-md rounded-3xl bg-white p-8 shadow-sm ring-1 ring-black/5">
-        <h1 className="font-serif text-2xl font-bold italic" style={{ color: PRIMARY }}>Kein Zugriff</h1>
-        <p className="mt-4 text-slate-700">Diese Adresse ist für die interne Übersicht nicht freigeschaltet.</p>
-        <button className="mt-6 underline" style={{ color: PRIMARY }} onClick={logout}>Abmelden</button>
+      <div className={`mx-auto mt-10 max-w-md p-8 ${PANEL}`}>
+        <h1 className="font-serif text-2xl font-bold italic">Kein Zugriff</h1>
+        <p className="mt-4 text-white/85">Diese Adresse ist für die interne Übersicht nicht freigeschaltet.</p>
+        <button className="mt-6 text-white underline" onClick={logout}>Abmelden</button>
       </div>
     );
   }
@@ -159,19 +160,19 @@ function Overview() {
     <div className="space-y-8">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="font-display text-sm font-semibold uppercase tracking-wider" style={{ color: ACCENT }}>AKRIA intern</p>
-          <h1 className="mt-1 font-serif text-3xl font-bold italic sm:text-4xl" style={{ color: PRIMARY }}>
+          <p className="font-display text-sm font-semibold uppercase tracking-wider text-white/70">AKRIA intern</p>
+          <h1 className="mt-1 font-serif text-3xl font-bold italic sm:text-4xl">
             Bestellungen {data?.campaign ?? ''}
           </h1>
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm text-white/70">
             {data ? <>Stand {dateTime.format(new Date(data.generated_at))} · Vorbestellfenster bis {lastPreorderDay(data.preorder_until)}</> : state === 'error' ? 'Die Daten konnten nicht geladen werden.' : 'Daten werden geladen …'}
           </p>
         </div>
         <div className="flex gap-3">
-          <button className="rounded-xl border px-4 py-2 text-sm font-medium disabled:opacity-50" style={{ borderColor: PRIMARY, color: PRIMARY }} onClick={() => void load()} disabled={busy}>
+          <button className="rounded-xl border border-white/60 px-4 py-2 text-sm font-medium text-white hover:bg-white/10 disabled:opacity-50" onClick={() => void load()} disabled={busy}>
             {busy ? 'Lädt …' : 'Aktualisieren'}
           </button>
-          <button className="rounded-xl px-4 py-2 text-sm text-slate-600 hover:text-slate-900" onClick={logout}>Abmelden</button>
+          <button className="rounded-xl px-4 py-2 text-sm text-white/70 hover:text-white" onClick={logout}>Abmelden</button>
         </div>
       </header>
 
@@ -214,19 +215,19 @@ function Content({ data }: { data: Dashboard }) {
 
 function Tile({ label, value, note }: { label: string; value: string; note: string }) {
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5">
-      <p className="text-sm text-slate-600">{label}</p>
-      <p className="mt-1 font-serif text-3xl tabular-nums sm:text-4xl" style={{ color: PRIMARY }}>{value}</p>
-      <p className="mt-1 text-xs text-slate-500">{note}</p>
+    <div className={`p-5 ${PANEL}`}>
+      <p className="text-sm text-white/75">{label}</p>
+      <p className="mt-1 font-serif text-3xl tabular-nums sm:text-4xl" style={{ color: ACCENT }}>{value}</p>
+      <p className="mt-1 text-xs text-white/60">{note}</p>
     </div>
   );
 }
 
 function Card({ title, note, children }: { title: string; note: string; children: ReactNode }) {
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5 sm:p-6">
-      <h2 className="font-display text-lg font-semibold" style={{ color: PRIMARY }}>{title}</h2>
-      <p className="mb-4 text-xs text-slate-500">{note}</p>
+    <div className={`p-5 sm:p-6 ${PANEL}`}>
+      <h2 className="font-display text-lg font-semibold text-white">{title}</h2>
+      <p className="mb-4 text-xs text-white/60">{note}</p>
       {children}
     </div>
   );
@@ -253,10 +254,10 @@ function labelIndexes(n: number, maxLabels: number) {
 
 function Axes({ yMax, y, labels }: { yMax: number; y: (v: number) => number; labels: { x: number; text: string }[] }) {
   return (
-    <g fontSize="12" fill="#64748b">
+    <g fontSize="12" fill="rgba(255,255,255,0.65)">
       {ticks(yMax).map(t => (
         <g key={t}>
-          <line x1={M.left} x2={W - M.right} y1={y(t)} y2={y(t)} stroke="#e2e8f0" />
+          <line x1={M.left} x2={W - M.right} y1={y(t)} y2={y(t)} stroke="rgba(255,255,255,0.12)" />
           <text x={M.left - 8} y={y(t)} dy="0.35em" textAnchor="end">{nf.format(t)}</text>
         </g>
       ))}
@@ -293,7 +294,7 @@ function CumulativeChart({ daily }: { daily: Daily[] }) {
         }}>
         <defs>
           <linearGradient id="akria-area" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor={ACCENT} stopOpacity="0.28" />
+            <stop offset="0" stopColor={ACCENT} stopOpacity="0.35" />
             <stop offset="1" stopColor={ACCENT} stopOpacity="0" />
           </linearGradient>
         </defs>
@@ -301,7 +302,7 @@ function CumulativeChart({ daily }: { daily: Daily[] }) {
         <path d={area} fill="url(#akria-area)" />
         <path d={line} fill="none" stroke={ACCENT} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
         <text x={x(daily.length - 1) + 6} y={y(last.units_cum)} dy="0.35em" fontSize="13" fontWeight="600" fill={ACCENT}>{nf.format(last.units_cum)}</text>
-        {h && hover !== null && <circle cx={x(hover)} cy={y(h.units_cum)} r="5" fill={ACCENT} stroke="white" strokeWidth="2" />}
+        {h && hover !== null && <circle cx={x(hover)} cy={y(h.units_cum)} r="5" fill={ACCENT} stroke="#083d73" strokeWidth="2" />}
       </svg>
       {h && <Tooltip title={dayLabel(h.day)} text={`${nf.format(h.units_cum)} gesamt · +${nf.format(h.units)} an diesem Tag`} />}
     </div>
@@ -339,8 +340,8 @@ function DailyChart({ daily }: { daily: Daily[] }) {
 
 function Tooltip({ title, text }: { title: string; text: string }) {
   return (
-    <div className="pointer-events-none absolute right-2 top-0 rounded-lg bg-white px-3 py-2 text-xs shadow-md ring-1 ring-black/10">
-      <p className="text-slate-500">{title}</p>
+    <div className="pointer-events-none absolute right-2 top-0 rounded-lg bg-[#083d73] px-3 py-2 text-xs text-white shadow-lg ring-1 ring-white/20">
+      <p className="text-white/60">{title}</p>
       <p className="font-medium tabular-nums">{text}</p>
     </div>
   );
@@ -355,11 +356,11 @@ function CountryBars({ countries, total }: { countries: Country[]; total: number
         <li key={c.country}>
           <div className="flex items-baseline justify-between text-sm">
             <span className="font-medium">{COUNTRY_NAMES[c.country] ?? c.country}</span>
-            <span className="tabular-nums text-slate-600">
+            <span className="tabular-nums" style={{ color: ACCENT }}>
               {nf.format(c.units)} Bag-in-Box · {nf.format(c.orders)} Best. · {total ? Math.round((100 * c.units) / total) : 0} %
             </span>
           </div>
-          <div className="mt-1.5 h-3 rounded-full bg-slate-100">
+          <div className="mt-1.5 h-3 rounded-full bg-white/10">
             <div className="h-3 rounded-full" style={{ width: `${(100 * c.units) / max}%`, background: ACCENT }} />
           </div>
         </li>
@@ -374,7 +375,7 @@ function CityTable({ cities }: { cities: City[] }) {
   return (
     <div className="max-h-[22rem] overflow-auto">
       <table className="w-full text-sm tabular-nums">
-        <thead className="sticky top-0 bg-white text-left text-xs text-slate-500">
+        <thead className="sticky top-0 bg-[#083d73] text-left text-xs text-white/60">
           <tr>
             <th className="py-2 pr-3 font-medium">Ort</th>
             <th className="py-2 pr-3 font-medium">Land</th>
@@ -384,11 +385,11 @@ function CityTable({ cities }: { cities: City[] }) {
         </thead>
         <tbody>
           {cities.map(c => (
-            <tr key={`${c.city}-${c.country}`} className="border-t border-slate-100">
+            <tr key={`${c.city}-${c.country}`} className="border-t border-white/10">
               <td className="py-2 pr-3">{c.city}</td>
-              <td className="py-2 pr-3 text-slate-600">{c.country}</td>
-              <td className="py-2 pr-3 text-right">{nf.format(c.orders)}</td>
-              <td className="py-2">
+              <td className="py-2 pr-3 text-white/70">{c.country}</td>
+              <td className="py-2 pr-3 text-right" style={{ color: ACCENT }}>{nf.format(c.orders)}</td>
+              <td className="py-2" style={{ color: ACCENT }}>
                 <span className="mr-2 inline-block h-2 rounded-full align-middle" style={{ width: `${Math.max(4, (64 * c.units) / max)}px`, background: ACCENT }} />
                 {nf.format(c.units)}
               </td>
@@ -401,5 +402,5 @@ function CityTable({ cities }: { cities: City[] }) {
 }
 
 function Empty() {
-  return <p className="py-10 text-center text-sm text-slate-500">Noch keine Bestellungen.</p>;
+  return <p className="py-10 text-center text-sm text-white/60">Noch keine Bestellungen.</p>;
 }
