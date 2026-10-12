@@ -6,6 +6,7 @@ import Order from './pages/Order';
 import Newsletter from './pages/Newsletter';
 import Success from './pages/Success';
 import Datenschutz from './pages/Datenschutz';
+import Intern from './pages/Intern';
 
 function TrackingInitializer() {
   const { search, hash } = useLocation();
@@ -50,6 +51,7 @@ function App() {
         <Route path="/newsletter" element={<Newsletter />} />
         <Route path="/success" element={<Success />} />
         <Route path="/datenschutz" element={<Datenschutz />} />
+        <Route path="/intern" element={<Intern />} />
       </Routes>
     </BrowserRouter>
   );
