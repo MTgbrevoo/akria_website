@@ -9,6 +9,7 @@ const ACCENT = '#fe4100';
 const PRIMARY = '#0c5eaf';
 const PANEL = 'rounded-2xl bg-[#083d73] ring-1 ring-white/10';
 const REFRESH_MS = 5 * 60 * 1000;
+const UNIT_GOAL = 240; // Verkaufsziel 2026 in Bag-in-Box
 
 type Daily = { day: string; orders: number; units: number; units_cum: number };
 type Country = { country: string; orders: number; units: number };
@@ -191,6 +192,8 @@ function Content({ data }: { data: Dashboard }) {
         <Tile label="Bestellwert" value={eur.format(Number(data.revenue_eur))} note="Summe der Bestellungen, nicht Zahlungseingang" />
       </section>
 
+      <GoalProgress units={data.units} />
+
       <section className="grid gap-4 lg:grid-cols-2" aria-label="Verlauf">
         <Card title="Bag-in-Box kumuliert" note={data.last_order_at ? `Letzte Bestellung: ${dateTime.format(new Date(data.last_order_at))}` : 'Noch keine Bestellungen'}>
           <CumulativeChart daily={data.daily} />
@@ -219,6 +222,25 @@ function Tile({ label, value, note }: { label: string; value: string; note: stri
       <p className="mt-1 font-serif text-3xl tabular-nums sm:text-4xl" style={{ color: ACCENT }}>{value}</p>
       <p className="mt-1 text-xs text-white/60">{note}</p>
     </div>
+  );
+}
+
+function GoalProgress({ units }: { units: number }) {
+  const pct = Math.min(100, (100 * units) / UNIT_GOAL);
+  const left = Math.max(0, UNIT_GOAL - units);
+  return (
+    <section aria-label="Verkaufsziel">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <h2 className="font-display text-lg font-semibold text-white">Verkaufsziel {nf.format(UNIT_GOAL)} Bag-in-Box</h2>
+        <p className="tabular-nums" style={{ color: ACCENT }}>
+          <span className="font-serif text-2xl">{nf.format(units)}</span> / {nf.format(UNIT_GOAL)} · {Math.floor(pct)} %
+        </p>
+      </div>
+      <div className="mt-3 h-2 rounded-full bg-white/10" role="progressbar" aria-valuemin={0} aria-valuemax={UNIT_GOAL} aria-valuenow={units}>
+        <div className="h-2 rounded-full transition-[width] duration-700" style={{ width: `${pct}%`, background: ACCENT }} />
+      </div>
+      <p className="mt-2 text-xs text-white/60">{left ? `Noch ${nf.format(left)} Bag-in-Box bis zum Ziel` : 'Ziel erreicht'}</p>
+    </section>
   );
 }
 
